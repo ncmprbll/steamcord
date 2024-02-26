@@ -1,5 +1,10 @@
+<script lang="ts">
+    import BigStoreItem from '$lib/components/BigStoreItem.svelte';
+</script>
+
 <main>
     <div class="store-body">
-        <p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+        <p>Featured games</p>
+        <BigStoreItem name={"random name"} price={79.99}/>
     </div>
 </main>

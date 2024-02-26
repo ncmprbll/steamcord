@@ -1,0 +1,23 @@
+.big-store-container {
+    display: flex;
+}
+
+.add-to-cart {
+    position: relative;
+    bottom: 0;
+    right: 0;
+    width: fit-content;
+    padding: 3px;
+    background-color: #3234ad;
+}
+
+.screenshot {
+    width: 616px;
+    height: 353px;
+    background-color: #333480;
+}
+
+.info {
+    padding-left: 14px;
+    padding-right: 14px;
+}

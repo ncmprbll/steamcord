@@ -1,3 +1,7 @@
+:root {
+    --nav-bg-color: #18181c;
+}
+
 body {
     font-family: Inter, sans-serif;
     font-size: 16px;
@@ -8,7 +12,7 @@ body {
     overflow-x: hidden;
     margin: 0;
 
-    background-color: #0d171a;
+    background-color: #121212;
     color: #ebf2f4;
 }
 
@@ -34,7 +38,7 @@ a:hover {
 }
 
 .menu {
-    background-color: #121212;
+    background-color: var(--nav-bg-color);
     position: -webkit-sticky;
     position: sticky;
     top: 0;
@@ -55,7 +59,7 @@ a:hover {
     -webkit-box-pack: justify;
     -webkit-justify-content: space-between;
     justify-content: space-between;
-    background-color: rgb(18, 18, 18);
+    background-color: var(--nav-bg-color);
     position: relative;
     z-index: 999;
 }
