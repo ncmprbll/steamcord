@@ -41,4 +41,16 @@
         padding-left: 14px;
         padding-right: 14px;
     }
+
+    .no-paging {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 400ms;
+        width: 100%;
+        box-sizing: border-box;
+        position: absolute;
+        top: 0;
+        left: 0;
+        opacity: 0;
+    }
 </style>
