@@ -9,9 +9,8 @@
 			Search bar
 		</div>
 		<div class="menu-items">
-			<a href="/">nav one2</a>
-			<a href="/">a long nav two</a>
-			<a href="/">a long long long nav three</a>
+			<a href="/">Store</a>
+			<a href="/">Community</a>
 		</div>
 	</div>
 </nav>

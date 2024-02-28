@@ -6,6 +6,7 @@
         {
             name: "test123",
             price: 29.99,
+            src: "https://cdn.akamai.steamstatic.com/steam/apps/227300/capsule_616x353.jpg?t=1707210696"
         },
         {
             name: "test456",
@@ -23,12 +24,17 @@
 <div bind:this={carousel} class="carousel">
     <div bind:this={items} class="items">
         {#each data as game}
-            <CarouselStoreItem name={game.name} price={game.price}/>
+            <CarouselStoreItem name={game.name} price={game.price} src={game.src}/>
         {/each}
     </div>
 </div>
 
 <style>
+    .items {
+        display: flex;
+        gap: 24px;
+    }
+
     .no-paging {
         opacity: 0;
         pointer-events: none;

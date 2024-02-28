@@ -1,21 +1,3 @@
-:root {
-    --nav-bg-color: #18181c;
-}
-
-body {
-    font-family: Inter, sans-serif;
-    font-size: 16px;
-    font-weight: normal;
-    line-height: 20px;
-    letter-spacing: 0.2px;
-    width: 100%;
-    overflow-x: hidden;
-    margin: 0;
-
-    background-color: #121212;
-    color: #ebf2f4;
-}
-
 a {
     color: inherit;
     text-decoration: none; 
@@ -50,11 +32,12 @@ a:hover {
     margin-left: auto;
     margin-right: auto;
     width: 75%;
-    max-width: 1600px;
+    max-width: 1060px;
     display: -webkit-box;
     display: -webkit-flex;
     display: -ms-flexbox;
     display: flex;
+    gap: 24px;
     height: 100%;
     -webkit-box-pack: justify;
     -webkit-justify-content: space-between;
@@ -93,6 +76,7 @@ a:hover {
     display: -webkit-flex;
     display: -ms-flexbox;
     display: flex;
+    gap: 12px;
     -webkit-flex-direction: row;
     -ms-flex-direction: row;
     flex-direction: row;

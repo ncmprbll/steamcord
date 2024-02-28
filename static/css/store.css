@@ -1,6 +1,31 @@
+:root {
+  font-family: Inter, sans-serif;
+  font-feature-settings: 'liga' 1, 'calt' 1;
+  --nav-bg-color: #18181c;
+}
+
+@supports (font-variation-settings: normal) {
+  :root { font-family: InterVariable, sans-serif; }
+}
+
+body {
+    font-family: Inter, sans-serif;
+    font-size: 16px;
+    font-weight: normal;
+    line-height: 20px;
+    letter-spacing: 0.2px;
+    width: 100%;
+    overflow-x: hidden;
+    margin: 0;
+
+    background-color: #121212;
+    color: #ebf2f4;
+}
+
+
 .store-body {
     margin-left: auto;
     margin-right: auto;
     width: 75%;
-    max-width: 1600px;
+    max-width: 1060px;
 }
