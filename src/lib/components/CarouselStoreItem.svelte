@@ -2,13 +2,15 @@
 	export let name: string;
     export let price: number;
     export let src: string;
+    export let clientWidth: number;
+    export let element: HTMLElement;
 </script>
 
-<a class="big-store-container">
+<a bind:clientWidth={clientWidth} bind:this={element} class="big-store-container">
     <div class="screenshot"> <!-- style="background-image: url(&quot;https://cdn.akamai.steamstatic.com/steam/apps/227300/capsule_616x353.jpg?t=1707210696&quot;);"> -->
         <picture>
-            <source type="image/jpeg" class="big-spot__background-source" media="(min-width:705px)" srcset="//images-3.gog-statics.com/b77e157a8be3f7edb748215b860273ee47f8a8764fe4fd4e07e74df78d80af5f_bs_background_1275.jpg">
-            <img class="big-spot__background-source" src="//images-3.gog-statics.com/b77e157a8be3f7edb748215b860273ee47f8a8764fe4fd4e07e74df78d80af5f_bs_background_1275.jpg" alt="">
+            <source type="image/jpeg" class="big-spot__background-source" media="(min-width:705px)" srcset={src}>
+            <img class="big-spot__background-source" {src} alt="">
         </picture>
         <div class="add-to-cart">
             Add to cart
@@ -21,6 +23,10 @@
 </a>
 
 <style>
+    img {
+        border-radius: 16px;
+    }
+
     .big-spot__background-source {
         position: absolute;
         width: 100%;
@@ -45,7 +51,6 @@
         position: relative;
         width: 1096px;
         height: 460px;
-
     }
 
     .info {
