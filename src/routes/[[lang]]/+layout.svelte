@@ -1,3 +1,7 @@
+<script lang="ts">
+    export let data;
+</script>
+
 <nav class="menu">
 	<div class="menu-container">
 		<div class="flex-center" style="filter: invert(100%) sepia(64%) saturate(36%) hue-rotate(203deg) brightness(111%) contrast(92%)">
@@ -9,8 +13,8 @@
 			Search bar
 		</div>
 		<div class="menu-items">
-			<a href="/">Store</a>
-			<a href="/">Community</a>
+			<a href="/">{data.locale.store}</a>
+			<a href="/">{data.locale.community}</a>
 		</div>
 	</div>
 </nav>

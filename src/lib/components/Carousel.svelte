@@ -62,18 +62,15 @@
 			offset += offsetValue;
 		}, 3000);
 
-        items.addEventListener('transitionstart', transitionstart, false);
-        items.addEventListener('transitionend', transitionend, false);
+        // items.addEventListener('transitionstart', transitionstart, false);
+        // items.addEventListener('transitionend', transitionend, false);
 
 		return () => clearInterval(interval); 
     });
-
-    let status = "...";
 </script>
 
-<p>status: {status}</p>
 <div bind:this={carousel} class="carousel">
-    <div bind:this={items} class="items" on:transitionstart={() => (status = 'intro ended')} style="transition: transform 400ms cubic-bezier(0.165, 0.84, 0.44, 1) 0s; transform: translate3d({offset}px, 0px, 0px);">
+    <div bind:this={items} class="items" on:transitionstart={transitionstart} on:transitionend={transitionend} style="transition: transform 400ms cubic-bezier(0.165, 0.84, 0.44, 1) 0s; transform: translate3d({offset}px, 0px, 0px);">
         {#each data as game, index}
             <CarouselStoreItem bind:element={objects[index]} bind:clientWidth={itemWidth} name={game.name} price={game.price} src={game.src}/>
         {/each}
