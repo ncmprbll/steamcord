@@ -30,6 +30,18 @@
         }
     ]
 
+    let left = [];
+    let right = [];
+
+    if (data.length > 2) {
+        left[0] = data[0];
+        left[1] = data[1];
+        left[2] = data[2];
+        right[2] = data[data.length - 1];
+        right[1] = data[data.length - 2];
+        right[0] = data[data.length - 3];
+    }
+
     let carousel: HTMLElement;
     let items: HTMLElement;
 
@@ -37,6 +49,7 @@
 
     let currentObject: number = 0;
     let itemWidth: number = 0;
+    let transformSpeed: number = 0;
     let offsetValue: number = 0;
     let offset: number = 0;
 
@@ -46,8 +59,20 @@
 
     function transitionend() {
         console.log(2);
-    };
 
+        // let first = objects[0];
+        // let last = objects[objects.length - 1];
+
+        // console.log( objects)
+
+        // last.after(first);
+
+        // objects[objects.length] = first;
+        // objects.shift();
+
+        // transformSpeed = 0;
+        // offset = 0;
+    };
 
     onMount(() => {
         let gap: string = parseInt(getComputedStyle(items).gap.replace("px", ""));
@@ -57,10 +82,12 @@
         }
 
         offsetValue = -(itemWidth + gap);
+        offset += left.length * offsetValue;
 
 		const interval = setInterval(() => {
+            //transformSpeed = 400;
 			offset += offsetValue;
-		}, 3000);
+		}, 10000);
 
         // items.addEventListener('transitionstart', transitionstart, false);
         // items.addEventListener('transitionend', transitionend, false);
@@ -69,18 +96,25 @@
     });
 </script>
 
-<div bind:this={carousel} class="carousel">
-    <div bind:this={items} class="items" on:transitionstart={transitionstart} on:transitionend={transitionend} style="transition: transform 400ms cubic-bezier(0.165, 0.84, 0.44, 1) 0s; transform: translate3d({offset}px, 0px, 0px);">
-        {#each data as game, index}
-            <CarouselStoreItem bind:element={objects[index]} bind:clientWidth={itemWidth} name={game.name} price={game.price} src={game.src}/>
-        {/each}
+{#if data.length > 2}
+    <div bind:this={carousel} class="carousel">
+        <div bind:this={items} class="items" on:transitionstart={transitionstart} on:transitionend={transitionend} style="transition: transform {transformSpeed}ms cubic-bezier(0.165, 0.84, 0.44, 1) 0s; transform: translate3d({offset}px, 0px, 0px);">
+            {#each left as game, index}
+                <CarouselStoreItem name={game.name} price={game.price} src={game.src}/>
+            {/each}
+            {#each data as game, index}
+                <CarouselStoreItem bind:element={objects[index]} bind:clientWidth={itemWidth} name={game.name} price={game.price} src={game.src}/>
+            {/each}
+            {#each right as game, index}
+                <CarouselStoreItem name={game.name} price={game.price} src={game.src}/>
+            {/each}
+        </div>
     </div>
-</div>
+{/if}
 
 <style>
     .items {
         display: flex;
-        gap: 24px;
     }
 
     .no-paging {

@@ -26,6 +26,6 @@ body {
 .store-body {
     margin-left: auto;
     margin-right: auto;
-    width: 75%;
     max-width: 1060px;
+    padding: 0 2%;
 }

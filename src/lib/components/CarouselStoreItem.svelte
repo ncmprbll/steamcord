@@ -1,13 +1,28 @@
 <script lang="ts">
+    import { onMount } from 'svelte';
+
 	export let name: string;
     export let price: number;
     export let src: string;
     export let clientWidth: number;
     export let element: HTMLElement;
+
+    let width = 1096;
+    let margin = 8;
+
+    function resize() {
+        width = Math.min(1096, window.innerWidth - 120)
+	}
+
+    onMount(resize);
 </script>
 
+<svelte:window 
+  on:resize={resize}
+/>
+
 <a bind:clientWidth={clientWidth} bind:this={element} class="big-store-container">
-    <div class="screenshot"> <!-- style="background-image: url(&quot;https://cdn.akamai.steamstatic.com/steam/apps/227300/capsule_616x353.jpg?t=1707210696&quot;);"> -->
+    <div style="position: relative; width: {width}px; height: 460px; margin-left: {margin}px; margin-right: {margin}px;"> <!-- style="background-image: url(&quot;https://cdn.akamai.steamstatic.com/steam/apps/227300/capsule_616x353.jpg?t=1707210696&quot;);"> -->
         <picture>
             <source type="image/jpeg" class="big-spot__background-source" media="(min-width:705px)" srcset={src}>
             <img class="big-spot__background-source" {src} alt="">
