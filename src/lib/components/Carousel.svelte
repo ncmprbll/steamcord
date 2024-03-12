@@ -29,6 +29,7 @@
             src: "//images-1.gog-statics.com/4f8f65241b4ece2764f7a900433e696e3c4ccec1f91a1a9afc283e2ff2a51f5d_bs_background_1275.jpg"
         }
     ]
+    export let locale;
 
     let left = [];
     let right = [];
@@ -44,14 +45,16 @@
 
     let carousel: HTMLElement;
     let items: HTMLElement;
+    let paragraph: HTMLElement;
 
     let objects: HTMLElement = [];
 
+    let margin: number;
     let currentObject: number = 0;
     let itemWidth: number = 0;
     let transformSpeed: number = 0;
     let offsetValue: number = 0;
-    let offset: number = 0;
+    let offset: number = -8;
 
     function transitionstart() {
         console.log(1);
@@ -74,7 +77,12 @@
         // offset = 0;
     };
 
+    function carouselGoto(index: number) {
+
+    }
+
     onMount(() => {
+        console.log(margin);
         let gap: string = parseInt(getComputedStyle(items).gap.replace("px", ""));
 
         if (gap === NaN) {
@@ -89,7 +97,7 @@
 			offset += offsetValue;
 		}, 10000);
 
-        // items.addEventListener('transitionstart', transitionstart, false);
+        // items.addEventListener('transitionstart', transitionsrtart, false);
         // items.addEventListener('transitionend', transitionend, false);
 
 		return () => clearInterval(interval); 
@@ -97,16 +105,17 @@
 </script>
 
 {#if data.length > 2}
+    <p bind:this={paragraph}>{locale.highlights}</p>
     <div bind:this={carousel} class="carousel">
         <div bind:this={items} class="items" on:transitionstart={transitionstart} on:transitionend={transitionend} style="transition: transform {transformSpeed}ms cubic-bezier(0.165, 0.84, 0.44, 1) 0s; transform: translate3d({offset}px, 0px, 0px);">
             {#each left as game, index}
-                <CarouselStoreItem name={game.name} price={game.price} src={game.src}/>
+                <CarouselStoreItem name={game.name} price={game.price} src={game.src} bind:paragraph/>
             {/each}
             {#each data as game, index}
-                <CarouselStoreItem bind:element={objects[index]} bind:clientWidth={itemWidth} name={game.name} price={game.price} src={game.src}/>
+                <CarouselStoreItem bind:element={objects[index]} bind:clientWidth={itemWidth} name={game.name} price={game.price} src={game.src} bind:paragraph bind:margin/>
             {/each}
             {#each right as game, index}
-                <CarouselStoreItem name={game.name} price={game.price} src={game.src}/>
+                <CarouselStoreItem name={game.name} price={game.price} src={game.src} bind:paragraph/>
             {/each}
         </div>
     </div>
@@ -115,9 +124,15 @@
 <style>
     .items {
         display: flex;
+        width: fit-content;
     }
 
-    .no-paging {
+    p {
+        border-bottom: 1px solid #3b3b3b;
+        height: 32px;
+    }
+
+    /* .no-paging {
         opacity: 0;
         pointer-events: none;
         transition: opacity 400ms;
@@ -129,5 +144,5 @@
         position: absolute;
         top: 0;
         left: 0;
-    }
+    } */
 </style>

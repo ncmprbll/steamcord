@@ -11,10 +11,6 @@
 
 <main>
     <div class="store-body">
-        <p>{data.locale.highlights}</p>
-        <Carousel>
-            <!-- <CarouselStoreItem name={"random name"} price={79.99}/>
-            <CarouselStoreItem name={"random name2"} price={69.99}/> -->
-        </Carousel>
+        <Carousel bind:locale={data.locale} />
     </div>
 </main>

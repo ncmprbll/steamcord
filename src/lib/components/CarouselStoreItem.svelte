@@ -1,31 +1,41 @@
 <script lang="ts">
     import { onMount } from 'svelte';
 
-	export let name: string;
-    export let price: number;
+	let name: string;
+    let price: number;
     export let src: string;
     export let clientWidth: number;
     export let element: HTMLElement;
+    export let paragraph: HTMLElement;
 
-    let width = 1096;
-    let margin = 8;
+    let width = 0;
+    export let margin = 8;
+    let style = '';
 
     function resize() {
-        width = Math.min(1096, window.innerWidth - 120)
+        width = paragraph?.offsetWidth;
 	}
 
     onMount(resize);
+
+    $: {
+        if (width === 0) {
+            style = ''
+        } else {
+            style = `width: ${width}px`;
+        }
+    }
 </script>
 
 <svelte:window 
-  on:resize={resize}
+    on:resize={resize}
 />
 
-<a bind:clientWidth={clientWidth} bind:this={element} class="big-store-container">
-    <div style="position: relative; width: {width}px; height: 460px; margin-left: {margin}px; margin-right: {margin}px;"> <!-- style="background-image: url(&quot;https://cdn.akamai.steamstatic.com/steam/apps/227300/capsule_616x353.jpg?t=1707210696&quot;);"> -->
+<a href="/" bind:clientWidth={clientWidth} bind:this={element} class="big-store-container" style="margin-left: {margin}px; margin-right: {margin}px;">
+    <div class="screenshot" style="{style}"> <!-- style="background-image: url(&quot;https://cdn.akamai.steamstatic.com/steam/apps/227300/capsule_616x353.jpg?t=1707210696&quot;);"> -->
         <picture>
             <source type="image/jpeg" class="big-spot__background-source" media="(min-width:705px)" srcset={src}>
-            <img class="big-spot__background-source" {src} alt="">
+            <img class="big-spot__background-source" {src} alt="" style="object-fit: none;">
         </picture>
         <div class="add-to-cart">
             Add to cart
@@ -50,6 +60,7 @@
 
     .big-store-container {
         display: flex;
+        width: 100%;
     }
 
     .add-to-cart {
@@ -64,11 +75,17 @@
 
     .screenshot {
         position: relative;
-        width: 1096px;
+        width: calc(100vw - 3 * 2vw);
         height: 460px;
     }
 
-    .info {
+    @media (min-width: 1120px) {
+        .screenshot {
+            width: 1060px
+        }
+    }
+
+    /* .info {
         background-image: url("https://store.akamai.steamstatic.com/public/images/v6/home/background_maincap_2.jpg");
         padding-left: 14px;
         padding-right: 14px;
@@ -84,5 +101,5 @@
         top: 0;
         left: 0;
         opacity: 0;
-    }
+    } */
 </style>
