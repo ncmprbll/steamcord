@@ -31,16 +31,19 @@
     ]
     export let locale;
 
+    const CAROUSEL_SPEED = 400;
+    const CAROUSEL_TIMER = 5; // Seconds
+
     let left = [];
     let right = [];
 
     if (data.length > 2) {
-        left[0] = data[0];
-        left[1] = data[1];
-        left[2] = data[2];
-        right[2] = data[data.length - 1];
-        right[1] = data[data.length - 2];
-        right[0] = data[data.length - 3];
+        left[0] = data[data.length - 3];
+        left[1] = data[data.length - 2];
+        left[2] = data[data.length - 1];
+        right[0] = data[0];
+        right[1] = data[1];
+        right[2] = data[2];
     }
 
     let carousel: HTMLElement;
@@ -52,62 +55,56 @@
     let margin: number;
     let currentObject: number = 0;
     let itemWidth: number = 0;
-    let transformSpeed: number = 0;
+    let speed: number = 0;
     let offsetValue: number = 0;
-    let offset: number = -8;
+    let offset: number = -3236;
 
-    function transitionstart() {
-        console.log(1);
-    };
-
-    function transitionend() {
-        console.log(2);
-
-        // let first = objects[0];
-        // let last = objects[objects.length - 1];
-
-        // console.log( objects)
-
-        // last.after(first);
-
-        // objects[objects.length] = first;
-        // objects.shift();
-
-        // transformSpeed = 0;
-        // offset = 0;
-    };
+    let current = 0;
+    let interval = -1;
 
     function carouselGoto(index: number) {
+        current = index;
+    }
 
+    $: {
+        let dummies = left.length;
+        offset = -(itemWidth * (dummies + current) + 2 * margin * (dummies + current) + margin)
+    }
+
+    function rotate() {
+        speed = CAROUSEL_SPEED;
+        carouselGoto(++current);
     }
 
     onMount(() => {
-        console.log(margin);
-        let gap: string = parseInt(getComputedStyle(items).gap.replace("px", ""));
-
-        if (gap === NaN) {
-            return () => {};
-        }
-
-        offsetValue = -(itemWidth + gap);
-        offset += left.length * offsetValue;
-
-		const interval = setInterval(() => {
-            //transformSpeed = 400;
-			offset += offsetValue;
-		}, 10000);
-
-        // items.addEventListener('transitionstart', transitionsrtart, false);
-        // items.addEventListener('transitionend', transitionend, false);
+        carouselGoto(0);
+		interval = setInterval(rotate, CAROUSEL_TIMER * 1000);
 
 		return () => clearInterval(interval); 
     });
+
+    function resize() {
+        speed = 0;
+	}
+
+    function transitionstart() {};
+
+    function transitionend() {
+        if (current >= objects.length) {
+            speed = 0
+            carouselGoto(0);
+        }
+    };
 </script>
+
+<svelte:window 
+    on:resize={resize}
+/>
 
 {#if data.length > 2}
     <p bind:this={paragraph}>{locale.highlights}</p>
     <div bind:this={carousel} class="carousel">
-        <div bind:this={items} class="items" on:transitionstart={transitionstart} on:transitionend={transitionend} style="transition: transform {transformSpeed}ms cubic-bezier(0.165, 0.84, 0.44, 1) 0s; transform: translate3d({offset}px, 0px, 0px);">
+        <div bind:this={items} class="items" on:transitionstart={transitionstart} on:transitionend={transitionend} style="transition: transform {speed}ms cubic-bezier(0.165, 0.84, 0.44, 1) 0s; transform: translate3d({offset}px, 0px, 0px);">
             {#each left as game, index}
                 <CarouselStoreItem name={game.name} price={game.price} src={game.src} bind:paragraph/>
             {/each}
