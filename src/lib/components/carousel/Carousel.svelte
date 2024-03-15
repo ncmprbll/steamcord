@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import CarouselStoreItem from '$lib/components/CarouselStoreItem.svelte';
+    import CarouselStoreItem from '$lib/components/carousel/CarouselStoreItem.svelte';
 
     export let data = [
         {
