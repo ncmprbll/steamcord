@@ -12,7 +12,7 @@
 <main>
     <div class="store-body">
         <Carousel bind:locale={data.locale} />
-        <Tier />
+        <Tier/>
         <Tier name="fighting"/>
     </div>
 </main>

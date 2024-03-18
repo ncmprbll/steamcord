@@ -15,9 +15,22 @@
         <TierStoreItem itemsInTier=4/>
         <TierStoreItem itemsInTier=4/>
     </div>
-    <div class="salerow salerow3"></div>
-    <div class="salerow salerow4"></div>
-    <div class="salerow salerow3"></div>
+    <div class="salerow salerow3">
+        <TierStoreItem itemsInTier=3/>
+        <TierStoreItem itemsInTier=3/>
+        <TierStoreItem itemsInTier=3/>
+    </div>
+    <div class="salerow salerow4">
+        <TierStoreItem itemsInTier=4/>
+        <TierStoreItem itemsInTier=4/>
+        <TierStoreItem itemsInTier=4/>
+        <TierStoreItem itemsInTier=4/>
+    </div>
+    <div class="salerow salerow3">
+        <TierStoreItem itemsInTier=3/>
+        <TierStoreItem itemsInTier=3/>
+        <TierStoreItem itemsInTier=3/>
+    </div>
 </div>
 
 <style>

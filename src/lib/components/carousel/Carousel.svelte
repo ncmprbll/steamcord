@@ -32,7 +32,7 @@
     export let locale;
 
     const CAROUSEL_SPEED = 400;
-    const CAROUSEL_TIMER = 5; // Seconds
+    const CAROUSEL_TIMER = 55; // Seconds
 
     let left = [];
     let right = [];
@@ -68,7 +68,11 @@
 
     $: {
         let dummies = left.length;
-        offset = -(itemWidth * (dummies + current) + 2 * margin * (dummies + current) + margin)
+        offset = -(itemWidth * (dummies + current) + 2 * margin * (dummies + current) + margin);
+
+        if (itemWidth === 0) {
+            offset = -margin;
+        }
     }
 
     function rotate() {
