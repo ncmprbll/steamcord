@@ -32,7 +32,7 @@
     export let locale;
 
     const CAROUSEL_SPEED = 400;
-    const CAROUSEL_TIMER = 55; // Seconds
+    const CAROUSEL_TIMER = 5; // Seconds
 
     let left = [];
     let right = [];
@@ -50,7 +50,7 @@
     let items: HTMLElement;
     let paragraph: HTMLElement;
 
-    let objects: HTMLElement = [];
+    let objects: HTMLElement[] = [];
 
     let margin: number;
     let currentObject: number = 0;
@@ -59,7 +59,8 @@
     let offsetValue: number = 0;
     let offset: number = -3236;
 
-    let current = 0;
+    let current: number = 0;
+    let currentPage: number = -1;
     let interval = -1;
 
     function carouselGoto(index: number) {
@@ -87,11 +88,26 @@
 		return () => clearInterval(interval); 
     });
 
+    function pageGoto(index: number) {
+        clearInterval(interval);
+        interval = setInterval(rotate, CAROUSEL_TIMER * 1000);
+        speed = CAROUSEL_SPEED;
+        carouselGoto(index);
+    }
+
     function resize() {
         speed = 0;
 	}
 
-    function transitionstart() {};
+    function transitionstart() {
+        if (current < 0) {
+            currentPage = objects.length - 1;
+        } else if (current >= objects.length){
+            currentPage = 0
+        } else {
+            currentPage = -1
+        }
+    };
 
     function transitionend() {
         if (current >= objects.length) {
@@ -119,10 +135,43 @@
                 <CarouselStoreItem name={game.name} price={game.price} src={game.src} bind:paragraph/>
             {/each}
         </div>
+        <div class="carousel-pages">
+            {#each data as game, index}
+                <div class:focus={currentPage === index || index === current} on:click={() => {pageGoto(index)}}></div>
+            {/each}
+        </div>
     </div>
 {/if}
 
 <style>
+    .carousel .carousel-pages > div {
+        display: inline-block;
+        margin: 12px 2px;
+        width: 20px;
+        height: 12px;
+        border-radius: 2px;
+        transition: background-color 0.2s;
+        background-color: hsla(202, 60%, 100%, 0.2);
+        cursor: pointer;
+    }
+
+    .carousel .carousel-pages > div:hover {
+        background-color: hsla(202, 60%, 100%, 0.3);
+    }
+
+    .carousel .carousel-pages > div.focus {
+        background-color: hsla(202, 60%, 100%, 0.4);
+    }
+
+    .carousel .carousel-pages {
+        text-align: center;
+        min-height: 37px;
+    }
+
+    .carousel-pages {
+        padding-bottom: 4px;
+    }
+
     .items {
         display: flex;
         width: fit-content;
