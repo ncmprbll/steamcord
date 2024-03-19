@@ -77,8 +77,10 @@
     }
 
     function rotate() {
-        speed = CAROUSEL_SPEED;
-        carouselGoto(++current);
+        if (!document.hidden) {
+            speed = CAROUSEL_SPEED;
+            carouselGoto(++current);
+        }
     }
 
     onMount(() => {
