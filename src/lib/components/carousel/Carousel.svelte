@@ -32,7 +32,7 @@
     export let locale;
 
     const CAROUSEL_SPEED = 400;
-    const CAROUSEL_TIMER = 55; // Seconds
+    const CAROUSEL_TIMER = 5; // Seconds
 
     let left = [];
     let right = [];
@@ -51,6 +51,9 @@
     let paragraph: HTMLElement;
 
     let objects: HTMLElement[] = [];
+    let activeLeft: boolean[] = [];
+    let activeRight: boolean[] = [];
+    let activeObjects: boolean[] = [];
 
     let margin: number;
     let currentObject: number = 0;
@@ -64,7 +67,35 @@
     let interval = -1;
 
     function carouselGoto(index: number) {
+        activeObjects[current] = false;
+        activeObjects[index] = true;
+
+        console.log(index, objects.length - 1, index === objects.length - 1)
+
+        if (index >= objects.length) {
+            activeRight[0] = true;
+            activeObjects[0] = true;
+            activeLeft[left.length - 1] = false;
+        } else if (index < 0) {
+            activeLeft[left.length - 1] = true;
+            activeObjects[objects.length - 1] = true;
+            activeRight[0] = false;
+        } else if (index === objects.length - 1) {
+            activeLeft[left.length - 1] = true;
+            activeRight[0] = false;
+        } else if (index === 0) {
+            activeRight[0] = true;
+            activeLeft[left.length - 1] = false;
+        } else {
+            activeRight[0] = false;
+            activeLeft[left.length - 1] = false;
+        }
+
         current = index;
+
+        console.log(activeLeft)
+        console.log(activeObjects)
+        console.log(activeRight)
     }
 
     $: {
@@ -79,7 +110,7 @@
     function rotate() {
         if (!document.hidden) {
             speed = CAROUSEL_SPEED;
-            carouselGoto(++current);
+            carouselGoto(current + 1);
         }
     }
 
@@ -129,13 +160,13 @@
         <div class="carousel-wrapper">
             <div bind:this={items} class="items" on:transitionstart={transitionstart} on:transitionend={transitionend} style="transition: transform {speed}ms cubic-bezier(0.165, 0.84, 0.44, 1) 0s; transform: translate3d({offset}px, 0px, 0px);">
                 {#each left as game, index}
-                    <CarouselStoreItem name={game.name} price={game.price} src={game.src} bind:paragraph/>
+                    <CarouselStoreItem bind:active={activeLeft[index]} name={game.name} price={game.price} src={game.src} bind:paragraph/>
                 {/each}
                 {#each data as game, index}
-                    <CarouselStoreItem bind:element={objects[index]} bind:clientWidth={itemWidth} name={game.name} price={game.price} src={game.src} bind:paragraph bind:margin/>
+                    <CarouselStoreItem bind:active={activeObjects[index]} bind:current={current} bind:element={objects[index]} bind:clientWidth={itemWidth} name={game.name} price={game.price} src={game.src} bind:paragraph bind:margin/>
                 {/each}
                 {#each right as game, index}
-                    <CarouselStoreItem name={game.name} price={game.price} src={game.src} bind:paragraph/>
+                    <CarouselStoreItem bind:active={activeRight[index]} name={game.name} price={game.price} src={game.src} bind:paragraph/>
                 {/each}
             </div>
         </div>

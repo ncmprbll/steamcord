@@ -7,6 +7,7 @@
     export let clientWidth: number;
     export let element: HTMLElement;
     export let paragraph: HTMLElement;
+    export let active: number;
 
     let width = 0;
     export let margin = 8;
@@ -37,75 +38,90 @@
             <source type="image/jpeg" class="big-spot__background-source" media="(min-width:705px)" srcset={src}>
             <img class="big-spot__background-source" {src} alt="" style="object-fit: none;">
         </picture>
-        <div class="wall-gradient"></div>
-        <div class="logo">
-            <picture>
-                <source type="image/jpeg" srcset="//images-2.gog-statics.com/ec37f29dbc507db9475ff1cb649aebaf1d8a145a2a029be3a71161c1783e2c9f_bs_logo_big.png,
-                //images-2.gog-statics.com/ec37f29dbc507db9475ff1cb649aebaf1d8a145a2a029be3a71161c1783e2c9f_bs_logo_big_2x.png 2x">
-                <img class="logo-image" src alt="Logo image">
-            </picture>
-        </div>
-        <div class="item-info">
-            <div>
-                <div>
-                    <span class="short-short-description-box">Short short description</span>
-                    <span class="short-description-box">
-                        <div class="short-description-text">
-                            Short description, short description, short description, short description, short description, short description, short description
-                        </div>
-                    </span>
-                </div>
-                <div>
-                    <div class="big-spot__super-title-text">Available for</div>
-                    <img src="https://store.akamai.steamstatic.com/public/images/v6/icon_platform_win.png?v=3">
-                </div>
+        <div class="wall-gradient-full" class:wall-gradient-full--active={!active}></div>
+        <div class="item" class:item--active={active}>
+            <div class="wall-gradient"></div>
+            <div class="logo">
+                <picture>
+                    <source type="image/jpeg" srcset="//images-2.gog-statics.com/ec37f29dbc507db9475ff1cb649aebaf1d8a145a2a029be3a71161c1783e2c9f_bs_logo_big.png,
+                    //images-2.gog-statics.com/ec37f29dbc507db9475ff1cb649aebaf1d8a145a2a029be3a71161c1783e2c9f_bs_logo_big_2x.png 2x">
+                    <img class="logo-image" src alt="Logo image">
+                </picture>
             </div>
-        </div>
-        <div class="actions">
-            <div class="actions-left-side">
-                <span>
-                    -74%
-                </span>
-                <span>
-                    <span>
-                        105
-                    </span>
-                </span>
-            </div>
-            <div class="actions-right-side">
-                {#if false}
-                <button class="js-product-tile__wishlist-button big-spot__wishlist-button ng-hide">
-                    <svg class="big-spot__wishlist-icon">
-                        <use xlink:href="/svg/d4972208.svg#button-wishlist"></use>
-                    </svg>
-                </button>
-                {/if}
-                <button ng-show="!tile.data.isInCart &amp;&amp; '1'" class="add-to-cart">
-                    <span>
-                        Add to cart
-                    </span>
-                </button>
-                {#if false}
-                <button class="big-spot__button big-spot__add-to-cart-button js-product-tile__add-to-cart-button ng-hide" >
-                    <div class="big-spot__button-content">
-                        <svg class="big-spot__in-cart-icon">
-                            <use xlink:href="/svg/d4972208.svg#button-in-cart"></use>
-                        </svg>
-                        <div class="big-spot__button-text">
-                            Checkout now
-                        </div>
-                        <div class="spinner-wrapper">
-                            <span class="spinner"></span>
-                        </div>
+            <div class="item-info">
+                <div>
+                    <div>
+                        <span class="short-short-description-box">Short short description</span>
+                        <span class="short-description-box">
+                            <div class="short-description-text">
+                                Short description, short description, short description, short description, short description, short description, short description
+                            </div>
+                        </span>
                     </div>
-                </button>
-                {/if}
+                    <div>
+                        <div class="big-spot__super-title-text">Available for</div>
+                        <img src="https://store.akamai.steamstatic.com/public/images/v6/icon_platform_win.png?v=3">
+                    </div>
+                </div>
+            </div>
+            <div class="actions">
+                <div class="actions-left-side">
+                    <span>
+                        -74%
+                    </span>
+                    <span>
+                        <span>
+                            105
+                        </span>
+                    </span>
+                </div>
+                <div class="actions-right-side">
+                    {#if false}
+                    <button class="js-product-tile__wishlist-button big-spot__wishlist-button ng-hide">
+                        <svg class="big-spot__wishlist-icon">
+                            <use xlink:href="/svg/d4972208.svg#button-wishlist"></use>
+                        </svg>
+                    </button>
+                    {/if}
+                    <button ng-show="!tile.data.isInCart &amp;&amp; '1'" class="add-to-cart">
+                        <span>
+                            Add to cart
+                        </span>
+                    </button>
+                    {#if false}
+                    <button class="big-spot__button big-spot__add-to-cart-button js-product-tile__add-to-cart-button ng-hide" >
+                        <div class="big-spot__button-content">
+                            <svg class="big-spot__in-cart-icon">
+                                <use xlink:href="/svg/d4972208.svg#button-in-cart"></use>
+                            </svg>
+                            <div class="big-spot__button-text">
+                                Checkout now
+                            </div>
+                            <div class="spinner-wrapper">
+                                <span class="spinner"></span>
+                            </div>
+                        </div>
+                    </button>
+                    {/if}
+                </div>
             </div>
         </div>
     </div>
 </a>
 
 <style>
+    .item {
+        visibility: hidden;
+        opacity: 0;
+        transition: visibility .75s, opacity .75s;
+    }
+
+    .item--active {
+        visibility: visible;
+        opacity: 1;
+        transition: visibility .75s, opacity .75s;
+    }
+
     .add-to-cart {
         font-size: 18px;
         letter-spacing: 0.5px;
@@ -227,6 +243,28 @@
         z-index: 0;
         opacity: 0.6;
         background: linear-gradient(270deg, rgba(11, 11, 11, 0) 0%, #0B0B0B 60%, #0B0B0B 100%);
+    }
+
+    .wall-gradient-full {
+        position: absolute;
+        top: 0;
+        width: 0;
+        height: 100%;
+        z-index: 0;
+        opacity: 0;
+        transition: opacity .75s;
+        background: #0B0B0B;
+    }
+
+    .wall-gradient-full--active {
+        position: absolute;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        opacity: 0.6;
+        transition: opacity .75s;
+        background: #0B0B0B;
     }
 
     .item-info {
