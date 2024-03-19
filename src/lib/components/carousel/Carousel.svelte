@@ -32,7 +32,7 @@
     export let locale;
 
     const CAROUSEL_SPEED = 400;
-    const CAROUSEL_TIMER = 5; // Seconds
+    const CAROUSEL_TIMER = 55; // Seconds
 
     let left = [];
     let right = [];
@@ -126,16 +126,18 @@
 {#if data.length > 2}
     <p bind:this={paragraph}>{locale.highlights}</p>
     <div bind:this={carousel} class="carousel">
-        <div bind:this={items} class="items" on:transitionstart={transitionstart} on:transitionend={transitionend} style="transition: transform {speed}ms cubic-bezier(0.165, 0.84, 0.44, 1) 0s; transform: translate3d({offset}px, 0px, 0px);">
-            {#each left as game, index}
-                <CarouselStoreItem name={game.name} price={game.price} src={game.src} bind:paragraph/>
-            {/each}
-            {#each data as game, index}
-                <CarouselStoreItem bind:element={objects[index]} bind:clientWidth={itemWidth} name={game.name} price={game.price} src={game.src} bind:paragraph bind:margin/>
-            {/each}
-            {#each right as game, index}
-                <CarouselStoreItem name={game.name} price={game.price} src={game.src} bind:paragraph/>
-            {/each}
+        <div class="carousel-wrapper">
+            <div bind:this={items} class="items" on:transitionstart={transitionstart} on:transitionend={transitionend} style="transition: transform {speed}ms cubic-bezier(0.165, 0.84, 0.44, 1) 0s; transform: translate3d({offset}px, 0px, 0px);">
+                {#each left as game, index}
+                    <CarouselStoreItem name={game.name} price={game.price} src={game.src} bind:paragraph/>
+                {/each}
+                {#each data as game, index}
+                    <CarouselStoreItem bind:element={objects[index]} bind:clientWidth={itemWidth} name={game.name} price={game.price} src={game.src} bind:paragraph bind:margin/>
+                {/each}
+                {#each right as game, index}
+                    <CarouselStoreItem name={game.name} price={game.price} src={game.src} bind:paragraph/>
+                {/each}
+            </div>
         </div>
         <div class="carousel-pages">
             {#each data as game, index}

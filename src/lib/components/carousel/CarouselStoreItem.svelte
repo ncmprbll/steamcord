@@ -47,7 +47,6 @@
         </div>
         <div class="item-info">
             <div>
-                <!-- <div class="css-o1nkhs"></div> -->
                 <div>
                     <span class="short-short-description-box">Short short description</span>
                     <span class="short-description-box">
@@ -62,10 +61,113 @@
                 </div>
             </div>
         </div>
+        <div class="actions">
+            <div class="actions-left-side">
+                <span>
+                    -74%
+                </span>
+                <span>
+                    <span>
+                        105
+                    </span>
+                </span>
+            </div>
+            <div class="actions-right-side">
+                {#if false}
+                <button class="js-product-tile__wishlist-button big-spot__wishlist-button ng-hide">
+                    <svg class="big-spot__wishlist-icon">
+                        <use xlink:href="/svg/d4972208.svg#button-wishlist"></use>
+                    </svg>
+                </button>
+                {/if}
+                <button ng-show="!tile.data.isInCart &amp;&amp; '1'" class="add-to-cart">
+                    <span>
+                        Add to cart
+                    </span>
+                </button>
+                {#if false}
+                <button class="big-spot__button big-spot__add-to-cart-button js-product-tile__add-to-cart-button ng-hide" >
+                    <div class="big-spot__button-content">
+                        <svg class="big-spot__in-cart-icon">
+                            <use xlink:href="/svg/d4972208.svg#button-in-cart"></use>
+                        </svg>
+                        <div class="big-spot__button-text">
+                            Checkout now
+                        </div>
+                        <div class="spinner-wrapper">
+                            <span class="spinner"></span>
+                        </div>
+                    </div>
+                </button>
+                {/if}
+            </div>
+        </div>
     </div>
 </a>
 
 <style>
+    .add-to-cart {
+        font-size: 18px;
+        letter-spacing: 0.5px;
+        font-weight: 500;
+        position: relative;
+        border: none;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, .35);
+        border-radius: 8px;
+        text-transform: uppercase;
+        text-align: center;
+        -webkit-box-align: center;
+        align-items: center;
+        -webkit-box-pack: center;
+        justify-content: center;
+        line-height: 15px;
+        padding: 0px 20px;
+        height: 50px;
+        display: flex;
+        width: 100%;
+        min-width: auto;
+        background-color: rgb(0, 116, 228);
+        color: rgb(245, 245, 245);
+    }
+
+    .add-to-cart > span {
+        display: flex;
+        -webkit-box-pack: center;
+        justify-content: center;
+        -webkit-box-align: center;
+        align-items: center;
+        /* min-width: 12em; */
+    }
+
+    .actions {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        position: absolute;
+        z-index: 1;
+        bottom: 32px;
+        right: 32px;
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    .actions-left-side {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-line-pack: center;
+        align-content: center;
+    }
+
+    .actions-right-side {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: row;
+        flex-direction: row;
+    }
+
     .logo {
         display: -ms-flexbox;
         display: flex;
@@ -162,16 +264,6 @@
         width: 100%;
         margin-left: 8px; /* Tied to 'export let margin' */
         margin-right: 8px; /* Tied to 'export let margin' */
-    }
-
-    .add-to-cart {
-        position: absolute;
-        bottom: 16px;
-        right: 16px;
-        width: -moz-fit-content;
-        width: fit-content;
-        padding: 3px;
-        background-color: #3234ad;
     }
 
     .screenshot {
