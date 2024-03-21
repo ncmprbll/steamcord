@@ -2,34 +2,8 @@
     import { onMount } from 'svelte';
     import CarouselStoreItem from '$lib/components/carousel/CarouselStoreItem.svelte';
 
-    export let data = [
-        {
-            name: "test123",
-            price: 29.99,
-            src: "//images-3.gog-statics.com/b77e157a8be3f7edb748215b860273ee47f8a8764fe4fd4e07e74df78d80af5f_bs_background_1275.jpg"
-        },
-        {
-            name: "test456",
-            price: 79.99,
-            src: "//images-2.gog-statics.com/b154b45bf3a52d65b82304a1961e1a9e719bb6622e14ed6112f2ba82b07d593b_bs_background_1275.jpg"
-        },
-        {
-            name: "test789",
-            price: 79.99,
-            src: "//images-3.gog-statics.com/59d0ab020acc6f3b582b6d54acc8c12894c49f2e521f25bd89f31405afd6b420_bs_background_1275.jpg"
-        },
-        {
-            name: "test766669",
-            price: 79.99,
-            src: "//images-4.gog-statics.com/94f23f0e6147392fbe66a627f83e4a461b35792bf56135ca68784d34eaa3e737_bs_background_1275.jpg"
-        },
-        {
-            name: "test7666691211",
-            price: 49.99,
-            src: "//images-1.gog-statics.com/4f8f65241b4ece2764f7a900433e696e3c4ccec1f91a1a9afc283e2ff2a51f5d_bs_background_1275.jpg"
-        }
-    ]
-    export let locale;
+    export let highlights = []
+    export let locale: Record<string, string>;
 
     const CAROUSEL_SPEED = 400;
     const CAROUSEL_TIMER = 5; // Seconds
@@ -37,13 +11,13 @@
     let left = [];
     let right = [];
 
-    if (data.length > 2) {
-        left[0] = data[data.length - 3];
-        left[1] = data[data.length - 2];
-        left[2] = data[data.length - 1];
-        right[0] = data[0];
-        right[1] = data[1];
-        right[2] = data[2];
+    if (highlights.length > 2) {
+        left[0] = highlights[highlights.length - 3];
+        left[1] = highlights[highlights.length - 2];
+        left[2] = highlights[highlights.length - 1];
+        right[0] = highlights[0];
+        right[1] = highlights[1];
+        right[2] = highlights[2];
     }
 
     let carousel: HTMLElement;
@@ -92,10 +66,6 @@
         }
 
         current = index;
-
-        console.log(activeLeft)
-        console.log(activeObjects)
-        console.log(activeRight)
     }
 
     $: {
@@ -154,24 +124,24 @@
     on:resize={resize}
 />
 
-{#if data.length > 2}
+{#if highlights.length > 2}
     <p bind:this={paragraph}>{locale.highlights}</p>
     <div bind:this={carousel} class="carousel">
         <div class="carousel-wrapper">
             <div bind:this={items} class="items" on:transitionstart={transitionstart} on:transitionend={transitionend} style="transition: transform {speed}ms cubic-bezier(0.165, 0.84, 0.44, 1) 0s; transform: translate3d({offset}px, 0px, 0px);">
                 {#each left as game, index}
-                    <CarouselStoreItem bind:active={activeLeft[index]} name={game.name} price={game.price} src={game.src} bind:paragraph/>
+                    <CarouselStoreItem locale={locale} bind:active={activeLeft[index]} game={game} bind:paragraph/>
                 {/each}
-                {#each data as game, index}
-                    <CarouselStoreItem bind:active={activeObjects[index]} bind:current={current} bind:element={objects[index]} bind:clientWidth={itemWidth} name={game.name} price={game.price} src={game.src} bind:paragraph bind:margin/>
+                {#each highlights as game, index}
+                    <CarouselStoreItem locale={locale} bind:active={activeObjects[index]} game={game} bind:current={current} bind:element={objects[index]} bind:clientWidth={itemWidth} bind:paragraph bind:margin/>
                 {/each}
                 {#each right as game, index}
-                    <CarouselStoreItem bind:active={activeRight[index]} name={game.name} price={game.price} src={game.src} bind:paragraph/>
+                    <CarouselStoreItem locale={locale} bind:active={activeRight[index]} game={game} src={game.src} bind:paragraph/>
                 {/each}
             </div>
         </div>
         <div class="carousel-pages">
-            {#each data as game, index}
+            {#each highlights as game, index}
                 <div class:focus={currentPage === index || index === current} on:click={() => {pageGoto(index)}}></div>
             {/each}
         </div>

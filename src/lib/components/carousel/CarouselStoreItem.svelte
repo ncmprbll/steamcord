@@ -1,13 +1,16 @@
 <script lang="ts">
     import { onMount } from 'svelte';
 
-	let name: string;
-    let price: number;
-    export let src: string;
+    import windows from '$lib/assets/os/windows.png';
+    import mac from '$lib/assets/os/mac.png';
+    import linux from '$lib/assets/os/linux.png';
+
+    export let game;
     export let clientWidth: number;
     export let element: HTMLElement;
     export let paragraph: HTMLElement;
     export let active: number;
+    export let locale: Record<string, string>;
 
     let width = 0;
     export let margin = 8;
@@ -32,48 +35,63 @@
     on:resize={resize}
 />
 
+{#if game !== undefined}
 <a href="/" bind:clientWidth={clientWidth} bind:this={element} class="big-store-container">
-    <div class="screenshot" style="{style}"> <!-- style="background-image: url(&quot;https://cdn.akamai.steamstatic.com/steam/apps/227300/capsule_616x353.jpg?t=1707210696&quot;);"> -->
+    <div class="screenshot" style="{style}">
         <picture>
-            <source type="image/jpeg" class="big-spot__background-source" media="(min-width:705px)" srcset={src}>
-            <img class="big-spot__background-source" {src} alt="" style="object-fit: none;">
+            <source type="image/jpeg" class="big-spot__background-source" srcset={game.backgroundSrc}>
+            <img class="big-spot__background-source" src alt="Highlight cover" style="object-fit: none;">
         </picture>
         <div class="wall-gradient-full" class:wall-gradient-full--active={!active}></div>
         <div class="item" class:item--active={active}>
             <div class="wall-gradient"></div>
             <div class="logo">
                 <picture>
-                    <source type="image/jpeg" srcset="//images-2.gog-statics.com/ec37f29dbc507db9475ff1cb649aebaf1d8a145a2a029be3a71161c1783e2c9f_bs_logo_big.png,
-                    //images-2.gog-statics.com/ec37f29dbc507db9475ff1cb649aebaf1d8a145a2a029be3a71161c1783e2c9f_bs_logo_big_2x.png 2x">
+                    <source type="image/jpeg" srcset={game.logoSrc}>
                     <img class="logo-image" src alt="Logo image">
                 </picture>
             </div>
             <div class="item-info">
                 <div>
                     <div>
-                        <span class="short-short-description-box">Short short description</span>
-                        <span class="short-description-box">
-                            <div class="short-description-text">
-                                Short description, short description, short description, short description, short description, short description, short description
-                            </div>
-                        </span>
+                        {#if game.shortestDescription !== "" && game.shortestDescription !== undefined}
+                            <span class="short-short-description-box">{game.shortestDescription}</span>
+                        {/if}
+                        {#if game.shortDescription !== "" && game.shortDescription !== undefined}
+                            <span class="short-description-box">
+                                <div class="short-description-text">{game.shortDescription}</div>
+                            </span>
+                        {/if}
                     </div>
-                    <div>
-                        <div class="big-spot__super-title-text">Available for</div>
-                        <img src="https://store.akamai.steamstatic.com/public/images/v6/icon_platform_win.png?v=3">
-                    </div>
+                    {#if game.availableFor !== undefined}
+                        <div>
+                            <div class="big-spot__super-title-text">{locale.availableFor}</div>
+                            {#if game.availableFor.includes("windows")}
+                                <img src={windows}>
+                            {/if}
+                            {#if game.availableFor.includes("mac")}
+                                <img src={mac}>
+                            {/if}
+                            {#if game.availableFor.includes("linux")}
+                                <img src={linux}>
+                            {/if}
+                        </div>
+                    {/if}
                 </div>
             </div>
             <div class="actions">
                 <div class="actions-left-side">
-                    <span>
-                        -74%
-                    </span>
-                    <span>
-                        <span>
-                            105
+                    {#if game.discount !== 0 && game.discount !== undefined}
+                        <span class="discount">
+                            -{game.discount}%
                         </span>
-                    </span>
+                    {/if}
+                    <div class="discount_prices">
+                        {#if game.discount !== 0 && game.discount !== undefined}
+                            <div class="discount_original_price">₽ {game.price.rub}</div>
+                        {/if}
+                        <div class="discount_final_price">₽ {Math.round(game.price.rub - game.price.rub * game.discount / 100)}</div>
+                    </div>
                 </div>
                 <div class="actions-right-side">
                     {#if false}
@@ -84,32 +102,34 @@
                     </button>
                     {/if}
                     <button ng-show="!tile.data.isInCart &amp;&amp; '1'" class="add-to-cart">
-                        <span>
-                            Add to cart
-                        </span>
+                        <span>{locale.addToCart}</span>
                     </button>
-                    {#if false}
-                    <button class="big-spot__button big-spot__add-to-cart-button js-product-tile__add-to-cart-button ng-hide" >
-                        <div class="big-spot__button-content">
-                            <svg class="big-spot__in-cart-icon">
-                                <use xlink:href="/svg/d4972208.svg#button-in-cart"></use>
-                            </svg>
-                            <div class="big-spot__button-text">
-                                Checkout now
-                            </div>
-                            <div class="spinner-wrapper">
-                                <span class="spinner"></span>
-                            </div>
-                        </div>
-                    </button>
-                    {/if}
                 </div>
             </div>
         </div>
     </div>
 </a>
+{/if}
 
 <style>
+    .discount {
+        font-weight: 800;
+        font-size: 19px;
+        color: #BEEE11;
+    }
+
+    .discount_original_price {
+        font-weight: 500;
+        font-size: 14px;
+        text-decoration: line-through;
+        color: #d5d5d5;
+    }
+
+    .discount_final_price {
+        font-weight: 700;
+        font-size: 19px;
+    }
+
     .item {
         visibility: hidden;
         opacity: 0;
@@ -128,7 +148,6 @@
         font-weight: 500;
         position: relative;
         border: none;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, .35);
         border-radius: 8px;
         text-transform: uppercase;
         text-align: center;
@@ -168,13 +187,20 @@
         right: 32px;
         text-align: right;
         white-space: nowrap;
+        background-color: rgb(0, 0, 0, .35);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, .35);
+        border-radius: 8px;
     }
 
     .actions-left-side {
         display: -ms-flexbox;
         display: flex;
+        gap: 8px;
         -ms-flex-line-pack: center;
         align-content: center;
+        align-items: center;
+        padding-left: 8px;
+        padding-right: 8px;
     }
 
     .actions-right-side {
@@ -182,6 +208,12 @@
         display: flex;
         -ms-flex-direction: row;
         flex-direction: row;
+    }
+
+    @media (max-width: 768px) {
+        .actions-right-side {
+            display: none;
+        }
     }
 
     .logo {

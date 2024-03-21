@@ -11,7 +11,7 @@
 
 <main>
     <div class="store-body">
-        <Carousel bind:locale={data.locale} />
+        <Carousel locale={data.locale} highlights={data.highlights}/>
         <Tier/>
         <Tier name="fighting"/>
     </div>
