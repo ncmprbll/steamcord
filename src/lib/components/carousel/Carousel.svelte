@@ -44,8 +44,6 @@
         activeObjects[current] = false;
         activeObjects[index] = true;
 
-        console.log(index, objects.length - 1, index === objects.length - 1)
-
         if (index >= objects.length) {
             activeRight[0] = true;
             activeObjects[0] = true;
@@ -74,6 +72,9 @@
 
         if (itemWidth === 0) {
             offset = -margin;
+            activeLeft[0] = true;
+        } else {
+            activeLeft[0] = false;
         }
     }
 
@@ -120,7 +121,7 @@
     };
 </script>
 
-<svelte:window 
+<svelte:window
     on:resize={resize}
 />
 

@@ -86,21 +86,14 @@
                             -{game.discount}%
                         </span>
                     {/if}
-                    <div class="discount_prices">
+                    <div class="discount-prices">
                         {#if game.discount !== 0 && game.discount !== undefined}
-                            <div class="discount_original_price">₽ {game.price.rub}</div>
+                            <div class="discount-original-price">₽ {game.price.rub}</div>
                         {/if}
-                        <div class="discount_final_price">₽ {Math.round(game.price.rub - game.price.rub * game.discount / 100)}</div>
+                        <div class="discount-final-price">₽ {Math.round(game.price.rub - game.price.rub * game.discount / 100)}</div>
                     </div>
                 </div>
                 <div class="actions-right-side">
-                    {#if false}
-                    <button class="js-product-tile__wishlist-button big-spot__wishlist-button ng-hide">
-                        <svg class="big-spot__wishlist-icon">
-                            <use xlink:href="/svg/d4972208.svg#button-wishlist"></use>
-                        </svg>
-                    </button>
-                    {/if}
                     <button ng-show="!tile.data.isInCart &amp;&amp; '1'" class="add-to-cart">
                         <span>{locale.addToCart}</span>
                     </button>
@@ -118,14 +111,14 @@
         color: #BEEE11;
     }
 
-    .discount_original_price {
+    .discount-original-price {
         font-weight: 500;
         font-size: 14px;
         text-decoration: line-through;
         color: #d5d5d5;
     }
 
-    .discount_final_price {
+    .discount-final-price {
         font-weight: 700;
         font-size: 19px;
     }

@@ -8,7 +8,7 @@
     <p>{name}</p>
 {/if}
 
-<div>
+<div class="tier">
     <div class="salerow salerow4">
         <TierStoreItem itemsInTier=4/>
         <TierStoreItem itemsInTier=4/>
@@ -34,6 +34,12 @@
 </div>
 
 <style>
+    .tier {
+        display: flex;
+        flex-direction: column;
+        /* gap: 16px; */
+    }
+
     p {
         border-bottom: 1px solid #3b3b3b;
         height: 32px;
@@ -42,8 +48,14 @@
     .salerow {
         display: flex;
         flex-direction: row;
-        flex-wrap: nowrap;
+        flex-wrap: wrap;
         justify-content: space-between;
-        /* margin: 0 -6px 12px -6px; */
+        /* gap: 8px; */
+    }
+
+    @media (min-width: 1120px) {
+        .salerow {
+            /* gap: 16px; */
+        }
     }
 </style>
