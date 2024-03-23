@@ -82,9 +82,7 @@
             <div class="actions">
                 <div class="actions-left-side">
                     {#if game.discount !== 0 && game.discount !== undefined}
-                        <span class="discount">
-                            -{game.discount}%
-                        </span>
+                        <span class="discount">-{game.discount}%</span>
                     {/if}
                     <div class="discount-prices">
                         {#if game.discount !== 0 && game.discount !== undefined}

@@ -2,35 +2,66 @@
     import TierStoreItem from '$lib/components/tier/TierStoreItem.svelte';
 
     export let name: string = "";
+    export let games = [];
+    export let locale: Record<string, string>;
+
+    let row1 = [];
+    let row2 = [];
+    let row3 = [];
+    let row4 = [];
+
+    for (let i = 0; i < 4; i++) {
+        row1[i] = games[i];
+    }
+
+    for (let i = 0; i < 3; i++) {
+        row2[i] = games[i + 4];
+    }
+
+    for (let i = 0; i < 4; i++) {
+        row3[i] = games[i + 7];
+    }
+
+    for (let i = 0; i < 3; i++) {
+        row4[i] = games[i + 11];
+    }
 </script>
 
 {#if name !== ''}
     <p>{name}</p>
+{:else}
+    <p>{locale.popularGames}
 {/if}
 
 <div class="tier">
-    <div class="salerow salerow4">
-        <TierStoreItem itemsInTier=4/>
-        <TierStoreItem itemsInTier=4/>
-        <TierStoreItem itemsInTier=4/>
-        <TierStoreItem itemsInTier=4/>
-    </div>
-    <div class="salerow salerow3">
-        <TierStoreItem itemsInTier=3/>
-        <TierStoreItem itemsInTier=3/>
-        <TierStoreItem itemsInTier=3/>
-    </div>
-    <div class="salerow salerow4">
-        <TierStoreItem itemsInTier=4/>
-        <TierStoreItem itemsInTier=4/>
-        <TierStoreItem itemsInTier=4/>
-        <TierStoreItem itemsInTier=4/>
-    </div>
-    <div class="salerow salerow3">
-        <TierStoreItem itemsInTier=3/>
-        <TierStoreItem itemsInTier=3/>
-        <TierStoreItem itemsInTier=3/>
-    </div>
+    {#if row1.length === 4}
+        <div class="salerow salerow4">
+            {#each row1 as game, index}
+                <TierStoreItem game={game} />
+            {/each}
+        </div>
+    {/if}
+    {#if row2.length === 3}
+        <div class="salerow salerow3">
+            {#each row2 as game, index}
+                <TierStoreItem game={game} />
+            {/each}
+        </div>
+    {/if}
+    {#if row3.length === 4}
+        <div class="salerow salerow4">
+            {#each row3 as game, index}
+                <TierStoreItem game={game} />
+            {/each}
+        </div>
+    {/if}
+    {#if row4.length === 3}
+        <div class="salerow salerow3">
+            {#each row4 as game, index}
+                <TierStoreItem game={game} />
+            {/each}
+        </div>
+    {/if}
 </div>
 
 <style>

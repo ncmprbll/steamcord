@@ -11,8 +11,8 @@
 
 <main>
     <div class="store-body">
-        <Carousel locale={data.locale} highlights={data.highlights}/>
-        <Tier/>
-        <Tier name="fighting"/>
+        <Carousel locale={data.locale} highlights={data.highlights} />
+        <Tier locale={data.locale} games={data.tier1} />
+        <Tier locale={data.locale} games={data.tier2} name="Horror" />
     </div>
 </main>

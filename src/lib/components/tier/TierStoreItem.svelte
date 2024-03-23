@@ -17,18 +17,23 @@
     }
 </script>
 
+{#if game !== undefined}
 <a class="sale-capsule" style={style}>
     <div class="sale_capsule_image_ctn">
-        <!-- <div class="sale_capsule_image_hover"></div> -->
-        <img class="sale-capsule-image" src="https://cdn.akamai.steamstatic.com/steam/apps/1669980/capsule_616x353.jpg?t=1698202778" alt="Volcano Princess">
+        <img class="sale-capsule-image" src="{game.tierSrc}" alt="Volcano Princess">
     </div>
-    <span class="game-name">game name</span>
+    <span class="game-name">{game.name}</span>
     <div class="price-block">
-        <div class="discount">-20%</div>
-        <div class="discount-original-price">₽ 420</div>
-        <div class="discount-final-price">₽ 336</div>
+        {#if game.discount !== 0 && game.discount !== undefined}
+            <div class="discount">-{game.discount}%</div>
+            <div class="discount-original-price">₽ {game.price.rub}</div>
+            <div class="discount-final-price">₽ {Math.round(game.price.rub - game.price.rub * game.discount / 100)}</div>
+        {:else}
+            <div class="discount-final-price">₽ {game.price.rub}</div>
+        {/if}
     </div>
 </a>
+{/if}
 
 <style>
     .discount {

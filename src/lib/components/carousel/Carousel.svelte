@@ -2,7 +2,7 @@
     import { onMount } from 'svelte';
     import CarouselStoreItem from '$lib/components/carousel/CarouselStoreItem.svelte';
 
-    export let highlights = []
+    export let highlights = [];
     export let locale: Record<string, string>;
 
     const CAROUSEL_SPEED = 400;
