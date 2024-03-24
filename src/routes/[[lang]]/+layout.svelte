@@ -20,3 +20,9 @@
 </nav>
 
 <slot />
+
+<footer>
+	<div class="footer-container">
+		© 2024 Steamcord. All rights reserved.
+	</div>
+</footer>
