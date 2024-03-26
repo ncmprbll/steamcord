@@ -1,5 +1,7 @@
 <script lang="ts">
     export let data;
+
+	import Login from '$lib/components/Login.svelte';
 </script>
 
 <nav class="menu">
@@ -26,3 +28,5 @@
 		© 2024 Steamcord. All rights reserved.
 	</div>
 </footer>
+
+<Login />
