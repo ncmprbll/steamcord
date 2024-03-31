@@ -4,6 +4,10 @@
 	import Login from '$lib/components/Login.svelte';
 </script>
 
+<svelte:head>
+    <title>Steamcord</title> 
+</svelte:head>
+
 <nav class="menu">
 	<div class="menu-container">
 		<div class="flex-center" style="filter: invert(100%) sepia(64%) saturate(36%) hue-rotate(203deg) brightness(111%) contrast(92%)">

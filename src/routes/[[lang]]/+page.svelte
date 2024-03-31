@@ -6,10 +6,6 @@
     import Discover from '$lib/components/Discover/Discover.svelte';
 </script>
 
-<svelte:head>
-    <title>Steamcord</title> 
-</svelte:head>
-
 <main>
     <div class="store-body">
         <Carousel locale={data.locale} highlights={data.highlights} />

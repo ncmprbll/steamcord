@@ -25,14 +25,14 @@
                     </svg>
                     <span>#log-in-title</span>
                 </div>
-                <form class="form">
+                <form method="POST" action="?/login" class="form">
                     <div class="box-input">
-                        <span>#account-name</span>
-                        <input type="text">
+                        <label for="account-name">#account-name</label>
+                        <input id="account-name" name="account-name" type="text">
                     </div>
                     <div class="box-input">
-                        <span>#password</span>
-                        <input type="text">
+                        <label for="password">#password</label>
+                        <input id="password" name="password" type="password">
                     </div>
                     <button class="form-button" type="submit">#sign-in</button>
                 </form>
@@ -51,24 +51,24 @@
                     </svg>
                     <span>#log-in-title</span>
                 </div>
-                <form class="form">
+                <form method="POST" action="?/register" class="form">
                     <div class="box-input">
                         <span>#account-name</span>
-                        <input type="text">
+                        <input id="account-name" name="account-name" type="text">
                     </div>
                     <div class="box-input">
                         <span>#e-mail</span>
-                        <input type="text">
+                        <input id="e-mail" name="email" type="text">
                     </div>
                     <div class="box-input">
                         <span>#password</span>
-                        <input type="text">
+                        <input id="password" name="password" type="text">
                     </div>
                     <div class="box-input">
                         <span>#confirm-password</span>
-                        <input type="text">
+                        <input id="confirm" name="confirm" type="text">
                     </div>
-                    <button class="form-button" type="submit">#sign-in</button>
+                    <button class="form-button" type="submit">#sign-up</button>
                 </form>
                 <div class="separator">
                     <span>#dont-have-account</span>
@@ -159,7 +159,7 @@
         gap: 8px;
     }
 
-    .box-input > span {
+    .box-input > label {
         font-size: 12px;
         letter-spacing: 0.5px;
         line-height: 1.3333;
@@ -169,7 +169,7 @@
         transition: color 400ms;
     }
 
-    span:has(+ input:focus) {
+    label:has(+ input:focus) {
         color: #1999ff;
     }
 
