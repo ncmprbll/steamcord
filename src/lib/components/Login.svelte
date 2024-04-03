@@ -6,7 +6,7 @@
     let signupOutroend: boolean = true;
 
     let signin: boolean = true;
-    let visible: boolean = true;
+    export let visible: boolean;
 
     function toggle() {
         signinOutroend = !signinOutroend;
