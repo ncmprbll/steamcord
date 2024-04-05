@@ -21,7 +21,6 @@
             <div>
                 <button class="login" on:click={() => {
                     visible = !visible
-                    console.log(visible)
                 }}>
                     Login
                 </button>

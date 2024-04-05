@@ -2,9 +2,12 @@ package http
 
 import (
 	"encoding/json"
-	"main/backend/internal/models"
+	"errors"
 	"main/backend/internal/auth"
+	"main/backend/internal/models"
 	"net/http"
+
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 type handlers struct{
@@ -27,8 +30,16 @@ func (h *handlers) Register() http.HandlerFunc {
 
 		// TODO: Remove error message with internal structure
 		if err := h.repository.Register(r.Context(), user); err != nil {
+			var pgErr *pgconn.PgError
+			if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+				http.Error(w, err.Error(), http.StatusConflict)
+				return
+			}
+
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+
+		w.WriteHeader(http.StatusCreated)
 	}
 }

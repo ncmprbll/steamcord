@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { invalidateAll } from '$app/navigation';
     import { fade } from 'svelte/transition';
 
     let duration: number = 100; // ms
@@ -6,17 +7,34 @@
     let signupOutroend: boolean = true;
 
     let signin: boolean = true;
+    let code: number = 0;
     export let visible: boolean;
 
     function toggle() {
         signinOutroend = !signinOutroend;
         signupOutroend = !signupOutroend;
     }
+
+	async function handleRegister(event) {
+		const url = event.target.action;
+		const data = new FormData(event.target)
+
+        const result = await fetch(url, {
+            method: event.target.method,
+            body: data
+        });
+
+        code = result.status;
+
+        if (result.status === 201) {
+            window.location.reload();
+        }
+	}
 </script>
 
 {#if visible}
 <div class="overlay">
-    <div class="position" on:click|self={() => {visible = !visible}}>
+    <div class="position" on:mousedown|self={() => {visible = !visible}}>
         {#if signin && signupOutroend}
             <div transition:fade={{ duration: duration }} on:outroend={toggle} class="box">
                 <div class="logo">
@@ -27,8 +45,8 @@
                 </div>
                 <form method="POST" action="?/login" class="form">
                     <div class="box-input">
-                        <label for="account-name">#account-name</label>
-                        <input id="account-name" name="account-name" type="text">
+                        <label for="login">#login</label>
+                        <input id="login" name="login" type="text">
                     </div>
                     <div class="box-input">
                         <label for="password">#password</label>
@@ -51,22 +69,25 @@
                     </svg>
                     <span>#log-in-title</span>
                 </div>
-                <form method="POST" action="?/register" class="form">
+                <form method="POST" action="/api/auth/register" class="form" on:submit|preventDefault={handleRegister}>
                     <div class="box-input">
-                        <span>#account-name</span>
-                        <input id="account-name" name="account-name" type="text">
+                        <label for="login">#login</label>
+                        <input id="login" name="login" type="text" required minlength="6" maxlength="20" pattern="[a-zA-Z0-9]+" title="Letters a to Z, numbers 0 to 9">
+                        {#if code === 409}
+                            <span class="input-message">User already exists</span>
+                        {/if}
                     </div>
                     <div class="box-input">
-                        <span>#e-mail</span>
-                        <input id="e-mail" name="email" type="text">
+                        <label for="email">#email</label>
+                        <input id="email" name="email" type="email" required>
                     </div>
                     <div class="box-input">
-                        <span>#password</span>
-                        <input id="password" name="password" type="text">
+                        <label for="password">#password</label>
+                        <input id="password" name="password" type="password" required minlength="8" maxlength="20">
                     </div>
                     <div class="box-input">
-                        <span>#confirm-password</span>
-                        <input id="confirm" name="confirm" type="text">
+                        <label for="confirm">#confirm-password</label>
+                        <input id="confirm" name="confirm" type="password" required minlength="8" maxlength="20">
                     </div>
                     <button class="form-button" type="submit">#sign-up</button>
                 </form>
@@ -83,6 +104,21 @@
 {/if}
 
 <style lang="postcss">
+    .input-message {
+        pointer-events: none;
+        display: block;
+        position: absolute;
+        top: calc(16px + 8px + 10.5px);
+        right: 6px;
+        padding-left: 30px;
+        font-size: 14px;
+    }
+
+    .input-message {
+        background: linear-gradient(90deg, rgba(238,221,213,0), #32353c 15px);
+        color: red;
+    }
+
     .separator {
         margin: 16px 0;
         position: relative;
@@ -154,6 +190,7 @@
     }
 
     .box-input {
+        position: relative;
         display: flex;
         flex-direction: column;
         gap: 8px;
