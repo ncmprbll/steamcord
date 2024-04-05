@@ -1,11 +1,13 @@
 <script lang="ts">
     import { invalidateAll } from '$app/navigation';
     import { fade } from 'svelte/transition';
+    import Spinner from '$lib/components/Spinner.svelte';
 
     let duration: number = 100; // ms
     let signinOutroend: boolean = false;
     let signupOutroend: boolean = true;
 
+    let loading: boolean = false;
     let signin: boolean = true;
     let code: number = 0;
     export let visible: boolean;
@@ -26,10 +28,14 @@
             return;
         }
 
+        loading = true;
+
         const result = await fetch(url, {
             method: event.target.method,
             body: data
         });
+
+        loading = false;
 
         code = result.status;
 
@@ -99,7 +105,13 @@
                         <label for="confirm">#confirm-password</label>
                         <input class:error={code === -1} id="confirm" name="confirm" type="password" required minlength="8" maxlength="20">
                     </div>
-                    <button class="form-button" type="submit">#sign-up</button>
+                    <button class="form-button" type="submit">
+                        {#if loading}
+                            <Spinner size="16"/>
+                        {:else}
+                            #sign-up
+                        {/if}
+                    </button>
                 </form>
                 <div class="separator">
                     <span>#dont-have-account</span>
