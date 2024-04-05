@@ -17,7 +17,14 @@
 
 	async function handleRegister(event) {
 		const url = event.target.action;
-		const data = new FormData(event.target)
+		const data = new FormData(event.target);
+        const password = data.get('password');
+        const confirm = data.get('confirm');
+
+        if (password !== confirm) {
+            code = -1; // Password mismatch
+            return;
+        }
 
         const result = await fetch(url, {
             method: event.target.method,
@@ -72,9 +79,9 @@
                 <form method="POST" action="/api/auth/register" class="form" on:submit|preventDefault={handleRegister}>
                     <div class="box-input">
                         <label for="login">#login</label>
-                        <input id="login" name="login" type="text" required minlength="6" maxlength="20" pattern="[a-zA-Z0-9]+" title="Letters a to Z, numbers 0 to 9">
+                        <input class:error={code === 409} id="login" name="login" type="text" required minlength="6" maxlength="20" pattern="[a-zA-Z0-9]+" title="Letters a to Z, numbers 0 to 9">
                         {#if code === 409}
-                            <span class="input-message">User already exists</span>
+                            <span class="input-message">#user-already-exists</span>
                         {/if}
                     </div>
                     <div class="box-input">
@@ -83,11 +90,14 @@
                     </div>
                     <div class="box-input">
                         <label for="password">#password</label>
-                        <input id="password" name="password" type="password" required minlength="8" maxlength="20">
+                        <input class:error={code === -1} id="password" name="password" type="password" required minlength="8" maxlength="20">
+                        {#if code === -1}
+                            <span class="input-message">#password-mismatch</span>
+                        {/if}
                     </div>
                     <div class="box-input">
                         <label for="confirm">#confirm-password</label>
-                        <input id="confirm" name="confirm" type="password" required minlength="8" maxlength="20">
+                        <input class:error={code === -1} id="confirm" name="confirm" type="password" required minlength="8" maxlength="20">
                     </div>
                     <button class="form-button" type="submit">#sign-up</button>
                 </form>
@@ -104,6 +114,10 @@
 {/if}
 
 <style lang="postcss">
+    .error {
+        border: 1px solid #b14a4a;
+    }
+
     .input-message {
         pointer-events: none;
         display: block;
@@ -224,6 +238,7 @@
         outline: none;
         font-size: 15px;
         border: 1px solid #32353c;
+        transition: border 300ms ease-out;
         box-sizing: border-box;
         width: 100%;
     }
