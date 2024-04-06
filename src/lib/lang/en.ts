@@ -23,6 +23,8 @@ const localization: Record<string, string> = {
     'userAlreadyExists': 'User already exists',
     'email': 'E-mail',
     'badCredentials': 'Wrong login or password',
+
+    'search': 'Search',
 };
 
 export { localization };
