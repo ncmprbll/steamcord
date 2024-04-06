@@ -22,6 +22,7 @@ const localization: Record<string, string> = {
     'backToLogin': 'Back to log-in',
     'userAlreadyExists': 'User already exists',
     'email': 'E-mail',
+    'badCredentials': 'Wrong login or password',
 };
 
 export { localization };

@@ -34,11 +34,9 @@
             body: data
         });
 
-        loading = false;
-
         code = result.status;
 
-        if (result.status === 201) {
+        if (result.status === 200) {
             window.location.reload();
         } else {
             loading = false;
@@ -87,13 +85,22 @@
                 <form method="POST" action="/api/auth/login" class="form" on:submit|preventDefault={handleLogin}>
                     <div class="box-input">
                         <label for="login">{locale.login}</label>
-                        <input id="login" name="login" type="text" required minlength="6" maxlength="20" pattern="[a-zA-Z0-9]+" title="Letters a to Z, numbers 0 to 9" on:input={clearcode} on:focus={clearcode}>
+                        <input class:error={code === 401} id="login" name="login" type="text" required minlength="6" maxlength="20" pattern="[a-zA-Z0-9]+" title="Letters a to Z, numbers 0 to 9" on:input={clearcode} on:focus={clearcode}>
+                        {#if code === 401}
+                            <span class="input-message">{locale.badCredentials}</span>
+                        {/if}
                     </div>
                     <div class="box-input">
                         <label for="password">{locale.password}</label>
-                        <input id="password" name="password" type="password" required minlength="8" maxlength="48" on:input={clearcode} on:focus={clearcode}>
+                        <input class:error={code === 401} id="password" name="password" type="password" required minlength="8" maxlength="48" on:input={clearcode} on:focus={clearcode}>
                     </div>
-                    <button class="form-button" type="submit">{locale.signin}</button>
+                    <button class="form-button" type="submit">
+                        {#if loading}
+                        <Spinner size="16"/>
+                    {:else}
+                        {locale.signin}
+                    {/if}
+                    </button>
                 </form>
                 <div class="separator">
                     <span>{locale.noaccount}</span>
