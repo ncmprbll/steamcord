@@ -46,6 +46,10 @@ func newErrorWrapper(s int, e string) *ErrorWrapper {
 }
 
 func parseSQLErrors(err error) *ErrorWrapper {
+	if errors.Is(err, sql.ErrNoRows) {
+		return newErrorWrapper(http.StatusUnauthorized, Unauthorized)
+	}
+
 	if strings.Contains(err.Error(), "23505") {
 		return newErrorWrapper(http.StatusConflict, Conflict)
 	}
@@ -55,11 +59,9 @@ func parseSQLErrors(err error) *ErrorWrapper {
 
 func ErrorResponse(err error) *ErrorWrapper {
 	switch {
-	case errors.Is(err, sql.ErrNoRows):
-		return newErrorWrapper(http.StatusNotFound, NotFound)
 	case errors.Is(err, context.DeadlineExceeded):
 		return newErrorWrapper(http.StatusRequestTimeout, RequestTimeoutError)
-	case strings.Contains(err.Error(), "SQLSTATE"):
+	case strings.Contains(strings.ToLower(err.Error()), "sql"):
 		return parseSQLErrors(err)
 	case strings.Contains(err.Error(), "Unmarshal"):
 		return newErrorWrapper(http.StatusBadRequest, BadRequest)
