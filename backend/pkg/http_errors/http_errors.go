@@ -28,7 +28,7 @@ var (
 	NotAllowedImageHeader = "Not allowed image header"
 	NoCookie              = "not found cookie header"
 	Conflict              = "Conflict"
-	ServerError            = "Internal Server Error"
+	ServerError           = "Internal Server Error"
 )
 
 type IErrorWrapper interface {

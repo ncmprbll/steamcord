@@ -57,5 +57,5 @@ func main() {
 
 	r.Mount("/auth", authRouter)
 
-	http.ListenAndServe(":" + port, r)
+	http.ListenAndServe(":"+port, r)
 }

@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-type handlers struct{
+type handlers struct {
 	repository auth.Repository
 }
 
