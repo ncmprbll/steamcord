@@ -14,6 +14,8 @@
     let code: number = 0;
     export let visible: boolean;
 
+    let login: string = '';
+
     function toggle() {
         signinOutroend = !signinOutroend;
         signupOutroend = !signupOutroend;
@@ -85,14 +87,14 @@
                 <form method="POST" action="/api/auth/login" class="form" on:submit|preventDefault={handleLogin}>
                     <div class="box-input">
                         <label for="login">{locale.login}</label>
-                        <input class:error={code === 401} id="login" name="login" type="text" required minlength="6" maxlength="20" pattern="[a-zA-Z0-9]+" title="Letters a to Z, numbers 0 to 9" on:input={clearcode} on:focus={clearcode}>
+                        <input class:error={code === 401} bind:value={login} id="signin-login" name="login" type="text" required minlength="6" maxlength="20" pattern="[a-zA-Z0-9]+" title="Letters a to Z, numbers 0 to 9" on:input={clearcode} on:focus={clearcode}>
                         {#if code === 401}
                             <span class="input-message">{locale.badCredentials}</span>
                         {/if}
                     </div>
                     <div class="box-input">
                         <label for="password">{locale.password}</label>
-                        <input class:error={code === 401} id="password" name="password" type="password" required minlength="8" maxlength="48" on:input={clearcode} on:focus={clearcode}>
+                        <input class:error={code === 401} id="signin-password" name="password" type="password" required minlength="8" maxlength="48" on:input={clearcode} on:focus={clearcode}>
                     </div>
                     <button class="form-button" type="submit">
                         {#if loading}
@@ -120,7 +122,7 @@
                 <form method="POST" action="/api/auth/register" class="form" on:submit|preventDefault={handleRegister}>
                     <div class="box-input">
                         <label for="login">{locale.login}</label>
-                        <input class:error={code === 409} id="login" name="login" type="text" required minlength="6" maxlength="20" pattern="[a-zA-Z0-9]+" title="Letters a to Z, numbers 0 to 9" on:input={clearcode} on:focus={clearcode}>
+                        <input class:error={code === 409} bind:value={login} id="signup-login" name="login" type="text" required minlength="6" maxlength="20" pattern="[a-zA-Z0-9]+" title="Letters a to Z, numbers 0 to 9" on:input={clearcode} on:focus={clearcode}>
                         {#if code === 409}
                             <span class="input-message">{locale.userAlreadyExists}</span>
                         {/if}
@@ -131,7 +133,7 @@
                     </div>
                     <div class="box-input">
                         <label for="password">{locale.password}</label>
-                        <input class:error={code === -1} id="password" name="password" type="password" required minlength="8" maxlength="48" on:input={clearcode} on:focus={clearcode}>
+                        <input class:error={code === -1} id="signup-password" name="password" type="password" required minlength="8" maxlength="48" on:input={clearcode} on:focus={clearcode}>
                         {#if code === -1}
                             <span class="input-message">{locale.passMismatch}</span>
                         {/if}
