@@ -2,12 +2,10 @@ package http
 
 import (
 	"encoding/json"
-	"errors"
 	"main/backend/internal/auth"
 	"main/backend/internal/models"
+	"main/backend/pkg/http_errors"
 	"net/http"
-
-	"github.com/jackc/pgx/v5/pgconn"
 )
 
 type handlers struct{
@@ -22,24 +20,54 @@ func (h *handlers) Register() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user := &models.User{}
 
-		// TODO: Remove error message with internal structure
 		if err := json.NewDecoder(r.Body).Decode(user); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			response := http_errors.ErrorResponse(err)
+			http.Error(w, response.Error, response.Status)
 			return
 		}
 
-		// TODO: Remove error message with internal structure
-		if err := h.repository.Register(r.Context(), user); err != nil {
-			var pgErr *pgconn.PgError
-			if errors.As(err, &pgErr) && pgErr.Code == "23505" {
-				http.Error(w, err.Error(), http.StatusConflict)
-				return
-			}
+		if err := user.HashPassword(); err != nil {
+			response := http_errors.ErrorResponse(err)
+			http.Error(w, response.Error, response.Status)
+			return
+		}
 
-			http.Error(w, err.Error(), http.StatusBadRequest)
+		if err := h.repository.Register(r.Context(), user); err != nil {
+			response := http_errors.ErrorResponse(err)
+			http.Error(w, response.Error, response.Status)
 			return
 		}
 
 		w.WriteHeader(http.StatusCreated)
+	}
+}
+
+func (h *handlers) Login() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		user := &models.User{}
+
+		if err := json.NewDecoder(r.Body).Decode(user); err != nil {
+			response := http_errors.ErrorResponse(err)
+			http.Error(w, response.Error, response.Status)
+			return
+		}
+
+		found, err := h.repository.FindByLogin(r.Context(), user)
+
+		if err != nil {
+			response := http_errors.ErrorResponse(err)
+			http.Error(w, response.Error, response.Status)
+			return
+		}
+
+		if err := found.ComparePasswords(user.Password); err != nil {
+			response := http_errors.ErrorResponse(err)
+			http.Error(w, response.Error, response.Status)
+			return
+		}
+
+		// Create session
+
+		w.WriteHeader(http.StatusOK)
 	}
 }

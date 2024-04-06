@@ -23,6 +23,28 @@
         code = 0;
     }
 
+    async function handleLogin(event) {
+		const url = event.target.action;
+		const data = new FormData(event.target);
+
+        loading = true;
+
+        const result = await fetch(url, {
+            method: event.target.method,
+            body: data
+        });
+
+        loading = false;
+
+        code = result.status;
+
+        if (result.status === 201) {
+            window.location.reload();
+        } else {
+            loading = false;
+        }
+	}
+
 	async function handleRegister(event) {
 		const url = event.target.action;
 		const data = new FormData(event.target);
@@ -41,12 +63,12 @@
             body: data
         });
 
-        loading = false;
-
         code = result.status;
 
         if (result.status === 201) {
             window.location.reload();
+        } else {
+            loading = false;
         }
 	}
 </script>
@@ -62,14 +84,14 @@
                     </svg>
                     <span>{locale.loginTitle}</span>
                 </div>
-                <form method="POST" action="?/login" class="form">
+                <form method="POST" action="/api/auth/login" class="form" on:submit|preventDefault={handleLogin}>
                     <div class="box-input">
                         <label for="login">{locale.login}</label>
-                        <input id="login" name="login" type="text" on:input={clearcode} on:focus={clearcode}>
+                        <input id="login" name="login" type="text" required minlength="6" maxlength="20" pattern="[a-zA-Z0-9]+" title="Letters a to Z, numbers 0 to 9" on:input={clearcode} on:focus={clearcode}>
                     </div>
                     <div class="box-input">
                         <label for="password">{locale.password}</label>
-                        <input id="password" name="password" type="password" on:input={clearcode} on:focus={clearcode}>
+                        <input id="password" name="password" type="password" required minlength="8" maxlength="48" on:input={clearcode} on:focus={clearcode}>
                     </div>
                     <button class="form-button" type="submit">{locale.signin}</button>
                 </form>
@@ -273,7 +295,7 @@
 
     .position {
         display: flex;
-        overflow-y: scroll;
+        overflow-y: auto;
         justify-content: center;
         align-items: center;
         height: 100%;

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -12,13 +11,14 @@ import (
 	authRepository "main/backend/internal/auth/postgres"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/jmoiron/sqlx"
 )
 
 func main() {
 	url := "postgres://postgres:password@localhost/postgres"
 	port := "3000"
 
-	database, err := sql.Open("pgx", url)
+	database, err := sqlx.Open("pgx", url)
 
 	if err != nil {
 		return
