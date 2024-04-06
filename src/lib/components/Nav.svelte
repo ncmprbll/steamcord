@@ -1,6 +1,6 @@
 <script lang="ts">
-    export let data;
-    export let visible: boolean;
+    export let locale;
+    export let loginVisible: boolean;
 </script>
 
 <nav class="menu">
@@ -15,12 +15,12 @@
 		</div>
 		<div class="menu-items">
             <div class="menu-left">
-                <a href="/">{data.locale.store}</a>
-                <a href="/">{data.locale.community}</a>
+                <a href="/">{locale.store}</a>
+                <a href="/">{locale.community}</a>
             </div>
             <div>
                 <button class="login" on:click={() => {
-                    visible = !visible
+                    loginVisible = !loginVisible
                 }}>
                     Login
                 </button>

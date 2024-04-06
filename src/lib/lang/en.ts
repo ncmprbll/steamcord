@@ -6,7 +6,22 @@ const localization: Record<string, string> = {
     'addToCart': 'Add to cart',
 
     'specialOffers': 'Special offers',
-    'popularGames': 'Popular games'
+    'popularGames': 'Popular games',
+
+    'loginTitle': 'Log-in',
+    'signupTitle': 'Sign-up',
+    'login': 'Login',
+    'password': 'Password',
+    'confirmPass': 'Confirm password',
+    'passMismatch': 'Passwords don\'t match',
+    'signin': 'Sign in',
+    'signup': 'Sign up',
+    'noaccount': 'Don\'t have an account?',
+    'yesaccount': 'Already have an account?',
+    'createAccount': 'Create account',
+    'backToLogin': 'Back to log-in',
+    'userAlreadyExists': 'User already exists',
+    'email': 'E-mail',
 };
 
 export { localization };

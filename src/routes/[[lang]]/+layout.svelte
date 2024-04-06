@@ -1,6 +1,6 @@
 <script lang="ts">
     export let data;
-	let visible = false;
+	let loginVisible = false;
 
 	import Nav from '$lib/components/Nav.svelte';
 	import Login from '$lib/components/Login.svelte';
@@ -10,7 +10,7 @@
     <title>Steamcord</title> 
 </svelte:head>
 
-<Nav {data} bind:visible/>
+<Nav locale={data.locale} bind:loginVisible/>
 
 <slot />
 
@@ -20,4 +20,4 @@
 	</div>
 </footer>
 
-<Login bind:visible/>
+<Login locale={data.locale} bind:visible={loginVisible}/>
