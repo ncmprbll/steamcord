@@ -180,6 +180,7 @@
     .input-message {
         background: linear-gradient(90deg, rgba(238,221,213,0), #32353c 15px);
         color: red;
+        user-select: none;
     }
 
     .separator {

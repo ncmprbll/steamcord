@@ -1,14 +1,18 @@
 package main
 
 import (
+	"context"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
+	"github.com/redis/go-redis/v9"
 
 	authDelivery "main/backend/internal/auth/delivery/http"
 	authRepository "main/backend/internal/auth/postgres"
+	sessionRepository "main/backend/internal/session/redis"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/jmoiron/sqlx"
@@ -21,13 +25,24 @@ func main() {
 	database, err := sqlx.Open("pgx", url)
 
 	if err != nil {
-		return
+		panic(err)
 	}
 
 	err = database.Ping()
 
 	if err != nil {
-		return
+		panic(err)
+	}
+
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "",
+		DB:       0,
+	})
+
+	err = rdb.Set(context.TODO(), "key", "value", time.Second * 5).Err()
+	if err != nil {
+		panic(err)
 	}
 
 	r := chi.NewRouter()
@@ -48,9 +63,10 @@ func main() {
 
 	// Repositories
 	authPostgres := authRepository.New(database)
+	sessionRedis := sessionRepository.New(rdb)
 
 	// Handlers
-	authHandlers := authDelivery.NewAuthHandlers(authPostgres)
+	authHandlers := authDelivery.NewAuthHandlers(authPostgres, sessionRedis)
 
 	// Routers
 	authRouter := authDelivery.NewRouter(authHandlers)
