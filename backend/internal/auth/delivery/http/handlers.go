@@ -5,8 +5,11 @@ import (
 	"main/backend/internal/auth"
 	"main/backend/internal/models"
 	"main/backend/internal/session"
-	"main/backend/pkg/http_errors"
+	"main/backend/internal/util"
 	"net/http"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 )
 
 type handlers struct {
@@ -23,20 +26,17 @@ func (h *handlers) Register() http.HandlerFunc {
 		user := &models.User{}
 
 		if err := json.NewDecoder(r.Body).Decode(user); err != nil {
-			response := http_errors.ErrorResponse(err)
-			http.Error(w, response.Error, response.Status)
+			util.HandleError(w, err)
 			return
 		}
 
 		if err := user.HashPassword(); err != nil {
-			response := http_errors.ErrorResponse(err)
-			http.Error(w, response.Error, response.Status)
+			util.HandleError(w, err)
 			return
 		}
 
 		if err := h.authRepository.Register(r.Context(), user); err != nil {
-			response := http_errors.ErrorResponse(err)
-			http.Error(w, response.Error, response.Status)
+			util.HandleError(w, err)
 			return
 		}
 
@@ -49,30 +49,26 @@ func (h *handlers) Login() http.HandlerFunc {
 		user := &models.User{}
 
 		if err := json.NewDecoder(r.Body).Decode(user); err != nil {
-			response := http_errors.ErrorResponse(err)
-			http.Error(w, response.Error, response.Status)
+			util.HandleError(w, err)
 			return
 		}
 
 		found, err := h.authRepository.FindByLogin(r.Context(), user)
 
 		if err != nil {
-			response := http_errors.ErrorResponse(err)
-			http.Error(w, response.Error, response.Status)
+			util.HandleError(w, err)
 			return
 		}
 
 		if err := found.ComparePasswords(user.Password); err != nil {
-			response := http_errors.ErrorResponse(err)
-			http.Error(w, response.Error, response.Status)
+			util.HandleError(w, err)
 			return
 		}
 
 		sessionId, err := h.sessionRepository.CreateSession(r.Context(), &models.Session{UserID: found.UUID}, 30)
 
 		if err != nil {
-			response := http_errors.ErrorResponse(err)
-			http.Error(w, response.Error, response.Status)
+			util.HandleError(w, err)
 			return
 		}
 
@@ -91,3 +87,67 @@ func (h *handlers) Login() http.HandlerFunc {
 		w.WriteHeader(http.StatusOK)
 	}
 }
+
+func (h *handlers) FindByUUID() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		userId := chi.URLParam(r, "user_id")
+
+		uuid, err := uuid.Parse(userId)
+
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		found, err := h.authRepository.FindByUUID(r.Context(), &models.User{UUID: uuid})
+
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		err = json.NewEncoder(w).Encode(found)
+
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}
+}
+
+func (h *handlers) Me() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		sessionIdCookie, err := r.Cookie("session_id")
+
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		sessionId := sessionIdCookie.Value
+		session, err := h.sessionRepository.GetSessionByID(r.Context(), sessionId)
+
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		found, err := h.authRepository.FindByUUID(r.Context(), &models.User{UUID: session.UserID})
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		err = json.NewEncoder(w).Encode(found)
+
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}
+}
+

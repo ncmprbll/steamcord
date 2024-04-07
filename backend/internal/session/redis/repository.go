@@ -37,7 +37,17 @@ func (s *Repository) CreateSession(ctx context.Context, session *models.Session,
 }
 
 func (s *Repository) GetSessionByID(ctx context.Context, sessionId string) (*models.Session, error) {
-	return nil, nil
+	bytes, err := s.rdb.Get(ctx, fmt.Sprintf("session_id::%s", sessionId)).Bytes()
+	if err != nil {
+		return nil, err
+	}
+
+	session := &models.Session{}
+	if err = json.Unmarshal(bytes, &session); err != nil {
+		return nil, err
+	}
+
+	return session, nil
 }
 
 func (s *Repository) DeleteByID(ctx context.Context, sessionId string) error {

@@ -1,3 +1,5 @@
+import type { User } from '$lib/types/user.type';
+
 // REDO?
 import * as en from '$lib/lang/en.ts';
 import * as ru from '$lib/lang/ru.ts';
@@ -8,7 +10,20 @@ const locales: Record<string, Record<string, string>> = {
 };
 //
 
-export function load({ params }) {
+export async function load({ params, cookies }) {
+    const result = await fetch("http://localhost:3000/auth/me", {
+		method: "GET",
+        credentials: "include",
+        headers: {
+            Cookie: "session_id=" + cookies.get("session_id")
+        }
+	});
+    let me: User | undefined;
+
+    if (result.status === 200) {
+        me = await result.json(); 
+    }
+
 	let highlights = [
         {
             name: "Cyberpunk 2077: Phantom Liberty",
@@ -219,6 +234,7 @@ export function load({ params }) {
     ]
 
 	return {
+        me: me,
 		locale: locales[params.lang ?? 'en'] ?? locales['en'],
 		highlights: highlights,
         tier1: games1,

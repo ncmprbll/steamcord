@@ -1,5 +1,5 @@
 <script lang="ts">
-    export let locale;
+    export let data;
     export let loginVisible: boolean;
 
     let expanded: boolean = false;
@@ -21,20 +21,24 @@
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 21 20" preserveAspectRatio="xMidYMid meet"><g transform="scale(1 -1) rotate(-45 -11.93502884 -2)" stroke="currentColor" stroke-width="1.65" fill="none" fill-rule="evenodd"><circle cx="7.70710678" cy="7.70710678" r="7"></circle><path d="M15.2071068 8.62132034h5.6923881" stroke-linecap="square"></path></g></svg>
             </span>
             <div class="search-input-wrapper">
-                <input class="css-w7sedp" data-testid="input-input" placeholder={locale.search} value="">
+                <input class="css-w7sedp" data-testid="input-input" placeholder={data.locale.search} value="">
             </div>
         </div>
 		<div class="menu-items">
             <div class="menu-left">
-                <a href="/">{locale.store}</a>
-                <a href="/">{locale.community}</a>
+                <a href="/">{data.locale.store}</a>
+                <a href="/">{data.locale.community}</a>
             </div>
             <div class="menu-right">
-                <button class="login" on:click={() => {
-                    loginVisible = !loginVisible
-                }}>
-                    Login
-                </button>
+                {#if data.me === undefined}
+                    <button class="login" on:click={() => {
+                        loginVisible = !loginVisible
+                    }}>
+                        Login
+                    </button>
+                {:else}
+                    <a href="/profile/{data.me.user_id}">My Profile</a>
+                {/if}
             </div>
 		</div>
         <button class="mobile-drawer-button" on:click={expand}>
@@ -44,18 +48,26 @@
     <div class="mobile-drawer" class:expanded={expanded}>
         <div class="mobile-divider" class:expanded={expanded} />
         <div>
-            <a href="/">{locale.store}</a>
-            <a href="/">{locale.community}</a>
-            <button class="login" on:click={() => {
-                loginVisible = !loginVisible
-            }}>
-                Login
-            </button>
+            <a href="/">{data.locale.store}</a>
+            <a href="/">{data.locale.community}</a>
+            {#if data.me === undefined}
+                <button class="login" on:click={() => {
+                    loginVisible = !loginVisible
+                }}>
+                    Login
+                </button>
+            {:else}
+                <a href="/profile/{data.me.user_id}">My Profile</a>
+            {/if}
         </div>
     </div>
 </nav>
 
 <style lang="postcss">
+    a {
+        white-space: nowrap;
+    }
+
     .mobile-drawer {
         display: none;
         max-width: 1060px;
@@ -84,6 +96,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        height: 100%;
     }
 
     .mobile-drawer-button > svg {

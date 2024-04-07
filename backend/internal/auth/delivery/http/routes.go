@@ -11,6 +11,8 @@ func NewRouter(h *handlers) http.Handler {
 
 	r.Post("/register", h.Register())
 	r.Post("/login", h.Login())
+	r.Get("/{user_id}", h.FindByUUID())
+	r.Get("/me", h.Me())
 
 	return r
 }

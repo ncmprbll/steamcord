@@ -10,7 +10,7 @@
     <title>Steamcord</title> 
 </svelte:head>
 
-<Nav locale={data.locale} bind:loginVisible/>
+<Nav data={data} bind:loginVisible/>
 
 <slot />
 

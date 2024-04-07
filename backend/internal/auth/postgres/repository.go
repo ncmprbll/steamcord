@@ -30,3 +30,11 @@ func (s *Repository) FindByLogin(ctx context.Context, user *models.User) (*model
 	}
 	return found, nil
 }
+
+func (s *Repository) FindByUUID(ctx context.Context, user *models.User) (*models.User, error) {
+	found := &models.User{}
+	if err := s.database.QueryRowxContext(ctx, "SELECT * FROM users WHERE user_id = $1;", user.UUID).StructScan(found); err != nil {
+		return nil, err
+	}
+	return found, nil
+}
