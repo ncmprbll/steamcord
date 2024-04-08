@@ -34,3 +34,7 @@ func (u *User) ComparePasswords(password string) error {
 	}
 	return nil
 }
+
+func (u *User) SanitizePassword() {
+	u.Password = ""
+}

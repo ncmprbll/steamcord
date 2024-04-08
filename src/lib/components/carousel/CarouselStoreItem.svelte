@@ -16,14 +16,19 @@
     export let margin = 8;
     let style = '';
 
-    function resize() {
+    export function resize(e: Event, p?: HTMLElement) {
+        if (p !== undefined) {
+            width = p.offsetWidth;
+            return;
+        }
+
         width = paragraph?.offsetWidth;
 	}
 
     onMount(resize);
 
     $: {
-        if (width === 0) {
+        if (width === 0 || width === undefined) {
             style = ''
         } else {
             style = `width: ${width}px`;
@@ -335,7 +340,7 @@
 
     @media (min-width: 1120px) {
         .screenshot {
-            width: 1060px
+            width: var(--store-width)
         }
     }
 

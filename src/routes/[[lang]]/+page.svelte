@@ -6,13 +6,9 @@
     import Discover from '$lib/components/Discover/Discover.svelte';
 </script>
 
-<main>
-    <div class="store-body">
-        <Carousel locale={data.locale} highlights={data.highlights} />
+<Carousel locale={data.locale} highlights={data.highlights} />
 
-        <Tier locale={data.locale} games={data.tier1} />
-        <Tier locale={data.locale} games={data.tier2} name="Horror" />
+<Tier locale={data.locale} games={data.tier1} />
+<Tier locale={data.locale} games={data.tier2} name="Horror" />
 
-        <Discover />
-    </div>
-</main>
+<Discover />

@@ -54,7 +54,6 @@ func (h *handlers) Login() http.HandlerFunc {
 		}
 
 		found, err := h.authRepository.FindByLogin(r.Context(), user)
-
 		if err != nil {
 			util.HandleError(w, err)
 			return
@@ -64,6 +63,7 @@ func (h *handlers) Login() http.HandlerFunc {
 			util.HandleError(w, err)
 			return
 		}
+		found.SanitizePassword()
 
 		sessionId, err := h.sessionRepository.CreateSession(r.Context(), &models.Session{UserID: found.UUID}, 30)
 
@@ -93,21 +93,20 @@ func (h *handlers) FindByUUID() http.HandlerFunc {
 		userId := chi.URLParam(r, "user_id")
 
 		uuid, err := uuid.Parse(userId)
-
 		if err != nil {
 			util.HandleError(w, err)
 			return
 		}
 
 		found, err := h.authRepository.FindByUUID(r.Context(), &models.User{UUID: uuid})
-
 		if err != nil {
 			util.HandleError(w, err)
 			return
 		}
+		found.SanitizePassword()
+
 
 		err = json.NewEncoder(w).Encode(found)
-
 		if err != nil {
 			util.HandleError(w, err)
 			return
@@ -139,6 +138,7 @@ func (h *handlers) Me() http.HandlerFunc {
 			util.HandleError(w, err)
 			return
 		}
+		found.SanitizePassword()
 
 		err = json.NewEncoder(w).Encode(found)
 

@@ -47,7 +47,15 @@
 	</div>
     <div class="mobile-drawer" class:expanded={expanded}>
         <div class="mobile-divider" class:expanded={expanded} />
-        <div>
+        <div class="mobile-items">
+            <div class="menu-search-bar mobile">
+                <span class="search-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 21 20" preserveAspectRatio="xMidYMid meet"><g transform="scale(1 -1) rotate(-45 -11.93502884 -2)" stroke="currentColor" stroke-width="1.65" fill="none" fill-rule="evenodd"><circle cx="7.70710678" cy="7.70710678" r="7"></circle><path d="M15.2071068 8.62132034h5.6923881" stroke-linecap="square"></path></g></svg>
+                </span>
+                <div class="search-input-wrapper">
+                    <input class="css-w7sedp" data-testid="input-input" placeholder={data.locale.search} value="">
+                </div>
+            </div>
             <a href="/">{data.locale.store}</a>
             <a href="/">{data.locale.community}</a>
             {#if data.me === undefined}
@@ -64,20 +72,34 @@
 </nav>
 
 <style lang="postcss">
+    .mobile-items {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 8px;
+        gap: 12px;
+    }
+
     a {
+        color: #b7bdbf;
+        transition: color 350ms;
         white-space: nowrap;
+    }
+
+    a:hover {
+        color: #ebf2f4;
     }
 
     .mobile-drawer {
         display: none;
-        max-width: 1060px;
+        max-width: var(--store-width);
         transition: max-height 300ms ease-in-out;
         max-height: 0;
         overflow: hidden;
     }
 
     .mobile-drawer.expanded {
-        max-height: 50px;
+        max-height: 169px;
         margin: 0 auto;
     }
 
@@ -167,8 +189,13 @@
         font-weight: normal;
         line-height: 20px;
         letter-spacing: 0.2px;
+        transition: color 350ms;
+        color: #b7bdbf;
+    }
+
+    .login:hover {
         color: #ebf2f4;
-        cursor: pointer;
+        cursor: pointer; 
     }
 
     .menu-items {
@@ -202,7 +229,7 @@
     .menu-container {
         margin-left: auto;
         margin-right: auto;
-        max-width: 1060px;
+        max-width: var(--store-width);
         display: -webkit-box;
         display: -webkit-flex;
         display: -ms-flexbox;
@@ -240,6 +267,11 @@
     @media (max-width: 850px) {
         .menu-search-bar {
             display: none;
+        }
+
+        .menu-search-bar.mobile {
+            display: flex;
+            width: 100%;
         }
     
         .menu-items {

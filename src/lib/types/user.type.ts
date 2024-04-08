@@ -1,11 +1,20 @@
 export type User = {
-	UUID: string;
-	Login: string;
-	DisplayName: string;
-	Email: string;
-	Password: string;
-	Role: string;
-	CreatedAt: Date;
-	UpdatedAt: Date;
-	LoginDate: Date;
-};
+	user_id: string
+	login: string
+	display_name: string
+	email: string
+	password: string
+	role: string
+	created_at: string
+	updated_at: string
+	login_date: string
+}
+
+export function removeSensitiveData(user: User, fields: string[], deleteField?: boolean) {
+	for (let i = 0; i < fields.length; i++) {
+		user[fields[i]] = '';
+
+		if (deleteField)
+			delete user[fields[i]]
+	}
+}
