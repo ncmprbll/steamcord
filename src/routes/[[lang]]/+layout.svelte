@@ -3,6 +3,7 @@
 	let loginVisible = false;
 
 	import Nav from '$lib/components/Nav.svelte';
+	import Error from '$lib/components/Error.svelte';
 	import Login from '$lib/components/Login.svelte';
 </script>
 
@@ -13,6 +14,7 @@
 <Nav data={data} bind:loginVisible/>
 
 <main>
+	<Error />
 	<slot />
 </main>
 
