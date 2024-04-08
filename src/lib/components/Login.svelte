@@ -75,7 +75,7 @@
 
 {#if visible}
 <div class="overlay">
-    <div class="position" on:mousedown|self={() => {visible = !visible}}>
+    <div class="position" tabindex="0" role="button" on:mousedown|self={() => {visible = !visible}}>
         {#if signin && signupOutroend}
             <div transition:fade={{ duration: duration }} on:outroend={toggle} class="box">
                 <div class="logo">
