@@ -2,4 +2,4 @@
     export let data;
 </script>
 
-{data.user}
+<div

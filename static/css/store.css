@@ -45,14 +45,11 @@ body {
     color: #ebf2f4;
 }
 
-.store-body {
+main {
     flex: 1;
     margin: 16px auto;
-    /* margin-left: auto;
-    margin-right: auto; */
-    width: calc(100vw - 2 * 2%);
+    width: calc(100% - 2 * 2%); /* padding (2 * 2%) from below */
     max-width: var(--store-width);
-    /* min-height: 100vh; */
     padding: 0 2%;
 }
 

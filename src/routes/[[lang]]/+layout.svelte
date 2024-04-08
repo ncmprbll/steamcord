@@ -12,7 +12,7 @@
 
 <Nav data={data} bind:loginVisible/>
 
-<main class="store-body">
+<main>
 	<slot />
 </main>
 
