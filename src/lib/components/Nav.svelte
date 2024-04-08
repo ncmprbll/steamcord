@@ -1,5 +1,6 @@
 <script lang="ts">
-    export let data;
+    import { page } from '$app/stores';
+
     export let loginVisible: boolean;
 
     let expanded: boolean = false;
@@ -21,23 +22,23 @@
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 21 20" preserveAspectRatio="xMidYMid meet"><g transform="scale(1 -1) rotate(-45 -11.93502884 -2)" stroke="currentColor" stroke-width="1.65" fill="none" fill-rule="evenodd"><circle cx="7.70710678" cy="7.70710678" r="7"></circle><path d="M15.2071068 8.62132034h5.6923881" stroke-linecap="square"></path></g></svg>
             </span>
             <div class="search-input-wrapper">
-                <input class="css-w7sedp" data-testid="input-input" placeholder={data.locale.search} value="">
+                <input placeholder={$page.data.locale.search} value="">
             </div>
         </div>
 		<div class="menu-items">
             <div class="menu-left">
-                <a href="/">{data.locale.store}</a>
-                <a href="/">{data.locale.community}</a>
+                <a href="/">{$page.data.locale.store}</a>
+                <a href="/">{$page.data.locale.community}</a>
             </div>
             <div class="menu-right">
-                {#if data.me === undefined}
+                {#if $page.data.me === undefined}
                     <button class="login" on:click={() => {
                         loginVisible = !loginVisible
                     }}>
                         Login
                     </button>
                 {:else}
-                    <a href="/profile/{data.me.user_id}">My Profile</a>
+                    <a href="/profile/{$page.data.me.user_id}">My Profile</a>
                 {/if}
             </div>
 		</div>
@@ -53,19 +54,19 @@
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 21 20" preserveAspectRatio="xMidYMid meet"><g transform="scale(1 -1) rotate(-45 -11.93502884 -2)" stroke="currentColor" stroke-width="1.65" fill="none" fill-rule="evenodd"><circle cx="7.70710678" cy="7.70710678" r="7"></circle><path d="M15.2071068 8.62132034h5.6923881" stroke-linecap="square"></path></g></svg>
                 </span>
                 <div class="search-input-wrapper">
-                    <input class="css-w7sedp" data-testid="input-input" placeholder={data.locale.search} value="">
+                    <input placeholder={$page.data.locale.search} value="">
                 </div>
             </div>
-            <a href="/">{data.locale.store}</a>
-            <a href="/">{data.locale.community}</a>
-            {#if data.me === undefined}
+            <a href="/">{$page.data.locale.store}</a>
+            <a href="/">{$page.data.locale.community}</a>
+            {#if $page.data.me === undefined}
                 <button class="login" on:click={() => {
                     loginVisible = !loginVisible
                 }}>
                     Login
                 </button>
             {:else}
-                <a href="/profile/{data.me.user_id}">My Profile</a>
+                <a href="/profile/{$page.data.me.user_id}">My Profile</a>
             {/if}
         </div>
     </div>

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { flip } from 'svelte/animate';
+
     export let data;
 	let loginVisible = false;
 
@@ -11,10 +13,10 @@
     <title>Steamcord</title> 
 </svelte:head>
 
-<Nav data={data} bind:loginVisible/>
+<Nav bind:loginVisible/>
 
 <main>
-	<Error />
+	<Error error={data.error}/>
 	<slot />
 </main>
 
@@ -24,4 +26,4 @@
 	</div>
 </footer>
 
-<Login locale={data.locale} bind:visible={loginVisible}/>
+<Login bind:visible={loginVisible}/>
