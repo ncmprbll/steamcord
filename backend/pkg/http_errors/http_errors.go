@@ -71,6 +71,10 @@ func ErrorResponse(err error) *ErrorWrapper {
 		return newErrorWrapper(http.StatusBadRequest, BadRequest)
 	case strings.Contains(err.Error(), "UUID"):
 		return newErrorWrapper(http.StatusBadRequest, BadRequest)
+	case strings.Contains(err.Error(), "invalid"):
+		return newErrorWrapper(http.StatusBadRequest, BadRequest)
+	case strings.Contains(err.Error(), "validation"):
+		return newErrorWrapper(http.StatusBadRequest, BadRequest)
 	case strings.Contains(strings.ToLower(err.Error()), "cookie"):
 		return newErrorWrapper(http.StatusUnauthorized, Unauthorized)
 	case strings.Contains(strings.ToLower(err.Error()), "token"):

@@ -30,6 +30,11 @@ func (h *handlers) Register() http.HandlerFunc {
 			return
 		}
 
+		if err := user.Validate(); err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
 		if err := user.HashPassword(); err != nil {
 			util.HandleError(w, err)
 			return

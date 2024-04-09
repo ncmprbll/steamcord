@@ -1,7 +1,7 @@
 package util
 
 import (
-	// "log"
+	"log"
 	"main/backend/pkg/http_errors"
 	"net/http"
 )
@@ -9,5 +9,5 @@ import (
 func HandleError(w http.ResponseWriter, e error) {
 	response := http_errors.ErrorResponse(e)
 	http.Error(w, response.Error, response.Status)
-	// log.Println(e.Error())
+	log.Println(e.Error())
 }
