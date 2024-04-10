@@ -110,7 +110,7 @@ func (h *handlers) FindByUUID() http.HandlerFunc {
 		}
 		found.SanitizePassword()
 
-
+		w.Header().Set("Content-Type", "application/json")
 		err = json.NewEncoder(w).Encode(found)
 		if err != nil {
 			util.HandleError(w, err)
@@ -145,8 +145,8 @@ func (h *handlers) Me() http.HandlerFunc {
 		}
 		found.SanitizePassword()
 
+		w.Header().Set("Content-Type", "application/json")
 		err = json.NewEncoder(w).Encode(found)
-
 		if err != nil {
 			util.HandleError(w, err)
 			return

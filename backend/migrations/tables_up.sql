@@ -36,10 +36,10 @@ CREATE TABLE products
 
 CREATE TABLE products_prices
 (
-    id SERIAL PRIMARY KEY,
     product_id BIGINT references products(id),
     currency_code VARCHAR(32) NOT NULL CHECK ( currency_code <> '' ),
-    price NUMERIC(16, 2) NOT NULL CHECK ( price > 0 )
+    price NUMERIC(16, 2) NOT NULL CHECK ( price > 0 ),
+    PRIMARY KEY (product_id, currency_code)
 );
 
 CREATE TABLE products_images

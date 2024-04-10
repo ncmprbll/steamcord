@@ -11,7 +11,9 @@ import (
 	"github.com/redis/go-redis/v9"
 
 	authDelivery "main/backend/internal/auth/delivery/http"
+	productsDelivery "main/backend/internal/products/delivery/http"
 	authRepository "main/backend/internal/auth/postgres"
+	productsRepository "main/backend/internal/products/postgres"
 	sessionRepository "main/backend/internal/session/redis"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -64,14 +66,18 @@ func main() {
 	// Repositories
 	authPostgres := authRepository.New(database)
 	sessionRedis := sessionRepository.New(rdb)
+	productsPostgres := productsRepository.New(database)
 
 	// Handlers
 	authHandlers := authDelivery.NewAuthHandlers(authPostgres, sessionRedis)
+	productsHandlers := productsDelivery.NewAuthHandlers(productsPostgres)
 
 	// Routers
 	authRouter := authDelivery.NewRouter(authHandlers)
-
+	productsRouter := productsDelivery.NewRouter(productsHandlers)
+	
 	r.Mount("/auth", authRouter)
+	r.Mount("/products", productsRouter)
 
 	http.ListenAndServe(":"+port, r)
 }

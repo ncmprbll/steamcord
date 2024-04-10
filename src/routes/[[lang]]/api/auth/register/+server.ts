@@ -9,5 +9,5 @@ export async function POST({ cookies, request }) {
 	return await fetch("http://localhost:3000/auth/register", {
 		method: request.method,
 		body: json
-	});;
+	});
 }
