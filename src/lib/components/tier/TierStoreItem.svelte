@@ -20,16 +20,16 @@
 {#if game !== undefined}
 <a class="sale-capsule" style={style}>
     <div class="sale_capsule_image_ctn">
-        <img class="sale-capsule-image" src="{game.tierSrc}" alt="Volcano Princess">
+        <img class="sale-capsule-image" src="{game.tier_background_img}" alt="Volcano Princess">
     </div>
     <span class="game-name">{game.name}</span>
     <div class="price-block">
         {#if game.discount !== 0 && game.discount !== undefined}
             <div class="discount">-{game.discount}%</div>
-            <div class="discount-original-price">₽ {game.price.rub}</div>
-            <div class="discount-final-price">₽ {Math.round(game.price.rub - game.price.rub * game.discount / 100)}</div>
+            <div class="discount-original-price">₽ {game.prices["RUB"]}</div>
+            <div class="discount-final-price">₽ {Math.round(game.prices["RUB"] - game.prices["RUB"] * game.discount / 100)}</div>
         {:else}
-            <div class="discount-final-price">₽ {game.price.rub}</div>
+            <div class="discount-final-price">₽ {game.prices["RUB"]}</div>
         {/if}
     </div>
 </a>

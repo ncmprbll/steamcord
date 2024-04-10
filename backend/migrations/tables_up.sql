@@ -44,8 +44,7 @@ CREATE TABLE products_prices
 
 CREATE TABLE products_images
 (
-    id SERIAL PRIMARY KEY,
-    product_id BIGINT references products(id),
+    product_id BIGINT PRIMARY KEY references products(id),
     featured_background_img TEXT,
     featured_logo_img TEXT,
     tier_background_img TEXT
@@ -53,9 +52,14 @@ CREATE TABLE products_images
 
 CREATE TABLE products_platforms
 (
-    id SERIAL PRIMARY KEY,
     product_id BIGINT references products(id),
-    platform VARCHAR(32) NOT NULL CHECK ( platform <> '' )
+    platform VARCHAR(32) NOT NULL CHECK ( platform <> '' ),
+    PRIMARY KEY (product_id, platform)
+);
+
+CREATE TABLE products_featured
+(
+    product_id BIGINT PRIMARY KEY references products(id)
 );
 
 INSERT INTO products (id, name, discount) VALUES (440, 'Cyberpunk 2077: Phantom Liberty', 0);
@@ -155,5 +159,7 @@ INSERT INTO products_platforms (product_id, platform) VALUES (2340, 'windows');
 INSERT INTO products_platforms (product_id, platform) VALUES (2440, 'windows');
 INSERT INTO products_platforms (product_id, platform) VALUES (2540, 'windows');
 INSERT INTO products_platforms (product_id, platform) VALUES (2640, 'windows');
+
+INSERT INTO products_featured (product_id) VALUES (440), (540), (640), (740), (840);
 
 SELECT SETVAL('products_sequence', 2640);

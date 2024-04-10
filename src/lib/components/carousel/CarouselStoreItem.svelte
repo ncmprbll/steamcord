@@ -44,7 +44,7 @@
 <a href="/" bind:clientWidth={clientWidth} bind:this={element} class="big-store-container">
     <div class="screenshot" style="{style}">
         <picture>
-            <source type="image/jpeg" class="big-spot__background-source" srcset={game.backgroundSrc}>
+            <source type="image/jpeg" class="big-spot__background-source" srcset={game.featured_background_img}>
             <img class="big-spot__background-source" src alt="Highlight cover" style="object-fit: none;">
         </picture>
         <div class="wall-gradient-full" class:wall-gradient-full--active={!active}></div>
@@ -52,32 +52,32 @@
             <div class="wall-gradient"></div>
             <div class="logo">
                 <picture>
-                    <source type="image/jpeg" srcset={game.logoSrc}>
+                    <source type="image/jpeg" srcset={game.featured_logo_img}>
                     <img class="logo-image" src alt="Logo image">
                 </picture>
             </div>
             <div class="item-info">
                 <div>
                     <div>
-                        {#if game.shortestDescription !== "" && game.shortestDescription !== undefined}
-                            <span class="short-short-description-box">{game.shortestDescription}</span>
+                        {#if game.name !== undefined && game.name !== ""}
+                            <span class="short-short-description-box">{game.name}</span>
                         {/if}
-                        {#if game.shortDescription !== "" && game.shortDescription !== undefined}
+                        {#if game.shortDescription !== undefined && game.shortDescription !== ""}
                             <span class="short-description-box">
                                 <div class="short-description-text">{game.shortDescription}</div>
                             </span>
                         {/if}
                     </div>
-                    {#if game.availableFor !== undefined}
+                    {#if game.platforms !== undefined}
                         <div>
                             <div class="big-spot__super-title-text">{locale.availableFor}</div>
-                            {#if game.availableFor.includes("windows")}
+                            {#if game.platforms.includes("windows")}
                                 <img src={windows}>
                             {/if}
-                            {#if game.availableFor.includes("mac")}
+                            {#if game.platforms.includes("mac")}
                                 <img src={mac}>
                             {/if}
-                            {#if game.availableFor.includes("linux")}
+                            {#if game.platforms.includes("linux")}
                                 <img src={linux}>
                             {/if}
                         </div>
@@ -86,14 +86,14 @@
             </div>
             <div class="actions">
                 <div class="actions-left-side">
-                    {#if game.discount !== 0 && game.discount !== undefined}
+                    {#if game.discount !== undefined && game.discount !== 0}
                         <span class="discount">-{game.discount}%</span>
                     {/if}
                     <div class="discount-prices">
                         {#if game.discount !== 0 && game.discount !== undefined}
-                            <div class="discount-original-price">₽ {game.price.rub}</div>
+                            <div class="discount-original-price">₽ {game.prices["RUB"]}</div>
                         {/if}
-                        <div class="discount-final-price">₽ {Math.round(game.price.rub - game.price.rub * game.discount / 100)}</div>
+                        <div class="discount-final-price">₽ {Math.round(game.prices["RUB"] - game.prices["RUB"] * game.discount / 100)}</div>
                     </div>
                 </div>
                 <div class="actions-right-side">

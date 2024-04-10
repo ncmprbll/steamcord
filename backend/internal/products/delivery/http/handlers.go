@@ -33,3 +33,22 @@ func (h *handlers) GetTier() http.HandlerFunc {
 		w.WriteHeader(http.StatusOK)
 	}
 }
+
+func (h *handlers) GetFeatured() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		rows, err := h.productsRepository.GetFeatured(r.Context())
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		err = json.NewEncoder(w).Encode(rows)
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}
+}
