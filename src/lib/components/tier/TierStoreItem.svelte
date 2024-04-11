@@ -1,5 +1,7 @@
 <script lang="ts">
-    export let game;
+    import type { TierGame } from './types/game.type';
+
+    export let game: TierGame;
     export let itemsInTier: number = 0;
 
     let style: string = "";
@@ -20,7 +22,7 @@
 {#if game !== undefined}
 <a class="sale-capsule" style={style}>
     <div class="sale_capsule_image_ctn">
-        <img class="sale-capsule-image" src="{game.tier_background_img}" alt="Volcano Princess">
+        <img class="sale-capsule-image" src={game.tier_background_img} alt={game.name}>
     </div>
     <span class="game-name">{game.name}</span>
     <div class="price-block">

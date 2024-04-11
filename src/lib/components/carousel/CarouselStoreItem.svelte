@@ -5,7 +5,9 @@
     import mac from '$lib/assets/os/mac.png';
     import linux from '$lib/assets/os/linux.png';
 
-    export let game;
+    import type { FeaturedGame } from './types/game.type';
+
+    export let game: FeaturedGame;
     export let clientWidth: number;
     export let element: HTMLElement;
     export let paragraph: HTMLElement;
