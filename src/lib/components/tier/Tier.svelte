@@ -27,42 +27,44 @@
     }
 </script>
 
-{#if name !== ''}
-    <p>{name}</p>
-{:else}
-    <p>{locale.popularGames}
-{/if}
+{#if games !== undefined}
+    {#if name !== ''}
+        <p>{name}</p>
+    {:else}
+        <p>{locale.popularGames}
+    {/if}
 
-<div class="tier">
-    {#if row1.length === 4}
-        <div class="salerow salerow4">
-            {#each row1 as game, index}
-                <TierStoreItem game={game} />
-            {/each}
-        </div>
-    {/if}
-    {#if row2.length === 3}
-        <div class="salerow salerow3">
-            {#each row2 as game, index}
-                <TierStoreItem game={game} />
-            {/each}
-        </div>
-    {/if}
-    {#if row3.length === 4}
-        <div class="salerow salerow4">
-            {#each row3 as game, index}
-                <TierStoreItem game={game} />
-            {/each}
-        </div>
-    {/if}
-    {#if row4.length === 3}
-        <div class="salerow salerow3">
-            {#each row4 as game, index}
-                <TierStoreItem game={game} />
-            {/each}
-        </div>
-    {/if}
-</div>
+    <div class="tier">
+        {#if row1.length === 4}
+            <div class="salerow salerow4">
+                {#each row1 as game, index}
+                    <TierStoreItem game={game} />
+                {/each}
+            </div>
+        {/if}
+        {#if row2.length === 3}
+            <div class="salerow salerow3">
+                {#each row2 as game, index}
+                    <TierStoreItem game={game} />
+                {/each}
+            </div>
+        {/if}
+        {#if row3.length === 4}
+            <div class="salerow salerow4">
+                {#each row3 as game, index}
+                    <TierStoreItem game={game} />
+                {/each}
+            </div>
+        {/if}
+        {#if row4.length === 3}
+            <div class="salerow salerow3">
+                {#each row4 as game, index}
+                    <TierStoreItem game={game} />
+                {/each}
+            </div>
+        {/if}
+    </div>
+{/if}
 
 <style>
     .tier {

@@ -6,6 +6,7 @@ import (
 )
 
 type Repository interface {
-	GetTier(context.Context, int) ([]*models.GetTierRow, error)
+	GetTier(context.Context, string) ([]*models.GetTierRow, error)
+	GetTierByGenre(context.Context, string, string) ([]*models.GetTierRow, error)
 	GetFeatured(context.Context) ([]*models.GetFeaturedRow, error)
 }

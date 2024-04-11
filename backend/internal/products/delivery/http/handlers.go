@@ -2,6 +2,7 @@ package http
 
 import (
 	"encoding/json"
+	"main/backend/internal/models"
 	"main/backend/internal/products"
 	"main/backend/internal/util"
 	"net/http"
@@ -17,7 +18,24 @@ func NewAuthHandlers(pR products.Repository) *handlers {
 
 func (h *handlers) GetTier() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		rows, err := h.productsRepository.GetTier(r.Context(), 14)
+		var (
+			rows []*models.GetTierRow
+			err error
+		)
+
+		genre := r.URL.Query().Get("genre")
+		count := r.URL.Query().Get("count")
+
+		if count == "" {
+			count = "14"
+		}
+
+		if genre == "" {
+			rows, err = h.productsRepository.GetTier(r.Context(), count)
+		} else {
+			rows, err = h.productsRepository.GetTierByGenre(r.Context(), genre, count)
+		}
+
 		if err != nil {
 			util.HandleError(w, err)
 			return

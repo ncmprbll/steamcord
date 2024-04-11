@@ -1,10 +1,12 @@
 DROP SEQUENCE IF EXISTS products_sequence CASCADE;
 
 DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS genres CASCADE;
 DROP TABLE IF EXISTS products CASCADE;
 DROP TABLE IF EXISTS products_prices CASCADE;
 DROP TABLE IF EXISTS products_images CASCADE;
 DROP TABLE IF EXISTS products_platforms CASCADE;
+DROP TABLE IF EXISTS products_genres CASCADE;
 DROP TABLE IF EXISTS products_featured CASCADE;
 
 -- CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -24,6 +26,12 @@ CREATE TABLE users
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     login_date TIMESTAMP(0) WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE genres
+(
+    id SERIAL PRIMARY KEY,
+    genre VARCHAR(32) NOT NULL CHECK ( genre <> '' )
 );
 
 CREATE SEQUENCE products_sequence INCREMENT BY 100 MINVALUE 440;
@@ -58,10 +66,19 @@ CREATE TABLE products_platforms
     PRIMARY KEY (product_id, platform)
 );
 
+CREATE TABLE products_genres
+(
+    product_id BIGINT references products(id),
+    genre_id SERIAL references genres(id),
+    PRIMARY KEY (product_id, genre_id)
+);
+
 CREATE TABLE products_featured
 (
     product_id BIGINT PRIMARY KEY references products(id)
 );
+
+INSERT INTO genres (genre) VALUES ('Horror'), ('Survival');
 
 INSERT INTO products (id, name, discount) VALUES (440, 'Cyberpunk 2077: Phantom Liberty', 0);
 INSERT INTO products (id, name, discount) VALUES (540, 'Baldur''s Gate 3', 10);
@@ -160,6 +177,8 @@ INSERT INTO products_platforms (product_id, platform) VALUES (2340, 'windows');
 INSERT INTO products_platforms (product_id, platform) VALUES (2440, 'windows');
 INSERT INTO products_platforms (product_id, platform) VALUES (2540, 'windows');
 INSERT INTO products_platforms (product_id, platform) VALUES (2640, 'windows');
+
+INSERT INTO products_genres (product_id, genre_id) VALUES (2340, 1), (2440, 1), (2540, 1), (2540, 2), (2640, 1), (1640, 1), (1840, 2);
 
 INSERT INTO products_featured (product_id) VALUES (440), (540), (640), (740), (840);
 

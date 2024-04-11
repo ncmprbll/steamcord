@@ -1,4 +1,6 @@
 import type { User } from '$lib/types/user.type';
+import type { FeaturedGame } from '$lib/types/game.type';
+import type { TierGame } from '$lib/types/game.type';
 
 // REDO?
 import * as en from '$lib/lang/en.ts';
@@ -38,52 +40,26 @@ export async function load({ params, cookies }) {
     // shortestDescription: "Cyberpunk 2077: Phantom Liberty",
     // shortDescription: "FREEDOM ALWAYS COMES AT A PRICE",
     const highlightsResult = await fetch('http://localhost:3000/products/featured');
-    const highlights = await highlightsResult.json();
+    let highlights: FeaturedGame[] | undefined;
+    if (highlightsResult.status === 200)
+        highlights = await highlightsResult.json();
 
-    const result = await fetch('http://localhost:3000/products/tier');
-    const games1 = await result.json();
+    const randomGamesResult = await fetch('http://localhost:3000/products/tier');
+    let randomGames: TierGame[] | undefined;
+    if (randomGamesResult.status === 200)
+        randomGames = await randomGamesResult.json();
 
-    let games2 = [
-        {
-            name: "Midnight Ghost Hunt",
-            discount: 66,
-            prices: {
-                "RUB": 435,
-            },
-            tier_background_img: "//cdn.akamai.steamstatic.com/steam/apps/915810/capsule_616x353.jpg"
-        },
-        {
-            name: "The Outlast Trials",
-            discount: 0,
-            prices: {
-                "RUB": 1300,
-            },
-            tier_background_img: "//cdn.akamai.steamstatic.com/steam/apps/1304930/capsule_616x353.jpg"
-        },
-        {
-            name: "Project Zomboid",
-            discount: 0,
-            prices: {
-                "RUB": 710,
-            },
-            tier_background_img: "//cdn.akamai.steamstatic.com/steam/apps/108600/capsule_616x353.jpg"
-        },
-        {
-            name: "Devour",
-            discount: 10,
-            prices: {
-                "RUB": 200,
-            },
-            tier_background_img: "//cdn.akamai.steamstatic.com/steam/apps/1274570/capsule_616x353.jpg"
-        }
-    ]
+    const horrorGamesResult = await fetch('http://localhost:3000/products/tier?genre=Horror&count=4');
+    let horrorGames: TierGame[] | undefined;
+    if (horrorGamesResult.status === 200)
+        horrorGames = await horrorGamesResult.json();
 
 	return {
         me: me,
         error: error,
 		locale: locale,
 		highlights: highlights,
-        tier1: games1,
-        tier2: games2
+        tier1: randomGames,
+        tier2: horrorGames
 	};
 }

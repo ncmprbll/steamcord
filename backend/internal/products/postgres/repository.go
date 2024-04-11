@@ -15,7 +15,7 @@ func New(database *sqlx.DB) *Repository {
 	return &Repository{database: database}
 }
 
-func (s *Repository) GetTier(ctx context.Context, limit int) ([]*models.GetTierRow, error) {
+func (s *Repository) GetTier(ctx context.Context, limit string) ([]*models.GetTierRow, error) {
 	const query = `
 				SELECT products.id, products.name, products.discount, json_object_agg(products_prices.currency_code, products_prices.price) as prices, products_images.tier_background_img
 					FROM products
@@ -27,6 +27,37 @@ func (s *Repository) GetTier(ctx context.Context, limit int) ([]*models.GetTierR
 					LIMIT $1;
 				`
 	rows, err := s.database.QueryxContext(ctx, query, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := []*models.GetTierRow{}
+
+	for rows.Next() {
+		row := &models.GetTierRow{}
+		rows.Scan(&row.ID, &row.Name, &row.Discount, &row.Prices, &row.TierBackgroundImg)
+		result = append(result, row)
+	}
+
+	return result, nil
+}
+
+func (s *Repository) GetTierByGenre(ctx context.Context, genre string, limit string) ([]*models.GetTierRow, error) {
+	const query = `
+					SELECT products.id, products.name, products.discount, json_object_agg(products_prices.currency_code, products_prices.price) as prices, products_images.tier_background_img
+						FROM products
+							JOIN products_prices ON products.id = products_prices.product_id
+							JOIN products_images ON products.id = products_images.product_id
+							JOIN products_genres ON products.id = products_genres.product_id
+							JOIN genres ON products_genres.genre_id = genres.id
+						WHERE products_images.tier_background_img <> ''
+						GROUP BY products.id, products_images.tier_background_img
+						HAVING $1 = ANY(ARRAY_AGG(genres.genre))
+						ORDER BY RANDOM()
+						LIMIT $2;
+					`
+	rows, err := s.database.QueryxContext(ctx, query, genre, limit)
 	if err != nil {
 		return nil, err
 	}
