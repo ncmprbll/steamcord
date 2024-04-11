@@ -16,21 +16,21 @@ type JSONPrice map[string]float32
 type JSONPlatforms []string
 
 type GetTierRow struct {
-	ID                int       `json:"id,omitempty"`
-	Name              string    `json:"name,omitempty"`
-	Discount          int       `json:"discount,omitempty"`
-	Prices            JSONPrice `json:"prices,omitempty"`
-	TierBackgroundImg string    `json:"tier_background_img,omitempty"`
+	ID                int       `json:"id"`
+	Name              string    `json:"name"`
+	Discount          int       `json:"discount"`
+	Prices            JSONPrice `json:"prices"`
+	TierBackgroundImg string    `json:"tier_background_img"`
 }
 
 type GetFeaturedRow struct {
-	ID                    int           `json:"id,omitempty"`
-	Name                  string        `json:"name,omitempty"`
-	Discount              int           `json:"discount,omitempty"`
-	Prices                JSONPrice     `json:"prices,omitempty"`
-	FeaturedBackgroundImg string        `json:"featured_background_img,omitempty"`
-	FeaturedLogoImg       string        `json:"featured_logo_img,omitempty"`
-	Platforms             JSONPlatforms `json:"platforms,omitempty"`
+	ID                    int           `json:"id"`
+	Name                  string        `json:"name"`
+	Discount              int           `json:"discount"`
+	Prices                JSONPrice     `json:"prices"`
+	FeaturedBackgroundImg string        `json:"featured_background_img"`
+	FeaturedLogoImg       string        `json:"featured_logo_img"`
+	Platforms             JSONPlatforms `json:"platforms"`
 }
 
 func (p *JSONPrice) Scan(src any) error {

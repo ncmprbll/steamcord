@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS products CASCADE;
 DROP TABLE IF EXISTS products_prices CASCADE;
 DROP TABLE IF EXISTS products_images CASCADE;
 DROP TABLE IF EXISTS products_platforms CASCADE;
+DROP TABLE IF EXISTS products_featured CASCADE;
 
 -- CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- CREATE EXTENSION IF NOT EXISTS CITEXT;
@@ -45,9 +46,9 @@ CREATE TABLE products_prices
 CREATE TABLE products_images
 (
     product_id BIGINT PRIMARY KEY references products(id),
-    featured_background_img TEXT,
-    featured_logo_img TEXT,
-    tier_background_img TEXT
+    featured_background_img TEXT DEFAULT '',
+    featured_logo_img TEXT DEFAULT '',
+    tier_background_img TEXT DEFAULT ''
 );
 
 CREATE TABLE products_platforms
@@ -110,29 +111,29 @@ INSERT INTO products_prices (product_id, currency_code, price) VALUES (2440, 'RU
 INSERT INTO products_prices (product_id, currency_code, price) VALUES (2540, 'RUB', 710);
 INSERT INTO products_prices (product_id, currency_code, price) VALUES (2640, 'RUB', 200);
 
-INSERT INTO products_images (product_id, featured_background_img, featured_logo_img) VALUES (440, '//images-2.gog-statics.com/90b287f4b41f72d83b72fc6bb282f423e7672fc9709351c8be4702ea502b7d63_bs_background_1275.jpg', '//images-2.gog-statics.com/7550dba3c65c44375b3e265301d75f80d4ecab4ff5f53c57e831fe59a9824a01_bs_logo_big.png');
-INSERT INTO products_images (product_id, featured_background_img, featured_logo_img) VALUES (540, '//images-4.gog-statics.com/6142569dc721f23b35277e83ac93173e472e36215f8c7b71dc005b132bda3319_bs_background_1275.jpg', '//images-4.gog-statics.com/ef2b52a72fa3c85ff741144da29ec0106b8e092003d4469c54c725a26520ce76_bs_logo_big.png');
-INSERT INTO products_images (product_id, featured_background_img, featured_logo_img) VALUES (640, '//images-4.gog-statics.com/a617fe8e9f37d4f66f2fe34d00efae0d44646e2ad8696c84012e498756310ce4_bs_background_1275.jpg', '//images-3.gog-statics.com/83b0412cca5c0652035aa500314a126bfa2e4611bba5a380cf753297a1ab1802_bs_logo_big.png');
-INSERT INTO products_images (product_id, featured_background_img, featured_logo_img) VALUES (740, '//images-3.gog-statics.com/c70e52b4c026fe14444ac42678b25ffdcf15c24120b26999104ae1882bc21361_bs_background_1275.jpg', '//images-1.gog-statics.com/8f7c4d22a059476989391174b8e4598aaa2ee9da7e1104b620ee75ee3ac6e61f_bs_logo_big.png');
-INSERT INTO products_images (product_id, featured_background_img, featured_logo_img) VALUES (840, '//images-1.gog-statics.com/d0848886974937a3b3792f1fc0905999a5e5d2e0cb4deb529e6429a1acc7e225_bs_background_1275.jpg', '//images-1.gog-statics.com/033ef423586605d0675c764b8bc6ef253fe3f6732c276aeffcce3cd7c98bc143_bs_logo_big.png');
-INSERT INTO products_images (product_id, tier_background_img) VALUES (940, '//cdn.akamai.steamstatic.com/steam/apps/413150/capsule_616x353.jpg');
-INSERT INTO products_images (product_id, tier_background_img) VALUES (1040, '//cdn.akamai.steamstatic.com/steam/apps/1669980/capsule_616x353.jpg');
-INSERT INTO products_images (product_id, tier_background_img) VALUES (1140, '//cdn.akamai.steamstatic.com/steam/apps/945360/capsule_616x353.jpg');
-INSERT INTO products_images (product_id, tier_background_img) VALUES (1240, 'https://cdn.akamai.steamstatic.com/steam/apps/1310410/capsule_616x353.jpg');
-INSERT INTO products_images (product_id, tier_background_img) VALUES (1340, 'https://cdn.akamai.steamstatic.com/steam/apps/823500/capsule_616x353.jpg');
-INSERT INTO products_images (product_id, tier_background_img) VALUES (1440, '//cdn.akamai.steamstatic.com/steam/apps/548430/capsule_616x353.jpg');
-INSERT INTO products_images (product_id, tier_background_img) VALUES (1540, '//cdn.akamai.steamstatic.com/steam/apps/1517290/capsule_616x353.jpg');
-INSERT INTO products_images (product_id, tier_background_img) VALUES (1640, '//cdn.akamai.steamstatic.com/steam/apps/1943950/capsule_616x353.jpg');
-INSERT INTO products_images (product_id, tier_background_img) VALUES (1740, '//cdn.akamai.steamstatic.com/steam/apps/2670630/capsule_616x353.jpg');
-INSERT INTO products_images (product_id, tier_background_img) VALUES (1840, '//cdn.akamai.steamstatic.com/steam/apps/252490/capsule_616x353.jpg');
-INSERT INTO products_images (product_id, tier_background_img) VALUES (1940, 'https://cdn.akamai.steamstatic.com/steam/apps/1245620/capsule_616x353.jpg');
-INSERT INTO products_images (product_id, tier_background_img) VALUES (2040, '//cdn.akamai.steamstatic.com/steam/apps/1966720/capsule_616x353.jpg');
-INSERT INTO products_images (product_id, tier_background_img) VALUES (2140, '//cdn.akamai.steamstatic.com/steam/apps/739630/capsule_616x353.jpg');
-INSERT INTO products_images (product_id, tier_background_img) VALUES (2240, '//cdn.akamai.steamstatic.com/steam/apps/493520/capsule_616x353.jpg');
-INSERT INTO products_images (product_id, tier_background_img) VALUES (2340, '//cdn.akamai.steamstatic.com/steam/apps/915810/capsule_616x353.jpg');
-INSERT INTO products_images (product_id, tier_background_img) VALUES (2440, '//cdn.akamai.steamstatic.com/steam/apps/1304930/capsule_616x353.jpg');
-INSERT INTO products_images (product_id, tier_background_img) VALUES (2540, '//cdn.akamai.steamstatic.com/steam/apps/108600/capsule_616x353.jpg');
-INSERT INTO products_images (product_id, tier_background_img) VALUES (2640, '//cdn.akamai.steamstatic.com/steam/apps/1274570/capsule_616x353.jpg');
+INSERT INTO products_images (product_id, featured_background_img, featured_logo_img) VALUES (440, '/content/apps/440/440_featured_background.jpg', '/content/apps/440/440_featured_logo.png');
+INSERT INTO products_images (product_id, featured_background_img, featured_logo_img) VALUES (540, '/content/apps/540/540_featured_background.jpg', '/content/apps/540/540_featured_logo.png');
+INSERT INTO products_images (product_id, featured_background_img, featured_logo_img) VALUES (640, '/content/apps/640/640_featured_background.jpg', '/content/apps/640/640_featured_logo.png');
+INSERT INTO products_images (product_id, featured_background_img, featured_logo_img) VALUES (740, '/content/apps/740/740_featured_background.jpg', '/content/apps/740/740_featured_logo.png');
+INSERT INTO products_images (product_id, featured_background_img, featured_logo_img) VALUES (840, '/content/apps/840/840_featured_background.jpg', '/content/apps/840/840_featured_logo.png');
+INSERT INTO products_images (product_id, tier_background_img) VALUES (940, '/content/apps/940/940_tier.jpg');
+INSERT INTO products_images (product_id, tier_background_img) VALUES (1040, '/content/apps/1040/1040_tier.jpg');
+INSERT INTO products_images (product_id, tier_background_img) VALUES (1140, '/content/apps/1140/1140_tier.jpg');
+INSERT INTO products_images (product_id, tier_background_img) VALUES (1240, '/content/apps/1240/1240_tier.jpg');
+INSERT INTO products_images (product_id, tier_background_img) VALUES (1340, '/content/apps/1340/1340_tier.jpg');
+INSERT INTO products_images (product_id, tier_background_img) VALUES (1440, '/content/apps/1440/1440_tier.jpg');
+INSERT INTO products_images (product_id, tier_background_img) VALUES (1540, '/content/apps/1540/1540_tier.jpg');
+INSERT INTO products_images (product_id, tier_background_img) VALUES (1640, '/content/apps/1640/1640_tier.jpg');
+INSERT INTO products_images (product_id, tier_background_img) VALUES (1740, '/content/apps/1740/1740_tier.jpg');
+INSERT INTO products_images (product_id, tier_background_img) VALUES (1840, '/content/apps/1840/1840_tier.jpg');
+INSERT INTO products_images (product_id, tier_background_img) VALUES (1940, '/content/apps/1940/1940_tier.jpg');
+INSERT INTO products_images (product_id, tier_background_img) VALUES (2040, '/content/apps/2040/2040_tier.jpg');
+INSERT INTO products_images (product_id, tier_background_img) VALUES (2140, '/content/apps/2140/2140_tier.jpg');
+INSERT INTO products_images (product_id, tier_background_img) VALUES (2240, '/content/apps/2240/2240_tier.jpg');
+INSERT INTO products_images (product_id, tier_background_img) VALUES (2340, '/content/apps/2340/2340_tier.jpg');
+INSERT INTO products_images (product_id, tier_background_img) VALUES (2440, '/content/apps/2440/2440_tier.jpg');
+INSERT INTO products_images (product_id, tier_background_img) VALUES (2540, '/content/apps/2540/2540_tier.jpg');
+INSERT INTO products_images (product_id, tier_background_img) VALUES (2640, '/content/apps/2640/2640_tier.jpg');
 
 INSERT INTO products_platforms (product_id, platform) VALUES (440, 'windows');
 INSERT INTO products_platforms (product_id, platform) VALUES (540, 'windows');
