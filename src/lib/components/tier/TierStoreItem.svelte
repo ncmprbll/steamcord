@@ -20,7 +20,7 @@
 </script>
 
 {#if game !== undefined}
-<a class="sale-capsule" style={style}>
+<a href="/" class="sale-capsule" style={style}>
     <div class="sale_capsule_image_ctn">
         <img class="sale-capsule-image" src={game.tier_background_img} alt={game.name}>
     </div>
@@ -116,7 +116,7 @@
         border-radius: 8px;
     }
 
-    .sale_capsule_image.autosize {
+    /* .sale_capsule_image.autosize {
         width: 100%;
-    }
+    } */
 </style>

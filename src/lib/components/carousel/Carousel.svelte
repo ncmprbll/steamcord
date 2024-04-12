@@ -151,14 +151,14 @@
         </div>
         <div class="carousel-pages">
             {#each highlights as game, index}
-                <div class:focus={currentPage === index || index === current} on:click={() => {pageGoto(index)}}></div>
+                <button class:focus={currentPage === index || index === current} on:click={() => {pageGoto(index)}}></button>
             {/each}
         </div>
     </div>
 {/if}
 
 <style>
-    .carousel .carousel-pages > div {
+    .carousel .carousel-pages > button {
         display: inline-block;
         margin: 12px 2px;
         width: 20px;
@@ -169,11 +169,11 @@
         cursor: pointer;
     }
 
-    .carousel .carousel-pages > div:hover {
+    .carousel .carousel-pages > button:hover {
         background-color: hsla(202, 60%, 100%, 0.3);
     }
 
-    .carousel .carousel-pages > div.focus {
+    .carousel .carousel-pages > button.focus {
         background-color: hsla(202, 60%, 100%, 0.4);
     }
 
@@ -197,18 +197,4 @@
         border-bottom: 1px solid #3b3b3b;
         height: 32px;
     }
-
-    /* .no-paging {
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 400ms;
-        width: 100%;
-        box-sizing: border-box;
-    }
-
-    .no-paging {
-        position: absolute;
-        top: 0;
-        left: 0;
-    } */
 </style>

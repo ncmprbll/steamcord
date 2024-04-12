@@ -14,20 +14,6 @@ DROP TABLE IF EXISTS products_featured CASCADE;
 -- -- CREATE EXTENSION IF NOT EXISTS postgis;
 -- -- CREATE EXTENSION IF NOT EXISTS postgis_topology;
 
-
-CREATE TABLE users
-(
-    user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    login VARCHAR(32) UNIQUE NOT NULL CHECK ( login <> '' ),
-    display_name VARCHAR(32) DEFAULT '' NOT NULL,
-    email VARCHAR(64) NOT NULL CHECK ( email <> '' ),
-    password VARCHAR(250) NOT NULL CHECK ( octet_length(password) <> 0 ),
-    role VARCHAR(10) NOT NULL DEFAULT 'user',
-    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    login_date TIMESTAMP(0) WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
 CREATE TABLE genres
 (
     id SERIAL PRIMARY KEY,
@@ -45,7 +31,7 @@ CREATE TABLE products
 
 CREATE TABLE products_prices
 (
-    product_id BIGINT references products(id),
+    product_id BIGINT REFERENCES products(id),
     currency_code VARCHAR(32) NOT NULL CHECK ( currency_code <> '' ),
     price NUMERIC(16, 2) NOT NULL CHECK ( price > 0 ),
     PRIMARY KEY (product_id, currency_code)
@@ -53,7 +39,7 @@ CREATE TABLE products_prices
 
 CREATE TABLE products_images
 (
-    product_id BIGINT PRIMARY KEY references products(id),
+    product_id BIGINT PRIMARY KEY REFERENCES products(id),
     featured_background_img TEXT DEFAULT '',
     featured_logo_img TEXT DEFAULT '',
     tier_background_img TEXT DEFAULT ''
@@ -61,21 +47,41 @@ CREATE TABLE products_images
 
 CREATE TABLE products_platforms
 (
-    product_id BIGINT references products(id),
+    product_id BIGINT REFERENCES products(id),
     platform VARCHAR(32) NOT NULL CHECK ( platform <> '' ),
     PRIMARY KEY (product_id, platform)
 );
 
 CREATE TABLE products_genres
 (
-    product_id BIGINT references products(id),
-    genre_id SERIAL references genres(id),
+    product_id BIGINT REFERENCES products(id),
+    genre_id SERIAL REFERENCES genres(id),
     PRIMARY KEY (product_id, genre_id)
 );
 
 CREATE TABLE products_featured
 (
-    product_id BIGINT PRIMARY KEY references products(id)
+    product_id BIGINT PRIMARY KEY REFERENCES products(id)
+);
+
+CREATE TABLE users
+(
+    user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    login VARCHAR(32) UNIQUE NOT NULL CHECK ( login <> '' ),
+    display_name VARCHAR(32) DEFAULT '' NOT NULL,
+    email VARCHAR(64) NOT NULL CHECK ( email <> '' ),
+    password VARCHAR(250) NOT NULL CHECK ( octet_length(password) <> 0 ),
+    role VARCHAR(10) NOT NULL DEFAULT 'user',
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    login_date TIMESTAMP(0) WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE users_cart
+(
+    user_id UUID REFERENCES users(user_id),
+    product_id BIGINT REFERENCES products(id),
+    PRIMARY KEY (user_id, product_id)
 );
 
 INSERT INTO genres (genre) VALUES ('Horror'), ('Survival');

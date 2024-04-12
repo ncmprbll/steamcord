@@ -2,9 +2,10 @@
     export let data;
 </script>
 
+{#if data.user !== undefined}
 <div class="profile-header">
     <div class="profile-avatar">
-        <img src="https://preview.redd.it/imrpoved-steam-default-avatar-v0-ffxjnceu7vf81.png?width=640&crop=smart&auto=webp&s=0f8cbc4130a94fc83f19418f1a734209108c2a4b" />
+        <img src="https://preview.redd.it/imrpoved-steam-default-avatar-v0-ffxjnceu7vf81.png?width=640&crop=smart&auto=webp&s=0f8cbc4130a94fc83f19418f1a734209108c2a4b" alt="User avatar"/>
     </div>
     <div class="profile-summary">
         <div class="profile-names">
@@ -16,6 +17,7 @@
         </div>
     </div>
 </div>
+{/if}
 
 <style lang="postcss">
     img {

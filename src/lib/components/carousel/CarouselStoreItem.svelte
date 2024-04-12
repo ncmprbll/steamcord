@@ -15,7 +15,7 @@
     export let locale: Record<string, string>;
 
     let width = 0;
-    export let margin = 8;
+    export const margin = 8;
     let style = '';
 
     export function resize(e: Event, p?: HTMLElement) {
@@ -36,6 +36,10 @@
             style = `width: ${width}px`;
         }
     }
+
+    function addToCart() {
+        console.log('yes', game.id)
+    }
 </script>
 
 <svelte:window
@@ -55,7 +59,7 @@
             <div class="logo">
                 <picture>
                     <source type="image/jpeg" srcset={game.featured_logo_img}>
-                    <img class="logo-image" src alt="Logo image">
+                    <img class="logo-image" src alt="Logo">
                 </picture>
             </div>
             <div class="item-info">
@@ -72,15 +76,15 @@
                     </div>
                     {#if game.platforms !== undefined}
                         <div>
-                            <div class="big-spot__super-title-text">{locale.availableFor}</div>
+                            <div>{locale.availableFor}</div>
                             {#if game.platforms.includes("windows")}
-                                <img src={windows}>
+                                <img src={windows} alt="Windows">
                             {/if}
                             {#if game.platforms.includes("mac")}
-                                <img src={mac}>
+                                <img src={mac} alt="Mac">
                             {/if}
                             {#if game.platforms.includes("linux")}
-                                <img src={linux}>
+                                <img src={linux} alt="Linux">
                             {/if}
                         </div>
                     {/if}
@@ -99,7 +103,7 @@
                     </div>
                 </div>
                 <div class="actions-right-side">
-                    <button ng-show="!tile.data.isInCart &amp;&amp; '1'" class="add-to-cart">
+                    <button class="add-to-cart" on:click|stopPropagation|preventDefault={addToCart}>
                         <span>{locale.addToCart}</span>
                     </button>
                 </div>
@@ -159,8 +163,13 @@
         display: flex;
         width: 100%;
         min-width: auto;
-        background-color: rgb(0, 116, 228);
+        background: linear-gradient(90deg, #06BFFF 0%, #2D73FF 100%);
         color: rgb(245, 245, 245);
+        cursor: pointer;
+    }
+
+    .add-to-cart:hover {
+        background: linear-gradient(90deg, #06BFFF 30%, #2D73FF 100%);
     }
 
     .add-to-cart > span {
@@ -345,22 +354,4 @@
             width: var(--store-width)
         }
     }
-
-    /* .info {
-        background-image: url("https://store.akamai.steamstatic.com/public/images/v6/home/background_maincap_2.jpg");
-        padding-left: 14px;
-        padding-right: 14px;
-    }
-
-    .no-paging {
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 400ms;
-        width: 100%;
-        box-sizing: border-box;
-        position: absolute;
-        top: 0;
-        left: 0;
-        opacity: 0;
-    } */
 </style>

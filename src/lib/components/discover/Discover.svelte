@@ -9,7 +9,7 @@
         </div>
         <div class="items">
             <div class="item">
-                <img class="item-image" src="https://t3.ftcdn.net/jpg/02/48/42/64/360_F_248426448_NVKLywWqArG2ADUxDq6QprtIzsF82dMF.jpg" />
+                <img class="item-image" src="https://t3.ftcdn.net/jpg/02/48/42/64/360_F_248426448_NVKLywWqArG2ADUxDq6QprtIzsF82dMF.jpg" alt="1"/>
                 <div class="item-info">
                     <div>
                         <div>game name</div>
@@ -21,7 +21,7 @@
                 </div>
             </div>
             <div class="item">
-                <img class="item-image" src="https://t3.ftcdn.net/jpg/02/48/42/64/360_F_248426448_NVKLywWqArG2ADUxDq6QprtIzsF82dMF.jpg" />
+                <img class="item-image" src="https://t3.ftcdn.net/jpg/02/48/42/64/360_F_248426448_NVKLywWqArG2ADUxDq6QprtIzsF82dMF.jpg" alt="1"/>
                 <div class="item-info">
                     <div>
                         <div>game name</div>
@@ -33,7 +33,7 @@
                 </div>
             </div>
             <div class="item">
-                <img class="item-image" src="https://t3.ftcdn.net/jpg/02/48/42/64/360_F_248426448_NVKLywWqArG2ADUxDq6QprtIzsF82dMF.jpg" />
+                <img class="item-image" src="https://t3.ftcdn.net/jpg/02/48/42/64/360_F_248426448_NVKLywWqArG2ADUxDq6QprtIzsF82dMF.jpg" alt="1"/>
                 <div class="item-info">
                     <div>
                         <div>game name</div>
@@ -45,7 +45,7 @@
                 </div>
             </div>
             <div class="item">
-                <img class="item-image" src="https://t3.ftcdn.net/jpg/02/48/42/64/360_F_248426448_NVKLywWqArG2ADUxDq6QprtIzsF82dMF.jpg" />
+                <img class="item-image" src="https://t3.ftcdn.net/jpg/02/48/42/64/360_F_248426448_NVKLywWqArG2ADUxDq6QprtIzsF82dMF.jpg" alt="1"/>
                 <div class="item-info">
                     <div>
                         <div>game name</div>
@@ -57,7 +57,7 @@
                 </div>
             </div>
             <div class="item">
-                <img class="item-image" src="https://t3.ftcdn.net/jpg/02/48/42/64/360_F_248426448_NVKLywWqArG2ADUxDq6QprtIzsF82dMF.jpg" />
+                <img class="item-image" src="https://t3.ftcdn.net/jpg/02/48/42/64/360_F_248426448_NVKLywWqArG2ADUxDq6QprtIzsF82dMF.jpg" alt="1"/>
                 <div class="item-info">
                     <div>
                         <div>game name</div>
@@ -69,7 +69,7 @@
                 </div>
             </div>
             <div class="item">
-                <img class="item-image" src="https://t3.ftcdn.net/jpg/02/48/42/64/360_F_248426448_NVKLywWqArG2ADUxDq6QprtIzsF82dMF.jpg" />
+                <img class="item-image" src="https://t3.ftcdn.net/jpg/02/48/42/64/360_F_248426448_NVKLywWqArG2ADUxDq6QprtIzsF82dMF.jpg" alt="1"/>
                 <div class="item-info">
                     <div>
                         <div>game name</div>
@@ -81,7 +81,7 @@
                 </div>
             </div>
             <div class="item">
-                <img class="item-image" src="https://t3.ftcdn.net/jpg/02/48/42/64/360_F_248426448_NVKLywWqArG2ADUxDq6QprtIzsF82dMF.jpg" />
+                <img class="item-image" src="https://t3.ftcdn.net/jpg/02/48/42/64/360_F_248426448_NVKLywWqArG2ADUxDq6QprtIzsF82dMF.jpg" alt="1"/>
                 <div class="item-info">
                     <div>
                         <div>game name</div>
