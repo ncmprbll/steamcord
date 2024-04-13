@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { page } from '$app/stores';
     import { onMount } from 'svelte';
 
     import windows from '$lib/assets/os/windows.png';
@@ -37,8 +38,16 @@
         }
     }
 
-    function addToCart() {
-        console.log('yes', game.id)
+    async function addToCart() {
+        if ($page.data === undefined || $page.data.me === undefined) {
+            return;
+        }
+
+        const result = await fetch("/api/cart/", {
+            method: "POST",
+            credentials: 'include',
+            body: JSON.stringify({product_id: game.id})
+        });
     }
 </script>
 

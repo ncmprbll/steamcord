@@ -62,7 +62,7 @@ func parseSQLErrors(err error) *ErrorWrapper {
 func ErrorResponse(err error) *ErrorWrapper {
 	switch {
 	case errors.Is(err, redis.Nil):
-		return newErrorWrapper(http.StatusNotFound, NotFound)
+		return newErrorWrapper(http.StatusUnauthorized, Unauthorized)
 	case errors.Is(err, context.DeadlineExceeded):
 		return newErrorWrapper(http.StatusRequestTimeout, RequestTimeoutError)
 	case strings.Contains(strings.ToLower(err.Error()), "sql"):

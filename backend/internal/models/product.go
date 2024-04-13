@@ -15,7 +15,7 @@ type Price struct {
 type JSONPrice map[string]float32
 type JSONPlatforms []string
 
-type GetTierRow struct {
+type TierRow struct {
 	ID                int       `json:"id"`
 	Name              string    `json:"name"`
 	Discount          int       `json:"discount"`
@@ -23,7 +23,7 @@ type GetTierRow struct {
 	TierBackgroundImg string    `json:"tier_background_img"`
 }
 
-type GetFeaturedRow struct {
+type FeaturedRow struct {
 	ID                    int           `json:"id"`
 	Name                  string        `json:"name"`
 	Discount              int           `json:"discount"`

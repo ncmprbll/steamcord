@@ -15,7 +15,7 @@ func New(database *sqlx.DB) *Repository {
 	return &Repository{database: database}
 }
 
-func (s *Repository) GetTier(ctx context.Context, limit string) ([]*models.GetTierRow, error) {
+func (s *Repository) GetTier(ctx context.Context, limit string) ([]*models.TierRow, error) {
 	const query = `
 				SELECT products.id, products.name, products.discount, json_object_agg(products_prices.currency_code, products_prices.price) as prices, products_images.tier_background_img
 					FROM products
@@ -32,10 +32,10 @@ func (s *Repository) GetTier(ctx context.Context, limit string) ([]*models.GetTi
 	}
 	defer rows.Close()
 
-	result := []*models.GetTierRow{}
+	result := []*models.TierRow{}
 
 	for rows.Next() {
-		row := &models.GetTierRow{}
+		row := &models.TierRow{}
 		rows.Scan(&row.ID, &row.Name, &row.Discount, &row.Prices, &row.TierBackgroundImg)
 		result = append(result, row)
 	}
@@ -43,7 +43,7 @@ func (s *Repository) GetTier(ctx context.Context, limit string) ([]*models.GetTi
 	return result, nil
 }
 
-func (s *Repository) GetTierByGenre(ctx context.Context, genre string, limit string) ([]*models.GetTierRow, error) {
+func (s *Repository) GetTierByGenre(ctx context.Context, genre string, limit string) ([]*models.TierRow, error) {
 	const query = `
 					SELECT products.id, products.name, products.discount, json_object_agg(products_prices.currency_code, products_prices.price) as prices, products_images.tier_background_img
 						FROM products
@@ -63,10 +63,10 @@ func (s *Repository) GetTierByGenre(ctx context.Context, genre string, limit str
 	}
 	defer rows.Close()
 
-	result := []*models.GetTierRow{}
+	result := []*models.TierRow{}
 
 	for rows.Next() {
-		row := &models.GetTierRow{}
+		row := &models.TierRow{}
 		rows.Scan(&row.ID, &row.Name, &row.Discount, &row.Prices, &row.TierBackgroundImg)
 		result = append(result, row)
 	}
@@ -74,7 +74,7 @@ func (s *Repository) GetTierByGenre(ctx context.Context, genre string, limit str
 	return result, nil
 }
 
-func (s *Repository) GetFeatured(ctx context.Context) ([]*models.GetFeaturedRow, error) {
+func (s *Repository) GetFeatured(ctx context.Context) ([]*models.FeaturedRow, error) {
 	const query = `
 				SELECT products.id, products.name, products.discount, json_object_agg(products_prices.currency_code, products_prices.price) as prices, products_images.featured_background_img, products_images.featured_logo_img, json_agg(products_platforms.platform) as platforms
 					FROM products
@@ -90,10 +90,10 @@ func (s *Repository) GetFeatured(ctx context.Context) ([]*models.GetFeaturedRow,
 	}
 	defer rows.Close()
 
-	result := []*models.GetFeaturedRow{}
+	result := []*models.FeaturedRow{}
 
 	for rows.Next() {
-		row := &models.GetFeaturedRow{}
+		row := &models.FeaturedRow{}
 		rows.Scan(&row.ID, &row.Name, &row.Discount, &row.Prices, &row.FeaturedBackgroundImg, &row.FeaturedLogoImg, &row.Platforms)
 		result = append(result, row)
 	}

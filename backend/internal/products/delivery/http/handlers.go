@@ -19,7 +19,7 @@ func NewAuthHandlers(pR products.Repository) *handlers {
 func (h *handlers) GetTier() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var (
-			rows []*models.GetTierRow
+			rows []*models.TierRow
 			err error
 		)
 

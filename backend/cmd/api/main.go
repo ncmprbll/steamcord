@@ -12,9 +12,11 @@ import (
 
 	authDelivery "main/backend/internal/auth/delivery/http"
 	productsDelivery "main/backend/internal/products/delivery/http"
+	cartDelivery "main/backend/internal/cart/delivery/http"
 	authRepository "main/backend/internal/auth/postgres"
 	productsRepository "main/backend/internal/products/postgres"
 	sessionRepository "main/backend/internal/session/redis"
+	cartRepository "main/backend/internal/cart/postgres"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/jmoiron/sqlx"
@@ -67,17 +69,21 @@ func main() {
 	authPostgres := authRepository.New(database)
 	sessionRedis := sessionRepository.New(rdb)
 	productsPostgres := productsRepository.New(database)
+	cartPostgres := cartRepository.New(database)
 
 	// Handlers
 	authHandlers := authDelivery.NewAuthHandlers(authPostgres, sessionRedis)
 	productsHandlers := productsDelivery.NewAuthHandlers(productsPostgres)
+	cartHandlers := cartDelivery.NewAuthHandlers(cartPostgres, authPostgres, sessionRedis)
 
 	// Routers
 	authRouter := authDelivery.NewRouter(authHandlers)
 	productsRouter := productsDelivery.NewRouter(productsHandlers)
+	cartRouter := cartDelivery.NewRouter(cartHandlers)
 	
 	r.Mount("/auth", authRouter)
 	r.Mount("/products", productsRouter)
+	r.Mount("/cart", cartRouter)
 
 	http.ListenAndServe(":"+port, r)
 }

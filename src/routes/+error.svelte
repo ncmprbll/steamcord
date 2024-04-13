@@ -37,8 +37,10 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		min-width: 100%;
 		height: 100vh;
 		margin: 0;
+		padding: 0;
 	}
 
 	.error {
