@@ -15,6 +15,11 @@ func New(database *sqlx.DB) *Repository {
 	return &Repository{database: database}
 }
 
+func (s *Repository) GetCart(ctx context.Context) {
+	return
+}
+
+
 func (s *Repository) AddToCart(ctx context.Context, cart *models.CartRow) error {
 	const query = `
 				INSERT INTO users_cart (user_id, product_id) VALUES ($1, $2);

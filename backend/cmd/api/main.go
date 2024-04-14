@@ -18,6 +18,8 @@ import (
 	sessionRepository "main/backend/internal/session/redis"
 	cartRepository "main/backend/internal/cart/postgres"
 
+	mw "main/backend/internal/middleware"
+
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/jmoiron/sqlx"
 )
@@ -71,15 +73,18 @@ func main() {
 	productsPostgres := productsRepository.New(database)
 	cartPostgres := cartRepository.New(database)
 
+	// Middleware Manager
+	manager := mw.NewMiddlewareManager(authPostgres, sessionRedis)
+
 	// Handlers
 	authHandlers := authDelivery.NewAuthHandlers(authPostgres, sessionRedis)
 	productsHandlers := productsDelivery.NewAuthHandlers(productsPostgres)
 	cartHandlers := cartDelivery.NewAuthHandlers(cartPostgres, authPostgres, sessionRedis)
 
 	// Routers
-	authRouter := authDelivery.NewRouter(authHandlers)
+	authRouter := authDelivery.NewRouter(authHandlers, manager)
 	productsRouter := productsDelivery.NewRouter(productsHandlers)
-	cartRouter := cartDelivery.NewRouter(cartHandlers)
+	cartRouter := cartDelivery.NewRouter(cartHandlers, manager)
 	
 	r.Mount("/auth", authRouter)
 	r.Mount("/products", productsRouter)

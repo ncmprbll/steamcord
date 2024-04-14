@@ -2,6 +2,7 @@ package http
 
 import (
 	"encoding/json"
+	"errors"
 	"main/backend/internal/auth"
 	"main/backend/internal/models"
 	"main/backend/internal/session"
@@ -123,31 +124,15 @@ func (h *handlers) FindByUUID() http.HandlerFunc {
 
 func (h *handlers) Me() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		sessionIdCookie, err := r.Cookie("session_id")
+		found, ok := r.Context().Value("user").(*models.User)
 
-		if err != nil {
-			util.HandleError(w, err)
+		if !ok {
+			util.HandleError(w, errors.New("no user"))
 			return
 		}
-
-		sessionId := sessionIdCookie.Value
-		session, err := h.sessionRepository.GetSessionByID(r.Context(), sessionId)
-
-		if err != nil {
-			util.HandleError(w, err)
-			return
-		}
-
-		found, err := h.authRepository.FindByUUID(r.Context(), &models.User{UUID: session.UserID})
-		if err != nil {
-			util.HandleError(w, err)
-			return
-		}
-		found.SanitizePassword()
 
 		w.Header().Set("Content-Type", "application/json")
-		err = json.NewEncoder(w).Encode(found)
-		if err != nil {
+		if err := json.NewEncoder(w).Encode(found); err != nil {
 			util.HandleError(w, err)
 			return
 		}

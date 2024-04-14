@@ -201,6 +201,7 @@
         z-index: 1;
         bottom: 32px;
         right: 32px;
+        height: 50px;
         text-align: right;
         white-space: nowrap;
         background-color: rgb(0, 0, 0, .35);

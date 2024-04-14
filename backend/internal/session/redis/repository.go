@@ -28,7 +28,7 @@ func (s *Repository) CreateSession(ctx context.Context, session *models.Session,
 		return "", err
 	}
 
-	err = s.rdb.Set(ctx, fmt.Sprintf("session_id::%s", token), sessionJson, time.Duration(expiration) * time.Second).Err()
+	err = s.rdb.Set(ctx, fmt.Sprintf("session_id:%s", token), sessionJson, time.Duration(expiration) * time.Second).Err()
 	if err != nil {
 		return "", err
 	}
@@ -37,7 +37,7 @@ func (s *Repository) CreateSession(ctx context.Context, session *models.Session,
 }
 
 func (s *Repository) GetSessionByID(ctx context.Context, sessionId string) (*models.Session, error) {
-	bytes, err := s.rdb.Get(ctx, fmt.Sprintf("session_id::%s", sessionId)).Bytes()
+	bytes, err := s.rdb.Get(ctx, fmt.Sprintf("session_id:%s", sessionId)).Bytes()
 	if err != nil {
 		return nil, err
 	}
