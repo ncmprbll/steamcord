@@ -14,6 +14,7 @@ func NewRouter(h *handlers, mw *middleware.MiddlewareManager) http.Handler {
 
 	r.Get("/", h.AddToCart())
 	r.Post("/", h.AddToCart())
+	r.Get("/count", h.GetCartCount())
 
 	return r
 }

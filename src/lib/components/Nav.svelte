@@ -4,6 +4,19 @@
     export let loginVisible: boolean;
 
     let expanded: boolean = false;
+    let init: boolean = false;
+    let count: number = 0;
+    let cartAnimation: boolean = false;
+
+    if ($page.data?.me?.cart) {
+        $page.data.me.cart.subscribe((cart) => {
+            if (init) {
+                cartAnimation = true;
+            }
+            count = cart.length;
+            init = true;
+        });
+    };
 
     function expand() {
         expanded = !expanded
@@ -31,13 +44,15 @@
                 <a href="/">{$page.data.locale.community}</a>
             </div>
             <div class="menu-right">
-                <a href="/cart" class="cart">
-                    <svg fill="currentColor" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 902.86 902.86" xml:space="preserve" stroke="#ffffff">
-                        <path d="M671.504,577.829l110.485-432.609H902.86v-68H729.174L703.128,179.2L0,178.697l74.753,399.129h596.751V577.829z M685.766,247.188l-67.077,262.64H131.199L81.928,246.756L685.766,247.188z"></path>
-                        <path d="M578.418,825.641c59.961,0,108.743-48.783,108.743-108.744s-48.782-108.742-108.743-108.742H168.717 c-59.961,0-108.744,48.781-108.744,108.742s48.782,108.744,108.744,108.744c59.962,0,108.743-48.783,108.743-108.744 c0-14.4-2.821-28.152-7.927-40.742h208.069c-5.107,12.59-7.928,26.342-7.928,40.742 C469.675,776.858,518.457,825.641,578.418,825.641z M209.46,716.897c0,22.467-18.277,40.744-40.743,40.744 c-22.466,0-40.744-18.277-40.744-40.744c0-22.465,18.277-40.742,40.744-40.742C191.183,676.155,209.46,694.432,209.46,716.897z M619.162,716.897c0,22.467-18.277,40.744-40.743,40.744s-40.743-18.277-40.743-40.744c0-22.465,18.277-40.742,40.743-40.742 S619.162,694.432,619.162,716.897z"></path> 
-                    </svg>
-                    <span>0</span>
-                </a>
+                {#if $page.data.me !== undefined}
+                    <a href="/cart" class="cart">
+                        <svg class:active={cartAnimation} fill="currentColor" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 902.86 902.86" xml:space="preserve" stroke="#ffffff" on:animationend={() => {cartAnimation = false}}>
+                            <path d="M671.504,577.829l110.485-432.609H902.86v-68H729.174L703.128,179.2L0,178.697l74.753,399.129h596.751V577.829z M685.766,247.188l-67.077,262.64H131.199L81.928,246.756L685.766,247.188z"></path>
+                            <path d="M578.418,825.641c59.961,0,108.743-48.783,108.743-108.744s-48.782-108.742-108.743-108.742H168.717 c-59.961,0-108.744,48.781-108.744,108.742s48.782,108.744,108.744,108.744c59.962,0,108.743-48.783,108.743-108.744 c0-14.4-2.821-28.152-7.927-40.742h208.069c-5.107,12.59-7.928,26.342-7.928,40.742 C469.675,776.858,518.457,825.641,578.418,825.641z M209.46,716.897c0,22.467-18.277,40.744-40.743,40.744 c-22.466,0-40.744-18.277-40.744-40.744c0-22.465,18.277-40.742,40.744-40.742C191.183,676.155,209.46,694.432,209.46,716.897z M619.162,716.897c0,22.467-18.277,40.744-40.743,40.744s-40.743-18.277-40.743-40.744c0-22.465,18.277-40.742,40.743-40.742 S619.162,694.432,619.162,716.897z"></path> 
+                        </svg>
+                        <span>{count}</span>
+                    </a>
+                {/if}
                 {#if $page.data.me === undefined}
                     <button class="login" on:click={() => {
                         loginVisible = !loginVisible
@@ -66,6 +81,13 @@
             </div>
             <a href="/">{$page.data.locale.store}</a>
             <a href="/">{$page.data.locale.community}</a>
+            {#if $page.data.me !== undefined}
+                <a href="/cart" class="cart">
+                    <span>Cart</span>
+                    &nbsp;
+                    <span>{count}</span>
+                </a>
+            {/if}
             {#if $page.data.me === undefined}
                 <button class="login" on:click={() => {
                     loginVisible = !loginVisible
@@ -80,6 +102,32 @@
 </nav>
 
 <style lang="postcss">
+    .cart > svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    .cart > svg.active {
+        animation-duration: 0.45s;
+        animation-name: active;
+        transform-origin: center;
+    }
+
+    @keyframes active {
+        25% {
+            transform: scale(1.25) rotate(-10deg)
+        }
+
+        40% {
+            transform: scale(1.4) rotate(10deg)
+        }
+
+        75% {
+            transform: scale(1.6) rotate(0deg);
+            color: #47ff44
+        }
+    }
+
     .cart {
         /* color: #b7bdbf; */
         display: flex;
@@ -113,7 +161,7 @@
     }
 
     .mobile-drawer.expanded {
-        max-height: 169px;
+        max-height: 201px;
         margin: 0 auto;
     }
 

@@ -71,7 +71,7 @@ func (h *handlers) Login() http.HandlerFunc {
 		}
 		found.SanitizePassword()
 
-		sessionId, err := h.sessionRepository.CreateSession(r.Context(), &models.Session{UserID: found.UUID}, 30)
+		sessionId, err := h.sessionRepository.CreateSession(r.Context(), &models.Session{UserID: found.UUID}, 300)
 
 		if err != nil {
 			util.HandleError(w, err)

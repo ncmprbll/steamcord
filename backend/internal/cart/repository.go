@@ -6,6 +6,6 @@ import (
 )
 
 type Repository interface {
-	GetCart(context.Context) 
+	GetCartCount(context.Context, *models.User) (*models.JSONCartProducts, error)
 	AddToCart(context.Context, *models.CartRow) error
 }

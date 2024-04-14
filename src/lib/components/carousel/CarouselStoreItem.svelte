@@ -18,6 +18,13 @@
     let width = 0;
     export const margin = 8;
     let style = '';
+    let alreadyInCart: boolean = false;
+
+    if ($page.data?.me?.cart) {
+        $page.data.me.cart.subscribe((cart) => {
+            alreadyInCart = cart.includes(game.id);
+        });
+    };
 
     export function resize(e: Event, p?: HTMLElement) {
         if (p !== undefined) {
@@ -48,6 +55,13 @@
             credentials: 'include',
             body: JSON.stringify({product_id: game.id})
         });
+
+        if (result.status === 200) {
+            $page.data.me.cart.update((cart) => {
+                cart.push(game.id);
+                return cart;
+            });
+        }
     }
 </script>
 
@@ -112,9 +126,11 @@
                     </div>
                 </div>
                 <div class="actions-right-side">
-                    <button class="add-to-cart" on:click|stopPropagation|preventDefault={addToCart}>
-                        <span>{locale.addToCart}</span>
-                    </button>
+                    {#if !alreadyInCart}
+                        <button class="add-to-cart" on:click|stopPropagation|preventDefault={addToCart}>
+                            <span>{locale.addToCart}</span>
+                        </button>
+                    {/if}
                 </div>
             </div>
         </div>

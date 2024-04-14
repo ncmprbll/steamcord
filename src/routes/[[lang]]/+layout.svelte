@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { flip } from 'svelte/animate';
+	import { cart } from '$lib/stores/users';
 
     export let data;
 	let loginVisible = false;

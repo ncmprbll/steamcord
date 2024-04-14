@@ -67,7 +67,7 @@ func ErrorResponse(err error) *ErrorWrapper {
 		return newErrorWrapper(http.StatusRequestTimeout, RequestTimeoutError)
 	case strings.Contains(strings.ToLower(err.Error()), "sql"):
 		return parseSQLErrors(err)
-	case strings.Contains(err.Error(), "Unmarshal"):
+	case strings.Contains(err.Error(), "Unmarshal") || strings.Contains(err.Error(), "unmarshal"):
 		return newErrorWrapper(http.StatusBadRequest, BadRequest)
 	case strings.Contains(err.Error(), "UUID"):
 		return newErrorWrapper(http.StatusBadRequest, BadRequest)

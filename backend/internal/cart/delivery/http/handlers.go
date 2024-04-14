@@ -21,6 +21,31 @@ func NewAuthHandlers(cR cart.Repository, aR auth.Repository, sR session.Reposito
 	return &handlers{cR, aR, sR}
 }
 
+func (h *handlers) GetCartCount() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		found, ok := r.Context().Value("user").(*models.User)
+
+		if !ok {
+			util.HandleError(w, errors.New("no user"))
+			return
+		}
+
+		cartJson, err := h.cartRepository.GetCartCount(r.Context(), found)
+		if err != nil {
+			util.HandleError(w, err)
+			return	
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(cartJson); err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}
+}
+
 func (h *handlers) AddToCart() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		found, ok := r.Context().Value("user").(*models.User)

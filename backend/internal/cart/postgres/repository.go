@@ -15,8 +15,16 @@ func New(database *sqlx.DB) *Repository {
 	return &Repository{database: database}
 }
 
-func (s *Repository) GetCart(ctx context.Context) {
-	return
+func (s *Repository) GetCartCount(ctx context.Context, user *models.User) (*models.JSONCartProducts, error) {
+	const query = `
+				SELECT json_agg(product_id) as products FROM users_cart WHERE user_id = $1;
+				`
+	json := &models.JSONCartProducts{}
+	if err := s.database.QueryRowxContext(ctx, query, user.UUID).Scan(json); err != nil {
+		return nil, err
+	}
+
+	return json, nil
 }
 
 

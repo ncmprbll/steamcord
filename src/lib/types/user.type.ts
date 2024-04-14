@@ -1,3 +1,7 @@
+import { type Writable } from 'svelte/store';
+
+type Cart = number[] | Writable<Cart>
+
 export type User = {
 	user_id: string
 	login: string
@@ -8,6 +12,7 @@ export type User = {
 	created_at: string
 	updated_at: string
 	login_date: string
+	cart: Cart
 }
 
 export function removeSensitiveData(user: User, fields: string[], deleteField?: boolean) {
