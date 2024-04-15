@@ -12,9 +12,10 @@ func NewRouter(h *handlers, mw *middleware.MiddlewareManager) http.Handler {
 
 	r.Use(mw.AuthSessionMiddleware)
 
-	r.Get("/", h.Cart())
 	r.Post("/", h.AddToCart())
-	r.Get("/count", h.CartCount())
+	r.Get("/", h.Cart())
+	r.Get("/ids", h.CartIDs())
+	r.Delete("/", h.DeleteFromCart())
 
 	return r
 }

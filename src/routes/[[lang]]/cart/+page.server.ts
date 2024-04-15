@@ -1,6 +1,8 @@
 import { redirect } from '@sveltejs/kit';
 
-export const load = async ({ parent, cookies }) => {
+export const load = async ({ parent, cookies, depends }) => {
+	depends('app:cart');
+
 	const data = await parent();
 
 	const sessionId = cookies.get('session_id');

@@ -1,11 +1,37 @@
 <script lang="ts">
+    import { invalidate } from '$app/navigation';
+
     import windows from '$lib/assets/os/windows.png';
     import mac from '$lib/assets/os/mac.png';
     import linux from '$lib/assets/os/linux.png';
 
     export let data;
 
-    const cart = data.cart;
+    $: ({ cart } = data);
+
+    if (data?.me?.cart) {
+        data.me.cart.subscribe((cart) => {
+            invalidate('app:cart');
+        });
+    };
+
+    async function removeFromCart(gameId) {
+        if (data === undefined || data.me === undefined) {
+            return;
+        }
+
+        const result = await fetch("/api/cart/", {
+            method: "DELETE",
+            credentials: 'include',
+            body: JSON.stringify({product_id: gameId})
+        });
+
+        if (result.status === 200) {
+            data.me.cart.update((cart) => {
+                return cart.filter(id => id !== gameId);
+            });
+        }
+    }
 </script>
 
 <p>Your shopping cart</p>
@@ -46,7 +72,7 @@
                             </div>
                         </div>
                         <div class="remove-from-cart-div">
-                            <button class="remove-from-cart" on:click|stopPropagation|preventDefault={() => {console.log(game.id)}}>
+                            <button class="remove-from-cart" on:click|preventDefault={() => {removeFromCart(game.id)}}>
                                 <span>Remove</span>
                             </button>
                         </div>

@@ -42,7 +42,7 @@ func (s *Repository) Cart(ctx context.Context, user *models.User) ([]*models.Car
 	return result, nil
 }
 
-func (s *Repository) CartCount(ctx context.Context, user *models.User) (*models.JSONCartProducts, error) {
+func (s *Repository) CartIDs(ctx context.Context, user *models.User) (*models.JSONCartProducts, error) {
 	const query = `
 				SELECT json_agg(product_id) as products FROM users_cart WHERE user_id = $1;
 				`
@@ -65,4 +65,21 @@ func (s *Repository) AddToCart(ctx context.Context, cart *models.CartRow) error 
 	}
 
 	return nil
+}
+
+func (s *Repository) DeleteFromCart(ctx context.Context, cart *models.CartRow) (int64, error) {
+	const query = `
+				DELETE FROM users_cart WHERE user_id = $1 AND product_id = $2;
+				`
+	result, err := s.database.ExecContext(ctx, query, cart.UserID, cart.ProductID)
+	if err != nil {
+		return 0, err
+	}
+
+	affected, err := result.RowsAffected()
+	if err != nil {
+		return 0, err
+	}
+
+	return affected, nil
 }

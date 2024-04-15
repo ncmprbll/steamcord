@@ -46,7 +46,7 @@ func (h *handlers) Cart() http.HandlerFunc {
 	}
 }
 
-func (h *handlers) CartCount() http.HandlerFunc {
+func (h *handlers) CartIDs() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		found, ok := r.Context().Value("user").(*models.User)
 
@@ -55,7 +55,7 @@ func (h *handlers) CartCount() http.HandlerFunc {
 			return
 		}
 
-		cartJson, err := h.cartRepository.CartCount(r.Context(), found)
+		cartJson, err := h.cartRepository.CartIDs(r.Context(), found)
 		if err != nil {
 			util.HandleError(w, err)
 			return	
@@ -93,5 +93,35 @@ func (h *handlers) AddToCart() http.HandlerFunc {
 		}
 
 		w.WriteHeader(http.StatusOK)
+	}
+}
+
+func (h *handlers) DeleteFromCart() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		found, ok := r.Context().Value("user").(*models.User)
+
+		if !ok {
+			util.HandleError(w, errors.New("no user"))
+			return
+		}
+
+		jsonProductID := &models.JSONProductID{}
+
+		if err := json.NewDecoder(r.Body).Decode(jsonProductID); err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		affected, err := h.cartRepository.DeleteFromCart(r.Context(), &models.CartRow{UserID: found.UUID, ProductID: jsonProductID.ProductID})
+		if err != nil {
+			util.HandleError(w, err)
+			return	
+		}
+
+		if affected == 0 {
+			w.WriteHeader(http.StatusNotFound)
+		} else {
+			w.WriteHeader(http.StatusOK)
+		}
 	}
 }

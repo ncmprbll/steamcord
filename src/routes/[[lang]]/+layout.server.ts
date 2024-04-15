@@ -34,7 +34,7 @@ export async function load({ params, cookies }) {
             me = await result.json();
             me!.cart = [];
 
-            result = await fetch('http://localhost:3000/cart/count', {
+            result = await fetch('http://localhost:3000/cart/ids', {
                 method: 'GET',
                 credentials: 'include',
                 headers: {
