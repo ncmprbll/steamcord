@@ -1,45 +1,26 @@
-import { get } from 'svelte/store';
-import { users } from '$lib/stores/users.ts';
+import type { FeaturedGame, TierGame } from "$lib/types/game.type";
 
-const hex = size => [...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
+export const load = async () => {
+	// shortestDescription: "Cyberpunk 2077: Phantom Liberty",
+    // shortDescription: "FREEDOM ALWAYS COMES AT A PRICE",
+    const highlightsResult = await fetch('http://localhost:3000/products/featured');
+    let highlights: FeaturedGame[] | undefined;
+    if (highlightsResult.status === 200)
+        highlights = await highlightsResult.json();
 
-export const actions = {
-	login: async ({ cookies, request }: any) => {
-		const data = await request.formData();
-		const login = data.get('account-name');
-		const password = data.get('password');
-		const u = get(users);
+    const randomGamesResult = await fetch('http://localhost:3000/products/tier');
+    let randomGames: TierGame[] | undefined;
+    if (randomGamesResult.status === 200)
+        randomGames = await randomGamesResult.json();
 
-		if (u[login] !== undefined && u[login].password === password) {
-			cookies.set('sessionid', hex(32), {
-				path: '/',
-				httpOnly: true,
-				secure: false,
-				sameSite: 'strict'
-			});
-			return { success: true };
-		}
+    const horrorGamesResult = await fetch('http://localhost:3000/products/tier?genre=Horror&count=4');
+    let horrorGames: TierGame[] | undefined;
+    if (horrorGamesResult.status === 200)
+        horrorGames = await horrorGamesResult.json();
 
-		return { success: false };
-	},
-	register: async ({ _, request }: any) => {
-		const data = await request.formData();
-		const login = data.get('account-name');
-		const email = data.get('email');
-		const password = data.get('password');
-		const confirm = data.get('confirm');
-
-        if (password === confirm) {
-			users.update((n) => {
-				n[login] = {
-					'email': email,
-					'password': password,
-				};
-				return n;
-			})
-			return { success: true };
-		}
-
-		return { success: false };
-	}
+    return {
+		highlights: highlights,
+        tier1: randomGames,
+        tier2: horrorGames
+    };
 };
