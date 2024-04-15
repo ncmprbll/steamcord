@@ -15,7 +15,34 @@ func New(database *sqlx.DB) *Repository {
 	return &Repository{database: database}
 }
 
-func (s *Repository) GetCartCount(ctx context.Context, user *models.User) (*models.JSONCartProducts, error) {
+func (s *Repository) Cart(ctx context.Context, user *models.User) ([]*models.CartGameRow, error) {
+	const query = `
+				SELECT products.id, products.name, products.discount, json_object_agg(products_prices.currency_code, products_prices.price) as prices, products_images.tier_background_img, json_agg(products_platforms.platform) as platforms
+				FROM products
+					JOIN products_prices ON products.id = products_prices.product_id
+					JOIN products_images ON products.id = products_images.product_id
+					JOIN products_platforms ON products.id = products_platforms.product_id
+				WHERE id IN (SELECT product_id FROM users_cart WHERE user_id = $1)
+				GROUP BY products.id, products_images.tier_background_img;
+				`
+	rows, err := s.database.QueryxContext(ctx, query, user.UUID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := []*models.CartGameRow{}
+
+	for rows.Next() {
+		row := &models.CartGameRow{}
+		rows.Scan(&row.ID, &row.Name, &row.Discount, &row.Prices, &row.TierBackgroundImg, &row.Platforms)
+		result = append(result, row)
+	}
+
+	return result, nil
+}
+
+func (s *Repository) CartCount(ctx context.Context, user *models.User) (*models.JSONCartProducts, error) {
 	const query = `
 				SELECT json_agg(product_id) as products FROM users_cart WHERE user_id = $1;
 				`

@@ -18,6 +18,15 @@ type CartRow struct {
 	ProductID int64     `json:"product_id,omitempty"`
 }
 
+type CartGameRow struct {
+	ID                int           `json:"id"`
+	Name              string        `json:"name"`
+	Discount          int           `json:"discount"`
+	Prices            JSONPrice     `json:"prices"`
+	TierBackgroundImg string        `json:"tier_background_img"`
+	Platforms         JSONPlatforms `json:"platforms"`
+}
+
 func (p *JSONCartProducts) Scan(src any) error {
 	bytes, ok := src.([]byte)
 

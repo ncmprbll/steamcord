@@ -140,6 +140,11 @@ INSERT INTO products_images (product_id, featured_background_img, featured_logo_
 INSERT INTO products_images (product_id, featured_background_img, featured_logo_img) VALUES (640, '/content/apps/640/640_featured_background.jpg', '/content/apps/640/640_featured_logo.png');
 INSERT INTO products_images (product_id, featured_background_img, featured_logo_img) VALUES (740, '/content/apps/740/740_featured_background.jpg', '/content/apps/740/740_featured_logo.png');
 INSERT INTO products_images (product_id, featured_background_img, featured_logo_img) VALUES (840, '/content/apps/840/840_featured_background.jpg', '/content/apps/840/840_featured_logo.png');
+UPDATE products_images SET tier_background_img = '/content/apps/440/440_tier.jpg' WHERE product_id = 440;
+UPDATE products_images SET tier_background_img = '/content/apps/540/540_tier.jpg' WHERE product_id = 540;
+UPDATE products_images SET tier_background_img = '/content/apps/640/640_tier.jpg' WHERE product_id = 640;
+UPDATE products_images SET tier_background_img = '/content/apps/740/740_tier.jpg' WHERE product_id = 740;
+UPDATE products_images SET tier_background_img = '/content/apps/840/840_tier.jpg' WHERE product_id = 840;
 INSERT INTO products_images (product_id, tier_background_img) VALUES (940, '/content/apps/940/940_tier.jpg');
 INSERT INTO products_images (product_id, tier_background_img) VALUES (1040, '/content/apps/1040/1040_tier.jpg');
 INSERT INTO products_images (product_id, tier_background_img) VALUES (1140, '/content/apps/1140/1140_tier.jpg');

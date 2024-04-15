@@ -21,7 +21,7 @@ func NewAuthHandlers(cR cart.Repository, aR auth.Repository, sR session.Reposito
 	return &handlers{cR, aR, sR}
 }
 
-func (h *handlers) GetCartCount() http.HandlerFunc {
+func (h *handlers) Cart() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		found, ok := r.Context().Value("user").(*models.User)
 
@@ -30,7 +30,32 @@ func (h *handlers) GetCartCount() http.HandlerFunc {
 			return
 		}
 
-		cartJson, err := h.cartRepository.GetCartCount(r.Context(), found)
+		rows, err := h.cartRepository.Cart(r.Context(), found)
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(rows); err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}
+}
+
+func (h *handlers) CartCount() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		found, ok := r.Context().Value("user").(*models.User)
+
+		if !ok {
+			util.HandleError(w, errors.New("no user"))
+			return
+		}
+
+		cartJson, err := h.cartRepository.CartCount(r.Context(), found)
 		if err != nil {
 			util.HandleError(w, err)
 			return	
