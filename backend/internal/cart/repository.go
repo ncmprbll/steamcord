@@ -6,7 +6,7 @@ import (
 )
 
 type Repository interface {
-	Cart(context.Context, *models.User) ([]*models.CartGameRow, error)
+	Cart(context.Context, string, *models.User) ([]*models.CartGameRow, error)
 	CartIDs(context.Context, *models.User) (*models.JSONCartProducts, error)
 	AddToCart(context.Context, *models.CartRow) error
 	DeleteFromCart(context.Context, *models.CartRow) (int64, error)

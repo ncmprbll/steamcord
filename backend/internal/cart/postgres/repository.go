@@ -15,43 +15,43 @@ func New(database *sqlx.DB) *Repository {
 	return &Repository{database: database}
 }
 
-func (s *Repository) Cart(ctx context.Context, user *models.User) ([]*models.CartGameRow, error) {
+func (s *Repository) Cart(ctx context.Context, currencyCode string, user *models.User) ([]*models.CartGameRow, error) {
 	const query = `
 				WITH cart_ids AS (
 					SELECT
 						product_id
 					FROM users_cart
-					WHERE user_id = $1
+					WHERE user_id = $2
 				), cart_items_price_image AS (
 					SELECT
 						products.id,
 						products.name,
 						products.discount,
-						jsonb_object_agg(products_prices.currency_code, jsonb_build_object('price', products_prices.price, 'symbol', currencies.symbol)) as prices,
+						jsonb_build_object('original', h.price, 'final', h.final, 'symbol', currencies.symbol) as price,
 						products_images.tier_background_img
 					FROM products
-						JOIN products_prices ON products.id = products_prices.product_id
-						JOIN currencies ON currencies.code = products_prices.currency_code
+					JOIN LATERAL (SELECT *, (price - price * products.discount / 100)::NUMERIC(16, 2) as final FROM products_prices WHERE currency_code = $1) h ON products.id = h.product_id
+						JOIN currencies ON currencies.code = h.currency_code
 						JOIN products_images ON products.id = products_images.product_id
 					WHERE id IN (SELECT product_id FROM cart_ids)
-					GROUP BY products.id, products_images.tier_background_img
+					GROUP BY products.id, products_images.tier_background_img, price, currencies.symbol, final
 				), cart_items_platforms AS (
 					SELECT
 						id,
 						name,
 						discount,
-						prices,
+						price,
 						tier_background_img,
 						jsonb_agg(products_platforms.platform) as platforms
 					FROM cart_items_price_image
 						JOIN products_platforms ON id = products_platforms.product_id
-					GROUP BY id, name, discount, prices, tier_background_img
+					GROUP BY id, name, discount, price, tier_background_img
 				)
 				SELECT
 					*
 				FROM cart_items_platforms;
 				`
-	rows, err := s.database.QueryxContext(ctx, query, user.UUID)
+	rows, err := s.database.QueryxContext(ctx, query, currencyCode, user.UUID)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +61,7 @@ func (s *Repository) Cart(ctx context.Context, user *models.User) ([]*models.Car
 
 	for rows.Next() {
 		row := &models.CartGameRow{}
-		rows.Scan(&row.ID, &row.Name, &row.Discount, &row.Prices, &row.TierBackgroundImg, &row.Platforms)
+		rows.Scan(&row.ID, &row.Name, &row.Discount, &row.Price, &row.TierBackgroundImg, &row.Platforms)
 		result = append(result, row)
 	}
 

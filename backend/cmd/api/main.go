@@ -83,7 +83,7 @@ func main() {
 
 	// Routers
 	authRouter := authDelivery.NewRouter(authHandlers, manager)
-	productsRouter := productsDelivery.NewRouter(productsHandlers)
+	productsRouter := productsDelivery.NewRouter(productsHandlers, manager)
 	cartRouter := cartDelivery.NewRouter(cartHandlers, manager)
 	
 	r.Mount("/auth", authRouter)

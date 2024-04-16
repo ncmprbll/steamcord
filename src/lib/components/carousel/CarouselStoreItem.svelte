@@ -120,9 +120,9 @@
                     {/if}
                     <div class="discount-prices">
                         {#if game.discount !== 0 && game.discount !== undefined}
-                            <div class="discount-original-price">{game.prices["RUB"].price} {game.prices["RUB"].symbol}</div>
+                            <div class="discount-original-price">{game.price.original} {game.price.symbol}</div>
                         {/if}
-                        <div class="discount-final-price">{Math.round(game.prices["RUB"].price - game.prices["RUB"].price * game.discount / 100)} {game.prices["RUB"].symbol}</div>
+                        <div class="discount-final-price">{game.price.final} {game.price.symbol}</div>
                     </div>
                 </div>
                 <div class="actions-right-side">

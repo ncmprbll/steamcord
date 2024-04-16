@@ -22,7 +22,7 @@ type CartGameRow struct {
 	ID                int           `json:"id"`
 	Name              string        `json:"name"`
 	Discount          int           `json:"discount"`
-	Prices            JSONPrice     `json:"prices"`
+	Price            JSONPrice     `json:"price"`
 	TierBackgroundImg string        `json:"tier_background_img"`
 	Platforms         JSONPlatforms `json:"platforms"`
 }

@@ -30,7 +30,7 @@ func (h *handlers) Cart() http.HandlerFunc {
 			return
 		}
 
-		rows, err := h.cartRepository.Cart(r.Context(), found)
+		rows, err := h.cartRepository.Cart(r.Context(), found.CurrencyCode, found)
 		if err != nil {
 			util.HandleError(w, err)
 			return

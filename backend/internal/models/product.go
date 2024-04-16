@@ -12,9 +12,10 @@ type Price struct {
 	Price        float32 `json:"price,omitempty"`
 }
 
-type JSONPrice map[string]struct {
-	Price  float32 `json:"price"`
-	Symbol string  `json:"symbol"`
+type JSONPrice struct {
+	Origianl float32 `json:"original"`
+	Final    float32 `json:"final"`
+	Symbol   string  `json:"symbol"`
 }
 
 type JSONPlatforms []string
@@ -23,7 +24,7 @@ type TierRow struct {
 	ID                int       `json:"id"`
 	Name              string    `json:"name"`
 	Discount          int       `json:"discount"`
-	Prices            JSONPrice `json:"prices"`
+	Price             JSONPrice `json:"price"`
 	TierBackgroundImg string    `json:"tier_background_img"`
 }
 
@@ -31,7 +32,7 @@ type FeaturedRow struct {
 	ID                    int           `json:"id"`
 	Name                  string        `json:"name"`
 	Discount              int           `json:"discount"`
-	Prices                JSONPrice     `json:"prices"`
+	Price                 JSONPrice     `json:"price"`
 	FeaturedBackgroundImg string        `json:"featured_background_img"`
 	FeaturedLogoImg       string        `json:"featured_logo_img"`
 	Platforms             JSONPlatforms `json:"platforms"`

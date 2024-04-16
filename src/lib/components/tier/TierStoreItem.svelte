@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { page } from '$app/stores';
     import type { TierGame } from './types/game.type';
 
     export let game: TierGame;
@@ -29,10 +30,10 @@
         <div class="price-block">
             {#if game.discount !== 0 && game.discount !== undefined}
                 <div class="discount">-{game.discount}%</div>
-                <div class="discount-original-price">{game.prices["RUB"].price} {game.prices["RUB"].symbol}</div>
-                <div class="discount-final-price">{Math.round(game.prices["RUB"].price - game.prices["RUB"].price * game.discount / 100)} {game.prices["RUB"].symbol}</div>
+                <div class="discount-original-price">{game.price.original} {game.price.symbol}</div>
+                <div class="discount-final-price">{game.price.final} {game.price.symbol}</div>
             {:else}
-                <div class="discount-final-price">{game.prices["RUB"].price} {game.prices["RUB"].symbol}</div>
+                <div class="discount-final-price">{game.price.original} {game.price.symbol}</div>
             {/if}
         </div>
     </div>
@@ -40,9 +41,17 @@
 {/if}
 
 <style>
+    .game-name {
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
     .short-info-block {
         display: flex;
-        justify-content: space-between
+        flex-direction: column;
+        gap: 4px;
+        justify-content: space-between;
+        white-space: nowrap;
     }
 
     .discount {
@@ -122,8 +131,4 @@
         box-shadow: 2px 2px 9px #0e0a0a;
         border-radius: 8px;
     }
-
-    /* .sale_capsule_image.autosize {
-        width: 100%;
-    } */
 </style>

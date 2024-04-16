@@ -19,9 +19,16 @@ func NewAuthHandlers(pR products.Repository) *handlers {
 func (h *handlers) GetTier() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var (
+			currencyCode = "USD"
 			rows []*models.TierRow
 			err error
 		)
+
+		found, ok := r.Context().Value("user").(*models.User)
+
+		if ok {
+			currencyCode = found.CurrencyCode
+		}
 
 		genre := r.URL.Query().Get("genre")
 		count := r.URL.Query().Get("count")
@@ -31,9 +38,9 @@ func (h *handlers) GetTier() http.HandlerFunc {
 		}
 
 		if genre == "" {
-			rows, err = h.productsRepository.GetTier(r.Context(), count)
+			rows, err = h.productsRepository.GetTier(r.Context(), currencyCode, count)
 		} else {
-			rows, err = h.productsRepository.GetTierByGenre(r.Context(), genre, count)
+			rows, err = h.productsRepository.GetTierByGenre(r.Context(), currencyCode, genre, count)
 		}
 
 		if err != nil {
@@ -54,7 +61,14 @@ func (h *handlers) GetTier() http.HandlerFunc {
 
 func (h *handlers) GetFeatured() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		rows, err := h.productsRepository.GetFeatured(r.Context())
+		currencyCode := "USD"
+		found, ok := r.Context().Value("user").(*models.User)
+
+		if ok {
+			currencyCode = found.CurrencyCode
+		}
+	
+		rows, err := h.productsRepository.GetFeatured(r.Context(), currencyCode)
 		if err != nil {
 			util.HandleError(w, err)
 			return

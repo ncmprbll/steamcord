@@ -15,61 +15,20 @@ func New(database *sqlx.DB) *Repository {
 	return &Repository{database: database}
 }
 
-func (s *Repository) GetTier(ctx context.Context, limit string) ([]*models.TierRow, error) {
+func (s *Repository) GetTier(ctx context.Context, currencyCode, limit string) ([]*models.TierRow, error) {
 	const query = `
 				WITH cart_items_price_image AS (
 					SELECT
 						products.id,
 						products.name,
 						products.discount,
-						jsonb_object_agg(products_prices.currency_code, jsonb_build_object('price', products_prices.price, 'symbol', currencies.symbol)) as prices,
+						jsonb_build_object('original', h.price, 'final', h.final, 'symbol', currencies.symbol) as price,
 						products_images.tier_background_img
 					FROM products
-						JOIN products_prices ON products.id = products_prices.product_id
-						JOIN currencies ON currencies.code = products_prices.currency_code
+						JOIN LATERAL (SELECT *, (price - price * products.discount / 100)::NUMERIC(16, 2) as final FROM products_prices WHERE currency_code = $1) h ON products.id = h.product_id
+						JOIN currencies ON currencies.code = h.currency_code
 						JOIN products_images ON products.id = products_images.product_id
-					GROUP BY products.id, products_images.tier_background_img
-					ORDER BY RANDOM()
-					LIMIT $1
-				)
-				SELECT
-					*
-				FROM cart_items_price_image;
-				`
-	rows, err := s.database.QueryxContext(ctx, query, limit)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	result := []*models.TierRow{}
-
-	for rows.Next() {
-		row := &models.TierRow{}
-		rows.Scan(&row.ID, &row.Name, &row.Discount, &row.Prices, &row.TierBackgroundImg)
-		result = append(result, row)
-	}
-
-	return result, nil
-}
-
-func (s *Repository) GetTierByGenre(ctx context.Context, genre string, limit string) ([]*models.TierRow, error) {
-	const query = `
-				WITH cart_items_price_image AS (
-					SELECT
-						products.id,
-						products.name,
-						products.discount,
-						jsonb_object_agg(products_prices.currency_code, jsonb_build_object('price', products_prices.price, 'symbol', currencies.symbol)) as prices,
-						products_images.tier_background_img
-					FROM products
-						JOIN products_prices ON products.id = products_prices.product_id
-						JOIN currencies ON currencies.code = products_prices.currency_code
-						JOIN products_images ON products.id = products_images.product_id
-						JOIN products_genres ON products.id = products_genres.product_id
-						JOIN genres ON products_genres.genre_id = genres.id
-					GROUP BY products.id, products_images.tier_background_img
-					HAVING $1 = ANY(ARRAY_AGG(genres.genre))
+					GROUP BY products.id, products_images.tier_background_img, price, currencies.symbol, final
 					ORDER BY RANDOM()
 					LIMIT $2
 				)
@@ -77,7 +36,7 @@ func (s *Repository) GetTierByGenre(ctx context.Context, genre string, limit str
 					*
 				FROM cart_items_price_image;
 				`
-	rows, err := s.database.QueryxContext(ctx, query, genre, limit)
+	rows, err := s.database.QueryxContext(ctx, query, currencyCode, limit)
 	if err != nil {
 		return nil, err
 	}
@@ -87,47 +46,88 @@ func (s *Repository) GetTierByGenre(ctx context.Context, genre string, limit str
 
 	for rows.Next() {
 		row := &models.TierRow{}
-		rows.Scan(&row.ID, &row.Name, &row.Discount, &row.Prices, &row.TierBackgroundImg)
+		rows.Scan(&row.ID, &row.Name, &row.Discount, &row.Price, &row.TierBackgroundImg)
 		result = append(result, row)
 	}
 
 	return result, nil
 }
 
-func (s *Repository) GetFeatured(ctx context.Context) ([]*models.FeaturedRow, error) {
+func (s *Repository) GetTierByGenre(ctx context.Context, currencyCode, genre, limit string) ([]*models.TierRow, error) {
+	const query = `
+				WITH cart_items_price_image AS (
+					SELECT
+						products.id,
+						products.name,
+						products.discount,
+						jsonb_build_object('original', h.price, 'final', h.final, 'symbol', currencies.symbol) as price,
+						products_images.tier_background_img
+					FROM products
+						JOIN LATERAL (SELECT *, (price - price * products.discount / 100)::NUMERIC(16, 2) as final FROM products_prices WHERE currency_code = $1) h ON products.id = h.product_id
+						JOIN currencies ON currencies.code = h.currency_code
+						JOIN products_images ON products.id = products_images.product_id
+						JOIN products_genres ON products.id = products_genres.product_id
+						JOIN genres ON products_genres.genre_id = genres.id
+					GROUP BY products.id, products_images.tier_background_img, price, currencies.symbol, final
+					HAVING $2 = ANY(ARRAY_AGG(genres.genre))
+					ORDER BY RANDOM()
+					LIMIT $3
+				)
+				SELECT
+					*
+				FROM cart_items_price_image;
+				`
+	rows, err := s.database.QueryxContext(ctx, query, currencyCode, genre, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := []*models.TierRow{}
+
+	for rows.Next() {
+		row := &models.TierRow{}
+		rows.Scan(&row.ID, &row.Name, &row.Discount, &row.Price, &row.TierBackgroundImg)
+		result = append(result, row)
+	}
+
+	return result, nil
+}
+
+func (s *Repository) GetFeatured(ctx context.Context, currencyCode string) ([]*models.FeaturedRow, error) {
 	const query = `
 				WITH cart_items_price_image_featured AS (
 					SELECT
 						products.id,
 						products.name,
 						products.discount,
-						jsonb_object_agg(products_prices.currency_code, jsonb_build_object('price', products_prices.price, 'symbol', currencies.symbol)) as prices,
+						jsonb_build_object('original', h.price, 'final', h.final, 'symbol', currencies.symbol) as price,
 						products_images.featured_background_img,
 						products_images.featured_logo_img
 					FROM products
 						JOIN products_featured ON products.id = products_featured.product_id
-						JOIN products_prices ON products.id = products_prices.product_id
-						JOIN currencies ON currencies.code = products_prices.currency_code
+						JOIN LATERAL (SELECT *, (price - price * products.discount / 100)::NUMERIC(16, 2) as final FROM products_prices WHERE currency_code = $1) h ON products.id = h.product_id
+						JOIN currencies ON currencies.code = h.currency_code
 						JOIN products_images ON products.id = products_images.product_id
-					GROUP BY id, featured_background_img, featured_logo_img
+					GROUP BY id, featured_background_img, featured_logo_img, price, currencies.symbol, final
 				), cart_items_platforms AS (
 					SELECT
 						id,
 						name,
 						discount,
-						prices,
+						price,
 						featured_background_img,
 						featured_logo_img,
 						jsonb_agg(products_platforms.platform) as platforms
 					FROM cart_items_price_image_featured
 						JOIN products_platforms ON id = products_platforms.product_id
-					GROUP BY id, name, discount, prices, featured_background_img, featured_logo_img
+					GROUP BY id, name, discount, price, featured_background_img, featured_logo_img
 				)
 				SELECT
 					*
 				FROM cart_items_platforms;
 				`
-	rows, err := s.database.QueryxContext(ctx, query)
+	rows, err := s.database.QueryxContext(ctx, query, currencyCode)
 	if err != nil {
 		return nil, err
 	}
@@ -137,7 +137,7 @@ func (s *Repository) GetFeatured(ctx context.Context) ([]*models.FeaturedRow, er
 
 	for rows.Next() {
 		row := &models.FeaturedRow{}
-		rows.Scan(&row.ID, &row.Name, &row.Discount, &row.Prices, &row.FeaturedBackgroundImg, &row.FeaturedLogoImg, &row.Platforms)
+		rows.Scan(&row.ID, &row.Name, &row.Discount, &row.Price, &row.FeaturedBackgroundImg, &row.FeaturedLogoImg, &row.Platforms)
 		result = append(result, row)
 	}
 
