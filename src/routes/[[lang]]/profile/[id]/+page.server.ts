@@ -9,7 +9,7 @@ export async function load({ params, cookies }) {
         const json = await result.json();
         const user = json as User;
 
-        removeSensitiveData(user, ['login', 'email', 'password', 'role', 'created_at', 'updated_at'], true); // Server sanitizes the password but we do it just in case
+        // removeSensitiveData(user, ['login', 'email', 'password', 'role', 'created_at', 'updated_at'], true); // Server sanitizes the password but we do it just in case
 
         return {
             user: JSON.stringify(user)

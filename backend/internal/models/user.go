@@ -13,20 +13,21 @@ import (
 const (
 	MIN_PASSWORD = 8
 	MAX_PASSWORD = 48
-	MIN_LOGIN = 6
-	MAX_LOGIN = 20
+	MIN_LOGIN    = 6
+	MAX_LOGIN    = 20
 )
 
 type User struct {
-	UUID        uuid.UUID `json:"user_id" db:"user_id"`
-	Login       string    `json:"login" db:"login"`
-	DisplayName string    `json:"display_name" db:"display_name"`
-	Email       string    `json:"email" db:"email"`
-	Password    string    `json:"password" db:"password"`
-	Role        string    `json:"role" db:"role"`
-	CreatedAt   time.Time `json:"created_at,omitempty" db:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at,omitempty" db:"updated_at"`
-	LoginDate   time.Time `json:"login_date" db:"login_date"`
+	UUID         uuid.UUID `json:"user_id" db:"user_id"`
+	Login        string    `json:"login,omitempty" db:"login"`
+	DisplayName  string    `json:"display_name" db:"display_name"`
+	CurrencyCode string    `json:"currency_code,omitempty" db:"currency_code"`
+	Email        string    `json:"email,omitempty" db:"email"`
+	Password     string    `json:"password,omitempty" db:"password"`
+	Role         string    `json:"role,omitempty" db:"role"`
+	CreatedAt    time.Time `json:"created_at,omitempty" db:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at,omitempty" db:"updated_at"`
+	LoginDate    time.Time `json:"login_date,omitempty" db:"login_date"`
 }
 
 func (u *User) HashPassword() error {
@@ -48,6 +49,16 @@ func (u *User) ComparePasswords(password string) error {
 func (u *User) SanitizePassword() {
 	u.Password = ""
 }
+
+func (u *User) RemoveSensitiveData() {
+	u.Login = ""
+	u.Email = ""
+	u.SanitizePassword()
+	u.Role = ""
+	u.CreatedAt = time.Time{}
+	u.UpdatedAt = time.Time{}
+}
+
 
 func (u *User) Validate() error {
 	login := u.Login

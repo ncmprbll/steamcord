@@ -9,11 +9,13 @@ DROP TABLE IF EXISTS products_images CASCADE;
 DROP TABLE IF EXISTS products_platforms CASCADE;
 DROP TABLE IF EXISTS products_genres CASCADE;
 DROP TABLE IF EXISTS products_featured CASCADE;
+DROP TABLE IF EXISTS currencies CASCADE;
 
--- CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
--- CREATE EXTENSION IF NOT EXISTS CITEXT;
--- -- CREATE EXTENSION IF NOT EXISTS postgis;
--- -- CREATE EXTENSION IF NOT EXISTS postgis_topology;
+CREATE TABLE currencies
+(
+    code CHAR(3) PRIMARY KEY CHECK ( LENGTH(code) = 3 ),
+    symbol CHAR(1) NOT NULL CHECK ( symbol <> '' )
+);
 
 CREATE TABLE genres
 (
@@ -33,7 +35,7 @@ CREATE TABLE products
 CREATE TABLE products_prices
 (
     product_id BIGINT REFERENCES products(id),
-    currency_code VARCHAR(32) NOT NULL CHECK ( currency_code <> '' ),
+    currency_code CHAR(3) REFERENCES currencies(code),
     price NUMERIC(16, 2) NOT NULL CHECK ( price > 0 ),
     PRIMARY KEY (product_id, currency_code)
 );
@@ -70,6 +72,7 @@ CREATE TABLE users
     user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     login VARCHAR(32) UNIQUE NOT NULL CHECK ( login <> '' ),
     display_name VARCHAR(32) DEFAULT '' NOT NULL,
+    currency_code CHAR(3) DEFAULT 'RUB' REFERENCES currencies(code),
     email VARCHAR(64) NOT NULL CHECK ( email <> '' ),
     password VARCHAR(250) NOT NULL CHECK ( octet_length(password) <> 0 ),
     role VARCHAR(10) NOT NULL DEFAULT 'user',
@@ -84,6 +87,9 @@ CREATE TABLE users_cart
     product_id BIGINT REFERENCES products(id),
     PRIMARY KEY (user_id, product_id)
 );
+
+INSERT INTO currencies (code, symbol) VALUES ('RUB', '₽');
+INSERT INTO currencies (code, symbol) VALUES ('USD', '$');
 
 INSERT INTO genres (genre) VALUES ('Horror'), ('Survival');
 
@@ -134,6 +140,30 @@ INSERT INTO products_prices (product_id, currency_code, price) VALUES (2340, 'RU
 INSERT INTO products_prices (product_id, currency_code, price) VALUES (2440, 'RUB', 1300);
 INSERT INTO products_prices (product_id, currency_code, price) VALUES (2540, 'RUB', 710);
 INSERT INTO products_prices (product_id, currency_code, price) VALUES (2640, 'RUB', 200);
+
+INSERT INTO products_prices (product_id, currency_code, price) VALUES (440, 'USD', 26.69);
+INSERT INTO products_prices (product_id, currency_code, price) VALUES (540, 'USD', 19.99);
+INSERT INTO products_prices (product_id, currency_code, price) VALUES (640, 'USD', 29.99);
+INSERT INTO products_prices (product_id, currency_code, price) VALUES (740, 'USD', 7.99);
+INSERT INTO products_prices (product_id, currency_code, price) VALUES (840, 'USD', 29.99);
+INSERT INTO products_prices (product_id, currency_code, price) VALUES (940, 'USD', 2.99);
+INSERT INTO products_prices (product_id, currency_code, price) VALUES (1040, 'USD', 4.99);
+INSERT INTO products_prices (product_id, currency_code, price) VALUES (1140, 'USD', 2.25);
+INSERT INTO products_prices (product_id, currency_code, price) VALUES (1240, 'USD', 24.50);
+INSERT INTO products_prices (product_id, currency_code, price) VALUES (1340, 'USD', 11.00);
+INSERT INTO products_prices (product_id, currency_code, price) VALUES (1440, 'USD', 3.85);
+INSERT INTO products_prices (product_id, currency_code, price) VALUES (1540, 'USD', 14.99);
+INSERT INTO products_prices (product_id, currency_code, price) VALUES (1640, 'USD', 2.59);
+INSERT INTO products_prices (product_id, currency_code, price) VALUES (1740, 'USD', 4.99);
+INSERT INTO products_prices (product_id, currency_code, price) VALUES (1840, 'USD', 11.00);
+INSERT INTO products_prices (product_id, currency_code, price) VALUES (1940, 'USD', 35.99);
+INSERT INTO products_prices (product_id, currency_code, price) VALUES (2040, 'USD', 3.85);
+INSERT INTO products_prices (product_id, currency_code, price) VALUES (2140, 'USD', 3.09);
+INSERT INTO products_prices (product_id, currency_code, price) VALUES (2240, 'USD', 16.75);
+INSERT INTO products_prices (product_id, currency_code, price) VALUES (2340, 'USD', 4.35);
+INSERT INTO products_prices (product_id, currency_code, price) VALUES (2440, 'USD', 13.00);
+INSERT INTO products_prices (product_id, currency_code, price) VALUES (2540, 'USD', 7.10);
+INSERT INTO products_prices (product_id, currency_code, price) VALUES (2640, 'USD', 2.00);
 
 INSERT INTO products_images (product_id, featured_background_img, featured_logo_img) VALUES (440, '/content/apps/440/440_featured_background.jpg', '/content/apps/440/440_featured_logo.png');
 INSERT INTO products_images (product_id, featured_background_img, featured_logo_img) VALUES (540, '/content/apps/540/540_featured_background.jpg', '/content/apps/540/540_featured_logo.png');

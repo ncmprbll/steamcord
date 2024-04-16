@@ -24,20 +24,27 @@
     <div class="sale_capsule_image_ctn">
         <img class="sale-capsule-image" src={game.tier_background_img} alt={game.name}>
     </div>
-    <span class="game-name">{game.name}</span>
-    <div class="price-block">
-        {#if game.discount !== 0 && game.discount !== undefined}
-            <div class="discount">-{game.discount}%</div>
-            <div class="discount-original-price">₽ {game.prices["RUB"]}</div>
-            <div class="discount-final-price">₽ {Math.round(game.prices["RUB"] - game.prices["RUB"] * game.discount / 100)}</div>
-        {:else}
-            <div class="discount-final-price">₽ {game.prices["RUB"]}</div>
-        {/if}
+    <div class="short-info-block">
+        <span class="game-name">{game.name}</span>
+        <div class="price-block">
+            {#if game.discount !== 0 && game.discount !== undefined}
+                <div class="discount">-{game.discount}%</div>
+                <div class="discount-original-price">{game.prices["RUB"].price} {game.prices["RUB"].symbol}</div>
+                <div class="discount-final-price">{Math.round(game.prices["RUB"].price - game.prices["RUB"].price * game.discount / 100)} {game.prices["RUB"].symbol}</div>
+            {:else}
+                <div class="discount-final-price">{game.prices["RUB"].price} {game.prices["RUB"].symbol}</div>
+            {/if}
+        </div>
     </div>
 </a>
 {/if}
 
 <style>
+    .short-info-block {
+        display: flex;
+        justify-content: space-between
+    }
+
     .discount {
         font-weight: 800;
         font-size: 19px;

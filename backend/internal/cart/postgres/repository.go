@@ -17,13 +17,39 @@ func New(database *sqlx.DB) *Repository {
 
 func (s *Repository) Cart(ctx context.Context, user *models.User) ([]*models.CartGameRow, error) {
 	const query = `
-				SELECT products.id, products.name, products.discount, json_object_agg(products_prices.currency_code, products_prices.price) as prices, products_images.tier_background_img, json_agg(products_platforms.platform) as platforms
-				FROM products
-					JOIN products_prices ON products.id = products_prices.product_id
-					JOIN products_images ON products.id = products_images.product_id
-					JOIN products_platforms ON products.id = products_platforms.product_id
-				WHERE id IN (SELECT product_id FROM users_cart WHERE user_id = $1)
-				GROUP BY products.id, products_images.tier_background_img;
+				WITH cart_ids AS (
+					SELECT
+						product_id
+					FROM users_cart
+					WHERE user_id = $1
+				), cart_items_price_image AS (
+					SELECT
+						products.id,
+						products.name,
+						products.discount,
+						jsonb_object_agg(products_prices.currency_code, jsonb_build_object('price', products_prices.price, 'symbol', currencies.symbol)) as prices,
+						products_images.tier_background_img
+					FROM products
+						JOIN products_prices ON products.id = products_prices.product_id
+						JOIN currencies ON currencies.code = products_prices.currency_code
+						JOIN products_images ON products.id = products_images.product_id
+					WHERE id IN (SELECT product_id FROM cart_ids)
+					GROUP BY products.id, products_images.tier_background_img
+				), cart_items_platforms AS (
+					SELECT
+						id,
+						name,
+						discount,
+						prices,
+						tier_background_img,
+						jsonb_agg(products_platforms.platform) as platforms
+					FROM cart_items_price_image
+						JOIN products_platforms ON id = products_platforms.product_id
+					GROUP BY id, name, discount, prices, tier_background_img
+				)
+				SELECT
+					*
+				FROM cart_items_platforms;
 				`
 	rows, err := s.database.QueryxContext(ctx, query, user.UUID)
 	if err != nil {
@@ -53,7 +79,6 @@ func (s *Repository) CartIDs(ctx context.Context, user *models.User) (*models.JS
 
 	return json, nil
 }
-
 
 func (s *Repository) AddToCart(ctx context.Context, cart *models.CartRow) error {
 	const query = `

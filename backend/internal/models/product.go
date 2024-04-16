@@ -12,7 +12,11 @@ type Price struct {
 	Price        float32 `json:"price,omitempty"`
 }
 
-type JSONPrice map[string]float32
+type JSONPrice map[string]struct {
+	Price  float32 `json:"price"`
+	Symbol string  `json:"symbol"`
+}
+
 type JSONPlatforms []string
 
 type TierRow struct {
