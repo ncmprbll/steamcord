@@ -101,10 +101,10 @@
                     </div>
                     <button class="form-button" type="submit">
                         {#if loading}
-                        <Spinner size="16"/>
-                    {:else}
-                        {$page.data.locale.signin}
-                    {/if}
+                            <Spinner size="16"/>
+                        {:else}
+                            {$page.data.locale.signin}
+                        {/if}
                     </button>
                 </form>
                 <div class="separator">

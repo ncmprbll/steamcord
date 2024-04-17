@@ -15,3 +15,21 @@ export type TierGame = {
 	prices: Record<string, number>;
 	tier_background_img: string;
 };
+
+export type Price = {
+	original: number;
+	final: number;
+	symbol: string;
+}
+
+export function formatPrice(price: Price, original: boolean): string {
+	if (original) {
+		return price.original.toFixed(2) + " " + price.symbol;
+	}
+
+	if (price.final === 0) {
+		return "Free";
+	}
+
+	return price.final.toFixed(2) + " " + price.symbol;
+}

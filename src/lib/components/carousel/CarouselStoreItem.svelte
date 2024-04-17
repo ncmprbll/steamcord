@@ -6,7 +6,8 @@
     import mac from '$lib/assets/os/mac.png';
     import linux from '$lib/assets/os/linux.png';
 
-    import type { FeaturedGame } from './types/game.type';
+
+    import { formatPrice, type FeaturedGame } from '$lib/types/game.type';
 
     export let game: FeaturedGame;
     export let clientWidth: number;
@@ -120,9 +121,9 @@
                     {/if}
                     <div class="discount-prices">
                         {#if game.discount !== 0 && game.discount !== undefined}
-                            <div class="discount-original-price">{game.price.original} {game.price.symbol}</div>
+                            <div class="discount-original-price">{formatPrice(game.price, true)}</div>
                         {/if}
-                        <div class="discount-final-price">{game.price.final} {game.price.symbol}</div>
+                        <div class="discount-final-price">{formatPrice(game.price)}</div>
                     </div>
                 </div>
                 <div class="actions-right-side">
@@ -149,12 +150,13 @@
         font-weight: 500;
         font-size: 14px;
         text-decoration: line-through;
-        color: #d5d5d5;
+        color: #979797;
     }
 
     .discount-final-price {
         font-weight: 700;
         font-size: 19px;
+        color: #ebf2f4;
     }
 
     .item {

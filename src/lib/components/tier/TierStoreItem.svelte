@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import type { TierGame } from './types/game.type';
+    import { formatPrice, type TierGame } from '$lib/types/game.type';
 
     export let game: TierGame;
     export let itemsInTier: number = 0;
@@ -30,10 +30,10 @@
         <div class="price-block">
             {#if game.discount !== 0 && game.discount !== undefined}
                 <div class="discount">-{game.discount}%</div>
-                <div class="discount-original-price">{game.price.original} {game.price.symbol}</div>
-                <div class="discount-final-price">{game.price.final} {game.price.symbol}</div>
+                <div class="discount-original-price">{formatPrice(game.price, true)}</div>
+                <div class="discount-final-price">{formatPrice(game.price)}</div>
             {:else}
-                <div class="discount-final-price">{game.price.original} {game.price.symbol}</div>
+                <div class="discount-final-price">{formatPrice(game.price, true)}</div>
             {/if}
         </div>
     </div>
@@ -71,11 +71,11 @@
 
     .discount-original-price {
         text-decoration: line-through;
-        color: #d5d5d5;
+        color: #979797;
     }
 
     .discount-final-price {
-
+        color: #ebf2f4;
     }
 
     img {
@@ -112,6 +112,12 @@
     @media (min-width: 1120px) {
         :global(.salerow4 .sale-capsule) {
             width: calc(25% - 16px);
+        }
+    }
+
+    @media (max-width: 400px) {
+        .discount-original-price {
+            display: none;
         }
     }
 

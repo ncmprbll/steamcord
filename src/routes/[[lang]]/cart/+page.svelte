@@ -5,6 +5,8 @@
     import mac from '$lib/assets/os/mac.png';
     import linux from '$lib/assets/os/linux.png';
 
+    import { formatPrice } from '$lib/types/game.type';
+
     export let data;
     let estimated: number = 0.00;
     let symbol: string = '';
@@ -15,7 +17,7 @@
         data.me.cart.subscribe(async () => {
             await invalidate('app:cart');
 
-            estimated = data.cart.reduce((a, i) => a + i.price.final, 0);
+            estimated = data.cart.reduce((a, i) => a + i.price.final, 0).toFixed(2);
             if (data.cart.length !== 0) {
                 symbol = data.cart[0].price.symbol;
             }
@@ -53,8 +55,8 @@
                         <img class="item-image" src={game.tier_background_img} alt="Game"/>
                     </a>
                     <div class="item-info text-styling">
-                        <div>
-                            <span>{game.name}</span>
+                        <div class="game-name">
+                            {game.name}
                         </div>
                         <div>
                             {#if game.platforms.includes("windows")}
@@ -73,14 +75,14 @@
                             {/if}
                             <div class="discount-prices">
                                 {#if game.discount !== 0 && game.discount !== undefined}
-                                    <div class="discount-original-price">{game.price.original} {game.price.symbol}</div>
+                                    <div class="discount-original-price">{formatPrice(game.price, true)}</div>
                                 {/if}
-                                <div class="discount-final-price">{game.price.final} {game.price.symbol}</div>
+                                <div class="discount-final-price">{formatPrice(game.price)}</div>
                             </div>
                         </div>
                         <div class="remove-from-cart-div">
                             <button class="button" on:click|preventDefault={() => {removeFromCart(game.id)}}>
-                                <span>Remove</span>
+                                Remove
                             </button>
                         </div>
                     </div>
@@ -91,14 +93,14 @@
     <div class="right-side">
         <div class="checkout-box">
             <div class="estimated">
-                {#if estimated !== 0}
-                    <span>Estimated total</span>
-                    <span class="span-price">{estimated} {symbol}</span>
+                {#if data.cart.length === 0}
+                    <span>No items in the cart</span>
                 {:else}
-                    {#if data.cart.length === 0}
-                        <span>No items in the cart</span>
+                    <span>Estimated total</span>
+                    {#if estimated != 0}
+                        <span class="span-price">{estimated} {symbol}</span>
                     {:else}
-                        <span>The items are free</span>
+                        <span class="span-price">Free</span>
                     {/if}
                 {/if}
             </div>
@@ -110,6 +112,13 @@
 </div>
 
 <style lang="postcss">
+    .game-name {
+        white-space: nowrap;
+        width: 100%;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
     .span-price {
         font-weight: 700;
     }
@@ -181,7 +190,7 @@
         justify-content: flex-end;
         font-size: 14px;
         text-decoration: line-through;
-        color: #d5d5d5;
+        color: #979797;
     }
 
     .discount-final-price {
@@ -223,10 +232,11 @@
         display: flex;
         flex-direction: column;
         width: 100%;
+        min-width: 0;
     }
 
     .items > span {
-        font-size: 24px;
+        font-size: 22px;
         letter-spacing: 2px;
         text-transform: uppercase;
         color: #90989b;
@@ -254,6 +264,8 @@
     }
 
     .item-info {
+        flex-grow: 1;
+        overflow: hidden;
         display: flex;
         flex-direction: column;
         width: 100%;
