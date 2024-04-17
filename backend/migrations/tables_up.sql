@@ -94,7 +94,7 @@ INSERT INTO currencies (code, symbol) VALUES ('USD', '$');
 
 INSERT INTO genres (genre) VALUES ('Horror'), ('Survival');
 
-INSERT INTO products (id, name, discount) VALUES (440, 'Cyberpunk 2077: Phantom Liberty', 0);
+INSERT INTO products (id, name, discount) VALUES (440, 'Cyberpunk 2077: Phantom Liberty', 100);
 INSERT INTO products (id, name, discount) VALUES (540, 'Baldur''s Gate 3', 10);
 INSERT INTO products (id, name, discount) VALUES (640, 'Fallout 4: Game of the Year Edition', 75);
 INSERT INTO products (id, name, discount) VALUES (740, 'Divinity: Original Sin 2 - Definitive Edition', 69);

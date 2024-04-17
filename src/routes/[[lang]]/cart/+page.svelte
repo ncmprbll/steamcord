@@ -12,12 +12,13 @@
     $: ({ cart } = data);
 
     if (data?.me?.cart) {
-        data.me.cart.subscribe(() => {
+        data.me.cart.subscribe(async () => {
+            await invalidate('app:cart');
+
             estimated = data.cart.reduce((a, i) => a + i.price.final, 0);
             if (data.cart.length !== 0) {
                 symbol = data.cart[0].price.symbol;
             }
-            invalidate('app:cart');
         });
     };
 
@@ -44,7 +45,7 @@
 <div class="container">
     <div class="items">
         {#if cart === undefined || cart.length === 0}
-            123
+            <span>No items in the cart</span>
         {:else}
             {#each cart as game, index}
                 <div class="item">
@@ -219,7 +220,18 @@
     }
 
     .items {
+        display: flex;
+        flex-direction: column;
         width: 100%;
+    }
+
+    .items > span {
+        font-size: 24px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: #90989b;
+        user-select: none;
+        margin: auto;
     }
 
     .item {
@@ -277,5 +289,9 @@
             display: flex;
             justify-content: center
         }
+
+        .items > span {
+        margin-top: 8px;
+    }
     }
 </style>
