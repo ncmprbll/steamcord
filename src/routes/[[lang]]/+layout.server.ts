@@ -44,7 +44,7 @@ export async function load({ params, cookies }) {
         if (result.status === 200) {
             me!.cart = await result.json();
         }
-    } else {
+    } else if (sessionId !== undefined) {
         error = 'Your session has expired, sign in again.';
         cookies.delete('session_id', { path: '/' });
     };

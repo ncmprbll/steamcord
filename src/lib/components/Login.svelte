@@ -46,6 +46,7 @@
 	}
 
 	async function handleRegister(event) {
+        console.log(123)
 		const url = event.target.action;
 		const data = new FormData(event.target);
         const password = data.get('password');
@@ -66,6 +67,8 @@
         code = result.status;
 
         if (result.status === 201) {
+            event.target.action = "/api/auth/login";
+            await handleLogin(event);
             window.location.reload();
         } else {
             loading = false;
