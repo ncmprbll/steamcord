@@ -6,13 +6,15 @@
     import linux from '$lib/assets/os/linux.png';
 
     export let data;
+    let estimated: number = 0.00;
+    let symbol: string = '';
 
     $: ({ cart } = data);
 
-    console.log(data);
-
     if (data?.me?.cart) {
-        data.me.cart.subscribe((cart) => {
+        data.me.cart.subscribe(() => {
+            estimated = data.cart.reduce((a, i) => a + i.price.final, 0);
+            symbol = data.cart[0].price.symbol;
             invalidate('app:cart');
         });
     };
@@ -44,7 +46,7 @@
         {:else}
             {#each cart as game, index}
                 <div class="item">
-                    <a href="/">
+                    <a class="image-center" href="/">
                         <img class="item-image" src={game.tier_background_img} alt="Game"/>
                     </a>
                     <div class="item-info text-styling">
@@ -74,7 +76,7 @@
                             </div>
                         </div>
                         <div class="remove-from-cart-div">
-                            <button class="remove-from-cart" on:click|preventDefault={() => {removeFromCart(game.id)}}>
+                            <button class="button" on:click|preventDefault={() => {removeFromCart(game.id)}}>
                                 <span>Remove</span>
                             </button>
                         </div>
@@ -83,24 +85,46 @@
             {/each}
         {/if}
     </div>
-    <div class="checkout-box">
-        <span>Estimated total</span>
-        <span>24425242</span>
-        <button>
-            Purchase
-        </button>
+    <div class="right-side">
+        <div class="checkout-box">
+            <div class="estimated">
+                <span>Estimated total</span>
+                <span class="span-price">{estimated} {symbol}</span>
+            </div>
+            <button class="button" on:click|preventDefault={() => {}}>
+                Purchase
+            </button>
+        </div>
     </div>
 </div>
 
 <style lang="postcss">
+    .span-price {
+        font-weight: 700;
+    }
+
+    .estimated {
+        display: flex;
+        justify-content: space-between;
+        font-size: 15px;
+        letter-spacing: 0.5px;
+        line-height: 1.3333;
+        margin-bottom: 12px;
+    }
+
+    .right-side {
+        position: relative;
+    }
+
     .remove-from-cart-div {
         display: flex;
         width: fit-content;
         margin-left: auto;
+        margin-top: 12px;
         flex-grow: 1;
     }
 
-    .remove-from-cart {
+    .button {
         font-size: 14px;
         letter-spacing: 0.5px;
         font-weight: 500;
@@ -123,7 +147,7 @@
         cursor: pointer;
     }
 
-    .remove-from-cart:hover {
+    .button:hover {
         background: linear-gradient(90deg, #06BFFF 30%, #2D73FF 100%);
     }
 
@@ -160,15 +184,22 @@
     }
 
     .checkout-box {
-        max-width: 280px;
-    }
+        display: flex;
+        flex-direction: column;
+        border-radius: 4px;
+        padding: 15px;
+        background-color: rgb(32, 32, 32);
+        min-width: 280px;
+        position: sticky;
+        top: 96px; /* 80 (navbar height) + 16 (margin) */
+    } 
 
     .container {
         display: flex;
         gap: 24px;
         justify-content: space-between;
-
     }
+
     .items {
         width: 100%;
     }
@@ -185,7 +216,7 @@
     }
 
     .item:hover {
-        background-color: #262626;
+        background-color: #222;
     }
 
     .item:last-child {
@@ -208,5 +239,25 @@
     .item-image {
         height: 100%;
         border-radius: 4px;
+    }
+
+    @media (max-width: 850px) {
+        .container {
+            flex-direction: column
+        }
+
+        .item {
+            flex-direction: column;
+            height: auto
+        }
+    
+        .item-image {
+            max-width: 100%
+        }
+
+        .image-center {
+            display: flex;
+            justify-content: center
+        }
     }
 </style>
