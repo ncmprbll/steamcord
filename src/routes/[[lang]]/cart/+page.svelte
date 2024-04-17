@@ -14,7 +14,9 @@
     if (data?.me?.cart) {
         data.me.cart.subscribe(() => {
             estimated = data.cart.reduce((a, i) => a + i.price.final, 0);
-            symbol = data.cart[0].price.symbol;
+            if (data.cart.length !== 0) {
+                symbol = data.cart[0].price.symbol;
+            }
             invalidate('app:cart');
         });
     };
@@ -88,10 +90,18 @@
     <div class="right-side">
         <div class="checkout-box">
             <div class="estimated">
-                <span>Estimated total</span>
-                <span class="span-price">{estimated} {symbol}</span>
+                {#if estimated !== 0}
+                    <span>Estimated total</span>
+                    <span class="span-price">{estimated} {symbol}</span>
+                {:else}
+                    {#if data.cart.length === 0}
+                        <span>No items in the cart</span>
+                    {:else}
+                        <span>The items are free</span>
+                    {/if}
+                {/if}
             </div>
-            <button class="button" on:click|preventDefault={() => {}}>
+            <button class="button" disabled={data.cart.length === 0} on:click|preventDefault={() => {}}>
                 Purchase
             </button>
         </div>
@@ -149,6 +159,14 @@
 
     .button:hover {
         background: linear-gradient(90deg, #06BFFF 30%, #2D73FF 100%);
+    }
+
+    .button:disabled {
+        background: rgba(61, 67, 77, .35);
+        color: #464d58;
+        box-shadow: none;
+        cursor: default;
+        pointer-events: none;
     }
 
     .discount {

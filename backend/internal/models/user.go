@@ -22,6 +22,7 @@ type User struct {
 	Login        string    `json:"login,omitempty" db:"login"`
 	DisplayName  string    `json:"display_name" db:"display_name"`
 	CurrencyCode string    `json:"currency_code,omitempty" db:"currency_code"`
+	Balance      float32   `json:"balance" db:"balance"`
 	Email        string    `json:"email,omitempty" db:"email"`
 	Password     string    `json:"password,omitempty" db:"password"`
 	Role         string    `json:"role,omitempty" db:"role"`
@@ -58,7 +59,6 @@ func (u *User) RemoveSensitiveData() {
 	u.CreatedAt = time.Time{}
 	u.UpdatedAt = time.Time{}
 }
-
 
 func (u *User) Validate() error {
 	login := u.Login

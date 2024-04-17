@@ -73,6 +73,7 @@ CREATE TABLE users
     login VARCHAR(32) UNIQUE NOT NULL CHECK ( login <> '' ),
     display_name VARCHAR(32) DEFAULT '' NOT NULL,
     currency_code CHAR(3) DEFAULT 'RUB' REFERENCES currencies(code),
+    balance NUMERIC(16, 2) DEFAULT 0.00 NOT NULL CHECK ( balance >= 0 ),
     email VARCHAR(64) NOT NULL CHECK ( email <> '' ),
     password VARCHAR(250) NOT NULL CHECK ( octet_length(password) <> 0 ),
     role VARCHAR(10) NOT NULL DEFAULT 'user',

@@ -70,7 +70,7 @@ func (s *Repository) Cart(ctx context.Context, currencyCode string, user *models
 
 func (s *Repository) CartIDs(ctx context.Context, user *models.User) (*models.JSONCartProducts, error) {
 	const query = `
-				SELECT json_agg(product_id) as products FROM users_cart WHERE user_id = $1;
+				SELECT COALESCE(json_agg(product_id), '[]'::json) as products FROM users_cart WHERE user_id = $1;
 				`
 	json := &models.JSONCartProducts{}
 	if err := s.database.QueryRowxContext(ctx, query, user.UUID).Scan(json); err != nil {
