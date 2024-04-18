@@ -4,12 +4,14 @@
     import windows from '$lib/assets/os/windows.png';
     import mac from '$lib/assets/os/mac.png';
     import linux from '$lib/assets/os/linux.png';
+    import Spinner from '$lib/components/Spinner.svelte';
 
     import { formatPrice } from '$lib/types/game.type';
 
     export let data;
     let estimated: number = 0.00;
     let symbol: string = '';
+    let loadings: boolean[] = [];
 
     $: ({ cart } = data);
 
@@ -29,11 +31,17 @@
             return;
         }
 
+        loadings[gameId] = true;
+
         const result = await fetch("/api/cart/", {
             method: "DELETE",
             credentials: 'include',
             body: JSON.stringify({product_id: gameId})
         });
+
+        await new Promise(r => setTimeout(r, 750)); // Artificial delay
+
+        loadings[gameId] = false;
 
         if (result.status === 200) {
             data.me.cart.update((cart) => {
@@ -82,7 +90,10 @@
                         </div>
                         <div class="remove-from-cart-div">
                             <button class="button" on:click|preventDefault={() => {removeFromCart(game.id)}}>
-                                Remove
+                                <span class:loading={loadings[game.id]}>Remove</span>
+                                {#if loadings[game.id]}
+                                    <Spinner absolute={true} size="16"/>
+                                {/if}
                             </button>
                         </div>
                     </div>
@@ -112,6 +123,10 @@
 </div>
 
 <style lang="postcss">
+    .loading {
+        opacity: 0;
+    }
+
     .game-name {
         white-space: nowrap;
         width: 100%;

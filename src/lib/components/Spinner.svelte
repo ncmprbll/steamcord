@@ -5,9 +5,10 @@
 	export let duration: SpinnerTypes['duration'] = '1.5s';
 	export let size: SpinnerTypes['size'] = '20';
 	export let pause: SpinnerTypes['pause'] = false;
+	export let absolute: boolean = false;
 </script>
 
-<div class="wrapper" style="--size: {size}{unit}; --color: {color}; --duration: {duration};">
+<div class="wrapper" style="position: {absolute ? "absolute" : "relative"}; --size: {size}{unit}; --color: {color}; --duration: {duration};">
 	<div class="shadow" class:pause-animation={pause} />
 </div>
 

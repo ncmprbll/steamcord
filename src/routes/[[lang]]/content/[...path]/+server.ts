@@ -25,8 +25,8 @@ export async function GET({ params }) {
 	});
 
 	return new Response(asset, {
-	  headers: {
-		"Content-Type": "image/jpg"
-	  }
+		headers: {
+			"Content-Type": "image/jpg"
+		}
 	})
 }

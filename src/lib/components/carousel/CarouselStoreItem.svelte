@@ -5,7 +5,7 @@
     import windows from '$lib/assets/os/windows.png';
     import mac from '$lib/assets/os/mac.png';
     import linux from '$lib/assets/os/linux.png';
-
+    import Spinner from '$lib/components/Spinner.svelte';
 
     import { formatPrice, type FeaturedGame } from '$lib/types/game.type';
 
@@ -20,6 +20,7 @@
     export const margin = 8;
     let style = '';
     let alreadyInCart: boolean = false;
+    let loading: boolean = false;
 
     if ($page.data?.me?.cart) {
         $page.data.me.cart.subscribe((cart) => {
@@ -51,11 +52,17 @@
             return;
         }
 
+        loading = true;
+
         const result = await fetch("/api/cart/", {
             method: "POST",
             credentials: 'include',
             body: JSON.stringify({product_id: game.id})
         });
+
+        await new Promise(r => setTimeout(r, 750)); // Artificial delay
+
+        loading = false;
 
         if (result.status === 200) {
             $page.data.me.cart.update((cart) => {
@@ -129,7 +136,10 @@
                 <div class="actions-right-side">
                     {#if !alreadyInCart}
                         <button class="add-to-cart" on:click|stopPropagation|preventDefault={addToCart}>
-                            <span>{locale.addToCart}</span>
+                            <span class:loading={loading}>{locale.addToCart}</span>
+                            {#if loading}
+                                <Spinner absolute={true} size="16"/>
+                            {/if}
                         </button>
                     {/if}
                 </div>
@@ -140,6 +150,10 @@
 {/if}
 
 <style>
+    .loading {
+        opacity: 0;
+    }
+
     .discount {
         font-weight: 800;
         font-size: 19px;
