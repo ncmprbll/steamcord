@@ -1,6 +1,8 @@
 <script lang="ts">
     import { page } from '$app/stores';
 
+    import AnchorContext from '$lib/components/AnchorContext.svelte';
+
     export let loginVisible: boolean;
 
     let expanded: boolean = false;
@@ -40,7 +42,7 @@
         </div>
 		<div class="menu-items">
             <div class="menu-left">
-                <a data-sveltekit-reload href="/">{$page.data.locale.store}</a>
+                <AnchorContext href="/test" text={$page.data.locale.store} />
                 <a data-sveltekit-reload href="/">{$page.data.locale.community}</a>
             </div>
             <div class="menu-right">
@@ -250,7 +252,7 @@
         font-family: Inter, sans-serif;
         font-size: 16px;
         font-weight: normal;
-        line-height: 20px;
+        line-height: var(--store-line-height);
         letter-spacing: 0.2px;
         transition: color 350ms;
         color: #b7bdbf;
@@ -285,7 +287,7 @@
         position: sticky;
         top: 0;
         z-index: 999;
-        /* height: 100px; */
+        max-height: var(--store-nav-height);
         padding: 8px 2%;
     }
 
@@ -328,6 +330,10 @@
     }
 
     @media (max-width: 850px) {
+        .menu {
+            max-height: fit-content;
+        }
+
         .menu-search-bar {
             display: none;
         }

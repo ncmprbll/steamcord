@@ -284,7 +284,7 @@
 
     .short-description-box {
         font-size: 16px;
-        line-height: 20px;
+        line-height: var(--store-line-height);
         display: -webkit-box;
         display: -webkit-flex;
         display: -ms-flexbox;
