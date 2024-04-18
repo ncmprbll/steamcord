@@ -29,7 +29,16 @@
         {
             text: "Sign out",
             type: "button",
-            callback: () => {console.log(123)}
+            callback: async () => {
+                const result = await fetch("/api/auth/logout", {
+                    method: "POST",
+                    credentials: "include",
+                });
+
+                if (result.status === 200) {
+                    window.location.reload();
+                }
+            }
         }
     ]
 

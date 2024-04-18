@@ -89,7 +89,6 @@ func (h *handlers) Login() http.HandlerFunc {
 		}
 
 		http.SetCookie(w, cookie)
-
 		w.WriteHeader(http.StatusOK)
 	}
 }
@@ -137,6 +136,33 @@ func (h *handlers) Me() http.HandlerFunc {
 			return
 		}
 
+		w.WriteHeader(http.StatusOK)
+	}
+}
+
+func (h *handlers) Logout() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		sessionIdCookie, err := r.Cookie("session_id")
+
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		if err := h.sessionRepository.DeleteByID(r.Context(), sessionIdCookie.Value); err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		cookie := &http.Cookie{
+			Name:     "session_id",
+			Value:    "",
+			Path:     "/",
+			MaxAge:   -1,
+			HttpOnly: true,
+		}
+
+		http.SetCookie(w, cookie)
 		w.WriteHeader(http.StatusOK)
 	}
 }

@@ -46,7 +46,6 @@
 	}
 
 	async function handleRegister(event) {
-        console.log(123)
 		const url = event.target.action;
 		const data = new FormData(event.target);
         const password = data.get('password');

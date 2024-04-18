@@ -20,24 +20,28 @@ func New(rdb *redis.Client) *Repository {
 	return &Repository{rdb: rdb}
 }
 
+func format(sessionId string) string {
+	return fmt.Sprintf("session_id:%s", sessionId)
+}
+
 func (s *Repository) CreateSession(ctx context.Context, session *models.Session, expiration int) (string, error) {
-	token := base64.StdEncoding.EncodeToString([]byte(uuid.New().String()))
+	sessionId := base64.StdEncoding.EncodeToString([]byte(uuid.New().String()))
 
 	sessionJson, err := json.Marshal(&session)
 	if err != nil {
 		return "", err
 	}
 
-	err = s.rdb.Set(ctx, fmt.Sprintf("session_id:%s", token), sessionJson, time.Duration(expiration) * time.Second).Err()
+	err = s.rdb.Set(ctx, format(sessionId), sessionJson, time.Duration(expiration) * time.Second).Err()
 	if err != nil {
 		return "", err
 	}
 
-	return token, err
+	return sessionId, err
 }
 
 func (s *Repository) GetSessionByID(ctx context.Context, sessionId string) (*models.Session, error) {
-	bytes, err := s.rdb.Get(ctx, fmt.Sprintf("session_id:%s", sessionId)).Bytes()
+	bytes, err := s.rdb.Get(ctx, format(sessionId)).Bytes()
 	if err != nil {
 		return nil, err
 	}
@@ -51,5 +55,9 @@ func (s *Repository) GetSessionByID(ctx context.Context, sessionId string) (*mod
 }
 
 func (s *Repository) DeleteByID(ctx context.Context, sessionId string) error {
+	if err := s.rdb.Del(ctx, format(sessionId)).Err(); err != nil {
+		return err
+	}
+
 	return nil
 }
