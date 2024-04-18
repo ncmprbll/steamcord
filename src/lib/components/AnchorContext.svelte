@@ -2,12 +2,13 @@
     import { type ContextMenuItem } from '$lib/types/context.type';
     
     export let href: string = '/';
-    export let text: string = '';
     export let items: ContextMenuItem[] = [];
 </script>
 
 <div class="container">
-    <a data-sveltekit-reload {href}>{text}</a>
+    <a data-sveltekit-reload {href}>
+        <slot />
+    </a>
     {#if items.length !== 0}
         <div class="context-menu">
             {#each items as item}
@@ -46,6 +47,7 @@
         font-size: 14px;
         line-height: var(--store-line-height);
         text-align: left;
+        white-space: nowrap;
     }
 
     button:hover {

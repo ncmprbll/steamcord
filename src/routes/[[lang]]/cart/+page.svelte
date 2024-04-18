@@ -89,7 +89,7 @@
                             </div>
                         </div>
                         <div class="remove-from-cart-div">
-                            <button class="button" on:click|preventDefault={() => {removeFromCart(game.id)}}>
+                            <button class="button remove-from-cart" disabled={loadings[game.id]} on:click|preventDefault={() => {removeFromCart(game.id)}}>
                                 <span class:loading={loadings[game.id]}>Remove</span>
                                 {#if loadings[game.id]}
                                     <Spinner absolute={true} size="16"/>
@@ -192,6 +192,10 @@
         box-shadow: none;
         cursor: default;
         pointer-events: none;
+    }
+
+    .button.remove-from-cart:disabled {
+        background: linear-gradient(90deg, #06BFFF 0%, #2D73FF 100%);
     }
 
     .discount {

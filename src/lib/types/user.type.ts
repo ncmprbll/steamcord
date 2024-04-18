@@ -6,6 +6,8 @@ export type User = {
 	user_id: string
 	login: string
 	display_name: string
+	currency_code: string
+	balance: number
 	email: string
 	password: string
 	role: string
@@ -15,11 +17,11 @@ export type User = {
 	cart: Cart
 }
 
-export function removeSensitiveData(user: User, fields: string[], deleteField?: boolean) {
-	for (let i = 0; i < fields.length; i++) {
-		user[fields[i]] = '';
+const currencies: Record<string, string> = {
+	"RUB": "₽",
+	"USD": "$"
+}
 
-		if (deleteField)
-			delete user[fields[i]]
-	}
+export function formatBalance(balance: number, currencyCode: string): string {
+	return balance.toFixed(2) + " " + (currencies[currencyCode] || "$");
 }

@@ -1,6 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
 
+    import { formatBalance } from '$lib/types/user.type';
     import AnchorContext from '$lib/components/AnchorContext.svelte';
 
     export let loginVisible: boolean;
@@ -64,7 +65,9 @@
         </div>
 		<div class="menu-items">
             <div class="menu-left">
-                <AnchorContext href="/test" text={$page.data.locale.store} />
+                <AnchorContext href="/test">
+                    {$page.data.locale.store}
+                </AnchorContext>
                 <a data-sveltekit-reload href="/">{$page.data.locale.community}</a>
             </div>
             <div class="menu-right">
@@ -86,9 +89,17 @@
                 {:else}
                     <AnchorContext
                         href="/profile/{$page.data.me.user_id}"
-                        text="My Profile"
                         items={profileContextMenu}
-                    />
+                    >
+                        <div class="profile-info">
+                            <div class="login">
+                                {$page.data.me.login}
+                            </div>
+                            <div class="balance">
+                                {formatBalance($page.data.me.balance, $page.data.me.currency_code)}
+                            </div>
+                        </div>
+                    </AnchorContext>
                 {/if}
             </div>
 		</div>
@@ -123,13 +134,28 @@
                     Login
                 </button>
             {:else}
-                <a data-sveltekit-reload href="/profile/{$page.data.me.user_id}">My Profile</a>
+                <a data-sveltekit-reload href="/profile/{$page.data.me.user_id}">
+                    <div>
+                        {$page.data.me.user_id}
+                    </div>
+                    <div>
+                        {formatBalance($page.data.me.balance, $page.data.me.currency_code)}
+                    </div>
+                </a>
             {/if}
         </div>
     </div>
 </nav>
 
 <style lang="postcss">
+    .profile-info {
+        text-align: right;
+    }
+
+    .balance {
+        font-size: 12px;
+    }
+
     .cart > svg {
         width: 24px;
         height: 24px;

@@ -69,6 +69,8 @@
                 cart.push(game.id);
                 return cart;
             });
+        } else if (result.status === 409) {
+            window.location.reload();
         }
     }
 </script>
@@ -135,7 +137,7 @@
                 </div>
                 <div class="actions-right-side">
                     {#if !alreadyInCart}
-                        <button class="add-to-cart" on:click|stopPropagation|preventDefault={addToCart}>
+                        <button class="button" disabled={loading} on:click|stopPropagation|preventDefault={addToCart}>
                             <span class:loading={loading}>{locale.addToCart}</span>
                             {#if loading}
                                 <Spinner absolute={true} size="16"/>
@@ -185,7 +187,7 @@
         transition: visibility .75s, opacity .75s;
     }
 
-    .add-to-cart {
+    .button {
         font-size: 18px;
         letter-spacing: 0.5px;
         font-weight: 500;
@@ -209,17 +211,21 @@
         cursor: pointer;
     }
 
-    .add-to-cart:hover {
+    .button:hover {
         background: linear-gradient(90deg, #06BFFF 30%, #2D73FF 100%);
     }
 
-    .add-to-cart > span {
+    .button:disabled {
+        cursor: default;
+        pointer-events: none;
+    }
+
+    .button > span {
         display: flex;
         -webkit-box-pack: center;
         justify-content: center;
         -webkit-box-align: center;
         align-items: center;
-        /* min-width: 12em; */
     }
 
     .actions {
