@@ -1,21 +1,31 @@
 <script lang="ts">
+    import { type ContextMenuItem } from '$lib/types/context.type';
+    
     export let href: string = '/';
     export let text: string = '';
-    export let items: Record<string, string> = {};
+    export let items: ContextMenuItem[] = [];
 </script>
 
 <div class="container">
     <a data-sveltekit-reload {href}>{text}</a>
     {#if items.length !== 0}
         <div class="context-menu">
-            {#each Object.entries(items) as [href, text]}
-                <a {href}>{text}</a>
+            {#each items as item}
+                {#if item.type === "button"}
+                    <button on:click={item.callback}>{item.text}</button>
+                {:else if item.type === "anchor"}
+                    <a href={item.href}>{item.text}</a>
+                {/if}
             {/each}
         </div>
     {/if}
 </div>
 
 <style>
+    a {
+        white-space: nowrap;
+    }
+
     .context-menu {
         position: absolute;
         top: var(--store-line-height);
@@ -30,7 +40,20 @@
         font-size: 14px;
     }
 
-    .context-menu > a {
+    button {
+        color: #b7bdbf;
+        transition: color 350ms;
+        font-size: 14px;
+        line-height: var(--store-line-height);
+        text-align: left;
+    }
+
+    button:hover {
+        color: #ebf2f4;
+        cursor: pointer;
+    }
+
+    .context-menu > a, .context-menu > button {
         padding: 6px 15px;
     }
 

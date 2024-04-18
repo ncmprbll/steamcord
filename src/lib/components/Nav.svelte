@@ -20,6 +20,19 @@
         });
     };
 
+    let profileContextMenu = [
+        {
+            text: "Profile",
+            type: "anchor",
+            href: `/profile/${$page.data?.me?.user_id}`
+        },
+        {
+            text: "Sign out",
+            type: "button",
+            callback: () => {console.log(123)}
+        }
+    ]
+
     function expand() {
         expanded = !expanded
     }
@@ -62,7 +75,11 @@
                         Login
                     </button>
                 {:else}
-                    <a data-sveltekit-reload href="/profile/{$page.data.me.user_id}">My Profile</a>
+                    <AnchorContext
+                        href="/profile/{$page.data.me.user_id}"
+                        text="My Profile"
+                        items={profileContextMenu}
+                    />
                 {/if}
             </div>
 		</div>
