@@ -209,6 +209,7 @@
         background: linear-gradient(90deg, #06BFFF 0%, #2D73FF 100%);
         color: rgb(245, 245, 245);
         cursor: pointer;
+        pointer-events: auto;
     }
 
     .button:hover {
@@ -217,7 +218,6 @@
 
     .button:disabled {
         cursor: default;
-        pointer-events: none;
     }
 
     .button > span {
@@ -389,6 +389,11 @@
         width: 100%;
         margin-left: 8px; /* Tied to 'export let margin' */
         margin-right: 8px; /* Tied to 'export let margin' */
+        pointer-events: auto;
+    }
+
+    .big-store-container:has(.button:hover) {
+        pointer-events: none;
     }
 
     .screenshot {

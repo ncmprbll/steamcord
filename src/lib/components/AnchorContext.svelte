@@ -15,7 +15,7 @@
                 {#if item.type === "button"}
                     <button on:click={item.callback}>{item.text}</button>
                 {:else if item.type === "anchor"}
-                    <a href={item.href}>{item.text}</a>
+                    <a data-sveltekit-reload href={item.href}>{item.text}</a>
                 {/if}
             {/each}
         </div>
