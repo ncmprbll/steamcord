@@ -8,14 +8,14 @@ import (
 )
 
 type JSONProductID struct {
-	ProductID int64 `json:"product_id"`
+	ProductID int `json:"product_id"`
 }
 
 type JSONCartProducts []int
 
 type CartRow struct {
 	UserID    uuid.UUID `json:"user_id,omitempty"`
-	ProductID int64     `json:"product_id,omitempty"`
+	ProductID int     `json:"product_id,omitempty"`
 }
 
 type CartGameRow struct {

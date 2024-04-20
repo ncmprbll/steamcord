@@ -2,6 +2,7 @@ DROP SEQUENCE IF EXISTS products_sequence CASCADE;
 
 DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS users_cart CASCADE;
+DROP TABLE IF EXISTS users_games CASCADE;
 DROP TABLE IF EXISTS genres CASCADE;
 DROP TABLE IF EXISTS products CASCADE;
 DROP TABLE IF EXISTS products_prices CASCADE;
@@ -88,6 +89,25 @@ CREATE TABLE users_cart
     product_id BIGINT REFERENCES products(id),
     PRIMARY KEY (user_id, product_id)
 );
+
+CREATE TABLE users_games
+(
+    user_id UUID REFERENCES users(user_id),
+    product_id BIGINT REFERENCES products(id),
+    currency_code CHAR(3) REFERENCES currencies(code),
+    bought_for NUMERIC(16, 2) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (user_id, product_id)
+);
+
+CREATE TABLE locales
+(
+    code VARCHAR(4) PRIMARY KEY,
+    name TEXT NOT NULL CHECK ( name <> '' )
+);
+
+INSERT INTO locales (code, name) VALUES ('ru', 'Русский');
+INSERT INTO locales (code, name) VALUES ('en', 'English');
 
 INSERT INTO currencies (code, symbol) VALUES ('RUB', '₽');
 INSERT INTO currencies (code, symbol) VALUES ('USD', '$');

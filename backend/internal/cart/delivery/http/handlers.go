@@ -71,6 +71,25 @@ func (h *handlers) CartIDs() http.HandlerFunc {
 	}
 }
 
+func (h *handlers) Purchase() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		found, ok := r.Context().Value("user").(*models.User)
+
+		if !ok {
+			util.HandleError(w, errors.New("no user"))
+			return
+		}
+
+		err := h.cartRepository.Purchase(r.Context(), found)
+		if err != nil {
+			util.HandleError(w, err)
+			return	
+		}
+
+		w.WriteHeader(http.StatusEarlyHints)
+	}
+}
+
 func (h *handlers) AddToCart() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		found, ok := r.Context().Value("user").(*models.User)

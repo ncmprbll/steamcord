@@ -218,6 +218,7 @@
 
     .button:disabled {
         cursor: default;
+        pointer-events: none;
     }
 
     .button > span {
@@ -392,7 +393,7 @@
         pointer-events: auto;
     }
 
-    .big-store-container:has(.button:hover) {
+    .big-store-container:has(.button:hover), .big-store-container:has(.button:disabled) {
         pointer-events: none;
     }
 

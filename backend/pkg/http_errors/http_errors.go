@@ -49,7 +49,7 @@ func newErrorWrapper(s int, e string) *ErrorWrapper {
 
 func parseSQLErrors(err error) *ErrorWrapper {
 	if errors.Is(err, sql.ErrNoRows) {
-		return newErrorWrapper(http.StatusUnauthorized, Unauthorized)
+		return newErrorWrapper(http.StatusNotFound, NotFound)
 	}
 
 	if strings.Contains(err.Error(), "23505") {
@@ -74,6 +74,8 @@ func ErrorResponse(err error) *ErrorWrapper {
 	case strings.Contains(err.Error(), "invalid"):
 		return newErrorWrapper(http.StatusBadRequest, BadRequest)
 	case strings.Contains(err.Error(), "validation"):
+		return newErrorWrapper(http.StatusBadRequest, BadRequest)
+	case strings.Contains(err.Error(), "funds"):
 		return newErrorWrapper(http.StatusBadRequest, BadRequest)
 	case strings.Contains(strings.ToLower(err.Error()), "cookie"):
 		return newErrorWrapper(http.StatusUnauthorized, Unauthorized)

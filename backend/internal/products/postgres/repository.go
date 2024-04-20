@@ -25,7 +25,7 @@ func (s *Repository) GetTier(ctx context.Context, currencyCode, limit string) ([
 						jsonb_build_object('original', h.price, 'final', h.final, 'symbol', currencies.symbol) as price,
 						products_images.tier_background_img
 					FROM products
-						JOIN LATERAL (SELECT *, (price - price * products.discount / 100)::NUMERIC(16, 2) as final FROM products_prices WHERE currency_code = $1) h ON products.id = h.product_id
+						JOIN LATERAL (SELECT *, (price - (price * products.discount / 100)::NUMERIC(16, 2)) as final FROM products_prices WHERE currency_code = $1) h ON products.id = h.product_id
 						JOIN currencies ON currencies.code = h.currency_code
 						JOIN products_images ON products.id = products_images.product_id
 					GROUP BY products.id, products_images.tier_background_img, price, currencies.symbol, final
@@ -63,7 +63,7 @@ func (s *Repository) GetTierByGenre(ctx context.Context, currencyCode, genre, li
 						jsonb_build_object('original', h.price, 'final', h.final, 'symbol', currencies.symbol) as price,
 						products_images.tier_background_img
 					FROM products
-						JOIN LATERAL (SELECT *, (price - price * products.discount / 100)::NUMERIC(16, 2) as final FROM products_prices WHERE currency_code = $1) h ON products.id = h.product_id
+						JOIN LATERAL (SELECT *, (price - (price * products.discount / 100)::NUMERIC(16, 2)) as final FROM products_prices WHERE currency_code = $1) h ON products.id = h.product_id
 						JOIN currencies ON currencies.code = h.currency_code
 						JOIN products_images ON products.id = products_images.product_id
 						JOIN products_genres ON products.id = products_genres.product_id
@@ -106,7 +106,7 @@ func (s *Repository) GetFeatured(ctx context.Context, currencyCode string) ([]*m
 						products_images.featured_logo_img
 					FROM products
 						JOIN products_featured ON products.id = products_featured.product_id
-						JOIN LATERAL (SELECT *, (price - price * products.discount / 100)::NUMERIC(16, 2) as final FROM products_prices WHERE currency_code = $1) h ON products.id = h.product_id
+						JOIN LATERAL (SELECT *, (price - (price * products.discount / 100)::NUMERIC(16, 2)) as final FROM products_prices WHERE currency_code = $1) h ON products.id = h.product_id
 						JOIN currencies ON currencies.code = h.currency_code
 						JOIN products_images ON products.id = products_images.product_id
 					GROUP BY id, featured_background_img, featured_logo_img, price, currencies.symbol, final
