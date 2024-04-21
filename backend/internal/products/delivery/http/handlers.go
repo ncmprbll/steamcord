@@ -2,6 +2,7 @@ package http
 
 import (
 	"encoding/json"
+	"errors"
 	"main/backend/internal/models"
 	"main/backend/internal/products"
 	"main/backend/internal/util"
@@ -77,6 +78,31 @@ func (h *handlers) GetFeatured() http.HandlerFunc {
 		w.Header().Set("Content-Type", "application/json")
 		err = json.NewEncoder(w).Encode(rows)
 		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}
+}
+
+func (h *handlers) GetOwned() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		found, ok := r.Context().Value("user").(*models.User)
+
+		if !ok {
+			util.HandleError(w, errors.New("no user"))
+			return
+		}
+
+		ownedJson, err := h.productsRepository.GetOwnedIDs(r.Context(), found)
+		if err != nil {
+			util.HandleError(w, err)
+			return	
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(ownedJson); err != nil {
 			util.HandleError(w, err)
 			return
 		}

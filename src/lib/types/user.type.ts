@@ -1,6 +1,7 @@
 import { type Writable } from 'svelte/store';
 
 type Cart = number[] | Writable<Cart>
+type Owned = Cart
 
 export type User = {
 	user_id: string
@@ -15,6 +16,7 @@ export type User = {
 	updated_at: string
 	login_date: string
 	cart: Cart
+	owned: Owned
 }
 
 const currencies: Record<string, string> = {

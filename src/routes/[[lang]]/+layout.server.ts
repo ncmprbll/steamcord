@@ -32,6 +32,7 @@ export async function load({ params, cookies }) {
     if (result.status === 200) {
         me = await result.json();
         me!.cart = [];
+        me!.owned = [];
 
         result = await fetch('http://localhost:3000/cart/ids', {
             method: 'GET',
@@ -43,6 +44,18 @@ export async function load({ params, cookies }) {
 
         if (result.status === 200) {
             me!.cart = await result.json();
+        }
+
+        result = await fetch('http://localhost:3000/products/owned', {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                Cookie: 'session_id=' + sessionId
+            }
+        });
+
+        if (result.status === 200) {
+            me!.owned = await result.json();
         }
     } else if (sessionId !== undefined) {
         error = 'Your session has expired, sign in again.';

@@ -80,7 +80,7 @@
 />
 
 {#if game !== undefined}
-<a href="/" bind:clientWidth={clientWidth} bind:this={element} class="big-store-container">
+<a href="/app/{game.id}" bind:clientWidth={clientWidth} bind:this={element} class="big-store-container">
     <div class="screenshot" style="{style}">
         <picture>
             <source type="image/jpeg" class="big-spot__background-source" srcset={game.featured_background_img}>
@@ -136,13 +136,21 @@
                     </div>
                 </div>
                 <div class="actions-right-side">
-                    {#if !alreadyInCart}
+                    {#if $page.data?.me?.owned.includes(game.id)}
+                        <div class="button owned">
+                            <span>Owned</span>
+                        </div>
+                    {:else if !alreadyInCart}
                         <button class="button" disabled={loading} on:click|stopPropagation|preventDefault={addToCart}>
                             <span class:loading={loading}>{locale.addToCart}</span>
                             {#if loading}
                                 <Spinner absolute={true} size="16"/>
                             {/if}
                         </button>
+                    {:else if alreadyInCart}
+                        <div class="button in-cart">
+                            <span>In cart</span>
+                        </div>
                     {/if}
                 </div>
             </div>
@@ -227,6 +235,16 @@
         justify-content: center;
         -webkit-box-align: center;
         align-items: center;
+    }
+
+    .button.owned {
+        background: rgb(61, 67, 77);
+        color: #d1cdcd;
+    }
+
+    .button.in-cart {
+        background: rgb(57 157 69);
+        color: #ffffff;
     }
 
     .actions {

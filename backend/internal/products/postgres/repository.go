@@ -143,3 +143,15 @@ func (s *Repository) GetFeatured(ctx context.Context, currencyCode string) ([]*m
 
 	return result, nil
 }
+
+func (s *Repository) GetOwnedIDs(ctx context.Context, user *models.User) (*models.JSONOwnedProducts, error) {
+	const query = `
+				SELECT COALESCE(json_agg(product_id), '[]'::json) as products FROM users_games WHERE user_id = $1;
+				`
+	json := &models.JSONOwnedProducts{}
+	if err := s.database.QueryRowxContext(ctx, query, user.UUID).Scan(json); err != nil {
+		return nil, err
+	}
+
+	return json, nil
+}

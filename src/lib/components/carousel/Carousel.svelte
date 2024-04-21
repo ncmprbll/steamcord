@@ -6,7 +6,7 @@
     export let locale: Record<string, string>;
 
     const CAROUSEL_SPEED = 400;
-    const CAROUSEL_TIMER = 5; // Seconds
+    const CAROUSEL_TIMER = 50; // Seconds
 
     let left = [];
     let right = [];

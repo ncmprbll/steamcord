@@ -1,6 +1,7 @@
 :root {
 	font-family: Inter, sans-serif;
 	font-feature-settings: 'liga' 1, 'calt' 1;
+    color-scheme: dark;
 	--nav-bg-color: #18181c;
     --store-width: 1060px;
     --store-nav-height: 80px;

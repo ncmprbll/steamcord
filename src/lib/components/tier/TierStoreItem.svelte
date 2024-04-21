@@ -21,7 +21,7 @@
 </script>
 
 {#if game !== undefined}
-<a href="/" class="sale-capsule" style={style}>
+<a href="/app/{game.id}" class="sale-capsule" style={style}>
     <div class="sale_capsule_image_ctn">
         <img class="sale-capsule-image" src={game.tier_background_img} alt={game.name}>
     </div>

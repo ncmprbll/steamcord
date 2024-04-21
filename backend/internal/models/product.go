@@ -5,6 +5,8 @@ import (
 	"errors"
 )
 
+type JSONOwnedProducts []int
+
 type Price struct {
 	ID           int     `json:"id,omitempty"`
 	ProductID    int64   `json:"product_id,omitempty"`
@@ -49,6 +51,16 @@ func (p *JSONPrice) Scan(src any) error {
 }
 
 func (p *JSONPlatforms) Scan(src any) error {
+	bytes, ok := src.([]byte)
+
+	if !ok {
+		return errors.New("not a bytes array")
+	}
+
+	return json.Unmarshal(bytes, p)
+}
+
+func (p *JSONOwnedProducts) Scan(src any) error {
 	bytes, ok := src.([]byte)
 
 	if !ok {
