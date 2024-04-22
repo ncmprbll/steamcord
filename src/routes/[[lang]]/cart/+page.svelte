@@ -165,7 +165,7 @@
         font-weight: 500;
         position: relative;
         border: none;
-        border-radius: 8px;
+        border-radius: 4px;
         text-transform: uppercase;
         align-self: end;
         text-align: center;

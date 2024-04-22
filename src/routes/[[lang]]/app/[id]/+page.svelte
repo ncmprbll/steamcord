@@ -1,4 +1,13 @@
 <script lang="ts">
+    import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
+
+    import windows from '$lib/assets/os/windows.png';
+    import mac from '$lib/assets/os/mac.png';
+    import linux from '$lib/assets/os/linux.png';
+    import { goto } from "$app/navigation";
+import { page } from "$app/stores"; 
+    import { formatPrice } from '$lib/types/game.type';
+
     export let data;
 
     let screenshots = [
@@ -11,6 +20,28 @@
         "https://cdn.akamai.steamstatic.com/steam/apps/2881650/ss_371cb06f9f6a6bc9e5273b4d6b8168ce00f4ff34.jpg",
         "https://cdn.akamai.steamstatic.com/steam/apps/2881650/ss_0639604a881c0a0c9e02960b61d108c1f643809d.jpg"
     ]
+
+    let description = `
+Squad is the embodiment of tactical military action. Compete in massive-scale 50 vs. 50 battles in the most realistic combined-arms first-person shooter. Squad emphasizes combat realism through teamwork, tactics, and authentic warfare. A wide selection of realistic faction-specific weapons and vehicles allow players to build their own loadouts that best suit their preferred tactics. And with Squad’s unique Picture-in-Picture scopes, it’s like you’re really aiming at the enemy through real military-issue scopes.
+
+Featuring 13 factions, 24 massive maps, and a sweeping arsenal of weapons and vehicles, Squad creates a heart-thumping, visceral shooter experience that requires split-second decision-making in intense, realistic firefights.
+
+## Massive 50 vs. 50 Battles
+
+Squad creates authentic combat experiences while pitting conventional and unconventional factions against each other. As part of a 50 person team, join a nine-person squad to face off against opposing factions in intense combat across large real-world environments. Squad features 13 factions from all over the world, including the United States Marine Corps, Australian Defence Force, and Canadian Army among many others.
+
+## Ultra-Realistic Infantry Combat
+
+Squad’s combat was designed to provide the most fun, immersive, and authentic infantry experience possible. With Squad’s core tenets of teamwork and tactics, you’ll have to work together to outmaneuver your enemies with realistic Picture-in-Picture scopes and Squad’s unique Suppression system. Work with your squad to overwhelm the enemy and snatch victory from the jaws of defeat!
+
+## Building & Logistics System
+
+Adapt to the ever-changing needs of the battlefield. By building fortifications and emplacements or supplying your team with ammunition and materials, you can give your squad the edge. Whether it’s placing HMGs and AT guns or fortifying a position with sandbags, razor wire, and some much-needed ammo, the battlefield is yours to change, if you have the courage to do so.
+
+## Communication
+
+Solid communication is a soldier's best friend when engaging the enemy. To help facilitate navigating the complexity of communication on the battlefield, Squad provides a world-class in-game VoIP system that allows players to talk to other soldiers locally, in-squad, between squad leaders, or even to the overall team commander. Map tools and in-world markers aid fire team leads and squad leaders to inform their soldiers of on-the-fly engagement tactics.
+`
 
     let previous = -1;
     let selected = 0;
@@ -59,34 +90,307 @@
 </div>
 
 <div class="main-content">
-    <p class="breaker">About this game</p>
-    <div class="description">
-        Squad is the embodiment of tactical military action. Compete in massive-scale 50 vs. 50 battles in the most realistic combined-arms first-person shooter. Squad emphasizes combat realism through teamwork, tactics, and authentic warfare. A wide selection of realistic faction-specific weapons and vehicles allow players to build their own loadouts that best suit their preferred tactics. And with Squad’s unique Picture-in-Picture scopes, it’s like you’re really aiming at the enemy through real military-issue scopes.
-        Featuring 13 factions, 24 massive maps, and a sweeping arsenal of weapons and vehicles, Squad creates a heart-thumping, visceral shooter experience that requires split-second decision-making in intense, realistic firefights.
-        Massive 50 vs. 50 Battles
-        Squad creates authentic combat experiences while pitting conventional and unconventional factions against each other. As part of a 50 person team, join a nine-person squad to face off against opposing factions in intense combat across large real-world environments. Squad features 13 factions from all over the world, including the United States Marine Corps, Australian Defence Force, and Canadian Army among many others.
-        Ultra-Realistic Infantry Combat
-        Squad’s combat was designed to provide the most fun, immersive, and authentic infantry experience possible. With Squad’s core tenets of teamwork and tactics, you’ll have to work together to outmaneuver your enemies with realistic Picture-in-Picture scopes and Squad’s unique Suppression system. Work with your squad to overwhelm the enemy and snatch victory from the jaws of defeat!
-        Building & Logistics System
-        Adapt to the ever-changing needs of the battlefield. By building fortifications and emplacements or supplying your team with ammunition and materials, you can give your squad the edge. Whether it’s placing HMGs and AT guns or fortifying a position with sandbags, razor wire, and some much-needed ammo, the battlefield is yours to change, if you have the courage to do so.
-        Communication
-        Solid communication is a soldier's best friend when engaging the enemy. To help facilitate navigating the complexity of communication on the battlefield, Squad provides a world-class in-game VoIP system that allows players to talk to other soldiers locally, in-squad, between squad leaders, or even to the overall team commander. Map tools and in-world markers aid fire team leads and squad leaders to inform their soldiers of on-the-fly engagement tactics.
+    <div class="main">
+        <p class="breaker">About this game</p>
+        <div class="description">
+            {@html marked.parse(description)}
+        </div>
+        <p class="breaker">System requirements</p>
+        <div class="system-requirements">
+            <table>
+                <tr>
+                    <th></th>
+                    <th>Minimum</th>
+                    <th>Recommended</th>
+                </tr>
+                <tr>
+                    <th scope="row">OS</th>
+                    <td>Win 10</td>
+                    <td>Win 11</td>
+                </tr>
+                <tr>
+                    <th scope="row">Processor</th>
+                    <td>Intel Core i5 @ 2.5 GHz or equivalent</td>
+                    <td>Intel Core i5 @ 3.0 GHz or AMD Ryzen 5 or equivalent</td>
+                </tr>
+                <tr>
+                    <th scope="row">Memory</th>
+                    <td>8 GB RAM</td>
+                    <td>16 GB RAM</td>
+                </tr>
+                <tr>
+                    <th scope="row">Graphics</th>
+                    <td>NVIDIA GeForce GTX 1050 ti or AMD R9 380</td>
+                    <td>NVIDIA GeForce GTX 1060 or AMD RX 470 or equivalent</td>
+                </tr>
+                <tr>
+                    <th scope="row">DirectX</th>
+                    <td>Version 11</td>
+                    <td>Version 12</td>
+                </tr>
+                <tr>
+                    <th scope="row">Network</th>
+                    <td>Broadband Internet connection</td>
+                    <td>Broadband Internet connection</td>
+                </tr>
+                <tr>
+                    <th scope="row">Storage</th>
+                    <td>4 GB available space</td>
+                    <td>6 GB available space</td>
+                </tr>
+            </table>
+        </div>
     </div>
-    <div>456</div>
+    <div class="aside">
+        <div class="price-block">
+            <!-- {#if game.discount !== 0 && game.discount !== undefined} -->
+            {#if true}
+                <div class="discount">-{5}%</div>
+                <div class="discount-original-price">$5.55</div>
+                <div class="discount-final-price">$5.55</div>
+            {:else}
+                <div class="discount-final-price">$5.55</div>
+            {/if}
+        </div>
+        <div class="button">
+            <span>Add to cart</span>
+        </div>
+        <div class="button">
+            <span>Add to wishlist</span>
+        </div>
+        <div class="meta-data">
+            <div class="meta-row">
+                <div class="meta-subtitle">Platforms</div>
+                <div class="platforms-icons">
+                    {#if true}
+                        <img src={windows} alt="Windows">
+                    {/if}
+                    {#if true}
+                        <img src={mac} alt="Mac">
+                    {/if}
+                    {#if true}
+                        <img src={linux} alt="Linux">
+                    {/if}
+                </div>
+            </div>
+            <div class="meta-row">
+                <div class="meta-subtitle">Publisher</div>
+                <div class="platforms-icons">
+                    Landfall Games
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<p class="breaker">Reviews</p>
+<div class="reviews">
+    <div class="review">
+        <div class="left">
+            <div class="player-info">
+                <div class="avatar">
+                    <img src="https://avatars.akamai.steamstatic.com/50456f88f839a416022715c64b6681a923f64366.jpg" srcset="https://avatars.akamai.steamstatic.com/50456f88f839a416022715c64b6681a923f64366.jpg 1x, https://avatars.akamai.steamstatic.com/50456f88f839a416022715c64b6681a923f64366_medium.jpg 2x" alt="Avatar">
+                </div>
+                <div class="name">
+                    Whtoo24k2
+                </div>
+            </div>
+        </div>
+        <div class="right">
+            <div class="status recommended">Recommended</div>
+            <div class="review-content">1p2o3p1o562jkltaj3wkjtkp23j12j3j12lk4j1lk2j56lk12jlk4j1lk1p2o3p1o562jkltaj3wkjtkp23j12j3j12lk4j1lk2j56lk12jlk4j1lk1p2o3p1o562jkltaj3wkjtkp23j12j3j12lk4j1lk2j56lk12jlk4j1lk1p2o3p1o562jkltaj3wkjtkp23j12j3j12lk4j1lk2j56lk12jlk4j1lk1p2o3p1o562jkltaj3wkjtkp23j12j3j12lk4j1lk2j56lk12jlk4j1lk</div>
+        </div>
+    </div>
+    <div class="review">
+        <div class="left">
+            <div class="player-info">
+                <div class="avatar">
+                    <img src="https://avatars.akamai.steamstatic.com/50456f88f839a416022715c64b6681a923f64366.jpg" srcset="https://avatars.akamai.steamstatic.com/50456f88f839a416022715c64b6681a923f64366.jpg 1x, https://avatars.akamai.steamstatic.com/50456f88f839a416022715c64b6681a923f64366_medium.jpg 2x" alt="Avatar">
+                </div>
+                <div class="name">
+                    Whtoo24k2
+                </div>
+            </div>
+        </div>
+        <div class="right">
+            <div class="status not-recommended">Not Recommended</div>
+            <div class="review-content">1p2o3p1o562jkltaj3wkjtkp23j12j3j12lk4j1lk2j56lk12jlk4j1lk1p2o3p1o562jkltaj3wkjtkp23j12j3j12lk4j1lk2j56lk12jlk4j1lk1p2o3p1o562jkltaj3wkjtkp23j12j3j12lk4j1lk2j56lk12jlk4j1lk1p2o3p1o562jkltaj3wkjtkp23j12j3j12lk4j1lk2j56lk12jlk4j1lk1p2o3p1o562jkltaj3wkjtkp23j12j3j12lk4j1lk2j56lk12jlk4j1lk1p2o3p1o562jkltaj3wkjtkp23j12j3j12lk4j1lk2j56lk12jlk4j1lk1p2o3p1o562jkltaj3wkjtkp23j12j3j12lk4j1lk2j56lk12jlk4j1lk1p2o3p1o562jkltaj3wkjtkp23j12j3j12lk4j1lk2j56lk12jlk4j1lk1p2o3p1o562jkltaj3wkjtkp23j12j3j12lk4j1lk2j56lk12jlk4j1lk1p2o3p1o562jkltaj3wkjtkp23j12j3j12lk4j1lk2j56lk12jlk4j1lk
+            </div>
+        </div>
+    </div>
 </div>
 
 <style lang="postcss">
+    :root {
+        --right-side-size: 324px;
+    }
+
+    .review {
+        display: flex;
+        padding: 8px 16px;
+    }
+
+    .player-info {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        padding-right: 16px;
+    }
+
+    .avatar {
+        width: 34px;
+        height: 34px;
+        flex: 0 0 34px;
+    }
+
+    .name {
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+    .left {
+        display: flex;
+        width: 20%;
+        border-right: 1px solid #3b3b3b;
+    }
+
+    .right {
+        padding: 8px 16px;
+        word-break: break-word;
+    }
+
+    .status {
+        font-size: 18px;
+        font-weight: 600;
+        letter-spacing: 2px;
+        margin-bottom: 4px;
+    }
+
+    td {
+        border-bottom: 1px solid #3b3b3b;
+    }
+
+    .meta-subtitle {
+        color: rgba(245, 245, 245, 0.6);
+    }
+
+    .meta-data {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        margin-top: 8px;
+    }
+
+    .meta-data > * {
+        border-bottom: 1px solid #3b3b3b;
+        padding-bottom: 8px
+    }
+
+    .meta-row {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .platforms-icons {
+        display: flex
+    }
+
+    .meta-summary {
+        padding: 8px 16px;
+    }
+
+    .button {
+        font-size: 14px;
+        letter-spacing: 0.5px;
+        font-weight: 500;
+        position: relative;
+        border: none;
+        border-radius: 4px;
+        text-transform: uppercase;
+        text-align: center;
+        -webkit-box-align: center;
+        align-items: center;
+        -webkit-box-pack: center;
+        justify-content: center;
+        line-height: 15px;
+        padding: 0px 20px;
+        height: 50px;
+        display: flex;
+        min-width: auto;
+        background: linear-gradient(90deg, #06BFFF 0%, #2D73FF 100%);
+        color: rgb(245, 245, 245);
+        cursor: pointer;
+        pointer-events: auto;
+    }
+
+    .button:hover {
+        background: linear-gradient(90deg, #06BFFF 30%, #2D73FF 100%);
+    }
+
+    .button:disabled {
+        cursor: default;
+        pointer-events: none;
+    }
+
+    .button > span {
+        display: flex;
+        -webkit-box-pack: center;
+        justify-content: center;
+        -webkit-box-align: center;
+        align-items: center;
+    }
+
+    .discount {
+        font-weight: 800;
+        font-size: 19px;
+        color: #BEEE11;
+    }
+
+    .price-block {
+        display: -ms-flexbox;
+        display: flex;
+        gap: 8px;
+        -ms-flex-line-pack: center;
+        align-content: center;
+        align-items: center;
+    }
+
+    .discount-original-price {
+        text-decoration: line-through;
+        color: #979797;
+    }
+
+    .discount-final-price {
+        color: #ebf2f4;
+    }
+
+    .aside {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        box-sizing: border-box;
+        border-radius: 4px;
+        padding: 16px;
+        background-color: rgb(32, 32, 32);
+        width: var(--right-side-size);
+        height: fit-content;
+        position: sticky;
+        top: 96px; /* 80 (navbar height) + 16 (margin) */
+    }
+
     .breaker {
         margin-top: 0;
         margin-bottom: 1em;
         border-bottom: 1px solid #3b3b3b;
         height: 32px;
+        text-transform: uppercase;
+        font-size: 18px;
+        font-weight: 600;
+        letter-spacing: 3px;
     }
 
     .short-description {
-        padding-top: 8px;
-        padding-right: 16px;
-        padding-bottom: 8px;
+        padding: 8px 16px;
     }
 
     .meta-row {
@@ -106,7 +410,18 @@
         justify-content: space-between;
         gap: 16px;
         width: 100%;
-        margin-bottom: 8px;
+        margin-bottom: 16px;
+    }
+
+    .main-content {
+        display: flex;
+        gap: 16px;
+        width: 100%;
+        margin-bottom: 16px;
+    }
+
+    .main {
+        flex: 1;
     }
 
     .screenshot-holder {
@@ -121,7 +436,7 @@
     }
 
     .screenshot-holder.previous {
-        transition: opacity 3g50ms ease-out;
+        transition: opacity 350ms ease-out;
         opacity: 0;
         position: absolute;
         top: 0;
@@ -134,7 +449,8 @@
     }
 
     .info-block {
-        width: 324px;
+        width: var(--right-side-size);
+        background-color: rgb(32, 32, 32);
     }
 
     img {
@@ -168,15 +484,44 @@
         cursor: default;
     }
 
-    @keyframes switch-from {
-        100% {
-            opacity: 0;
+    @media (max-width: 1021px) {
+        .header-content {
+            flex-direction: column;
+        }
+
+        .info-block {
+            width: 100%;
+            order: -1;
+        }
+
+        .item-image {
+            width: 50%;
+            float: left;
+        }
+
+        .short-description {
+            overflow: hidden;
+        }
+
+        .meta-summary {
+            overflow: hidden;
         }
     }
 
-    @keyframes switch-to {
-        100% {
-            opacity: 1;
+    @media (max-width: 740px) {
+        .main-content {
+            flex-direction: column;
+        }
+
+        .item-image {
+            width: 100%;
+            float: none;
+        }
+
+        .aside {
+            order: -1;
+            width: 100%;
+            position: static;
         }
     }
 </style>
