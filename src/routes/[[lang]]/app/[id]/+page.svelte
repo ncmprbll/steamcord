@@ -235,6 +235,7 @@ Solid communication is a soldier's best friend when engaging the enemy. To help 
         gap: 16px;
         align-items: center;
         padding-right: 16px;
+        overflow: hidden;
     }
 
     .avatar {
@@ -263,7 +264,15 @@ Solid communication is a soldier's best friend when engaging the enemy. To help 
         font-size: 18px;
         font-weight: 600;
         letter-spacing: 2px;
-        margin-bottom: 4px;
+        margin-bottom: 8px;
+    }
+
+    .status.recommended {
+        color: green;
+    }
+
+    .status.not-recommended {
+        color: red;
     }
 
     td {
@@ -522,6 +531,19 @@ Solid communication is a soldier's best friend when engaging the enemy. To help 
             order: -1;
             width: 100%;
             position: static;
+        }
+
+        .review {
+            flex-direction: column;
+        }
+
+        .left {
+            width: 100%;
+            border-right: none;
+        }
+
+        .right {
+            padding: 16px 0;
         }
     }
 </style>

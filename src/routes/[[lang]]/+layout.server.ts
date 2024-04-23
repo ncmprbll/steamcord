@@ -1,8 +1,4 @@
-import { writable } from 'svelte/store';
-
 import type { User } from '$lib/types/user.type';
-import type { FeaturedGame } from '$lib/types/game.type';
-import type { TierGame } from '$lib/types/game.type';
 
 // REDO?
 import * as en from '$lib/lang/en.ts';
@@ -19,9 +15,31 @@ export async function load({ params, cookies }) {
 
     let error: string | undefined;
     let me: User | undefined;
+    let dbLocales: Record<string, string>[] | undefined;
+    let lang: string = "";
+
+    if (params.lang !== undefined) {
+        lang = "/" + params.lang;
+    }
+
+    let result = await fetch('http://localhost:3000/locales/');
+    if (result.status === 200) {
+        dbLocales = await result.json();
+    }
+
     const sessionId = cookies.get('session_id');
 
-    let result = await fetch('http://localhost:3000/auth/me', {
+    if (sessionId === undefined) {
+        return {
+            me: me,
+            error: error,
+            locale: locale,
+            locales: dbLocales,
+            lang: lang
+        };
+    }
+
+    result = await fetch('http://localhost:3000/auth/me', {
         method: 'GET',
         credentials: 'include',
         headers: {
@@ -57,7 +75,7 @@ export async function load({ params, cookies }) {
         if (result.status === 200) {
             me!.owned = await result.json();
         }
-    } else if (sessionId !== undefined) {
+    } else {
         error = 'Your session has expired, sign in again.';
         cookies.delete('session_id', { path: '/' });
     };
@@ -66,5 +84,7 @@ export async function load({ params, cookies }) {
         me: me,
         error: error,
 		locale: locale,
+        locales: dbLocales,
+        lang: lang
 	};
 }

@@ -6,6 +6,8 @@
 
     export let loginVisible: boolean;
 
+    console.log($page.data)
+
     let expanded: boolean = false;
     let init: boolean = false;
     let count: number = 0;
@@ -21,11 +23,37 @@
         });
     };
 
+    let languagesContextMenu = [];
+
+    function setLanguage(code: string) {
+        const path = $page.url.pathname;
+
+        if ($page.params.lang === undefined) {
+            window.location.pathname = "/" + code + path;
+        } else {
+            window.location.pathname = path.replace($page.params.lang, code);
+        }
+
+        console.log(code, $page.params, $page.url, $page.url.pathname);
+    }
+
+    if ($page.data?.locales) {
+        for (let i = 0; i < $page.data.locales.length; i++) {
+            languagesContextMenu[i] = {
+                text: $page.data.locales[i].name,
+                type: "button",
+                callback: () => {
+                    setLanguage($page.data.locales[i].code)
+                }
+            }
+        }
+    }
+
     let profileContextMenu = [
         {
             text: "Profile",
             type: "anchor",
-            href: `/profile/${$page.data?.me?.user_id}`
+            href: `${$page.data?.lang}/profile/${$page.data?.me?.user_id}`
         },
         {
             text: "Sign out",
@@ -65,14 +93,23 @@
         </div>
 		<div class="menu-items">
             <div class="menu-left">
-                <AnchorContext href="/test">
+                <AnchorContext href="{$page.data?.lang}">
                     {$page.data.locale.store}
                 </AnchorContext>
                 <a data-sveltekit-reload href="/">{$page.data.locale.community}</a>
             </div>
             <div class="menu-right">
+                <AnchorContext
+                    items={languagesContextMenu}
+                >
+                    <div class="svg-icon">
+                        <svg  fill="currentColor" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 466.337 466.337" xml:space="preserve">
+                           <path d="M233.168,0C104.604,0,0,104.604,0,233.168c0,128.565,104.604,233.169,233.168,233.169 c128.565,0,233.169-104.604,233.169-233.169C466.337,104.604,361.733,0,233.168,0z M223.984,441.874 c-22.321,0-46.405-41.384-59.045-107.815h118.067C270.371,400.49,246.316,441.874,223.984,441.874z M161.114,310.144 c-2.738-19.991-4.437-41.781-4.881-65.018H291.74c-0.443,23.237-2.148,45.027-4.869,65.018H161.114z M24.521,245.126h107.704 c0.443,21.883,2.09,43.859,4.887,65.018H38.768C30.693,289.826,25.818,267.966,24.521,245.126z M223.984,24.464 c21.982,0,45.687,40.14,58.484,104.877h-116.97C178.286,64.604,201.996,24.464,223.984,24.464z M286.463,153.245 c2.978,20.785,4.811,43.596,5.277,67.966H156.222c0.467-24.37,2.295-47.169,5.272-67.966H286.463z M132.226,221.211H24.521 c1.354-23.926,6.568-46.836,15.332-67.966h97.656C134.462,175.32,132.681,198.312,132.226,221.211z M315.749,245.126h126.065 c-1.296,22.84-6.188,44.7-14.246,65.018H310.855C313.646,288.985,315.305,267.009,315.749,245.126z M315.749,221.211 c-0.468-22.898-2.254-45.891-5.29-67.966h116.023c8.77,21.13,13.978,44.04,15.332,67.966H315.749z M414.596,129.33H306.617 c-7.894-42.067-20.727-78.844-38.195-102.222C330.952,37.799,384.06,76.205,414.596,129.33z M176.073,32.036 c-15.7,23.459-27.348,58.1-34.699,97.305H51.741C78.657,82.505,123.064,47.1,176.073,32.036z M49.96,334.058h90.895 c7.311,40.403,19.133,76.205,35.219,100.26C121.944,418.904,76.672,382.378,49.96,334.058z M268.41,439.222 c17.865-23.938,30.874-61.889,38.697-105.164h109.274C386.15,388.743,332.12,428.339,268.41,439.222z"></path>
+                        </svg>
+                    </div>
+                </AnchorContext>
                 {#if $page.data.me !== undefined}
-                    <a data-sveltekit-reload href="/cart" class="cart">
+                    <a data-sveltekit-reload href="{$page.data?.lang}/cart" class="svg-icon">
                         <svg class:active={cartAnimation} fill="currentColor" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 902.86 902.86" xml:space="preserve" stroke="#ffffff" on:animationend={() => {cartAnimation = false}}>
                             <path d="M671.504,577.829l110.485-432.609H902.86v-68H729.174L703.128,179.2L0,178.697l74.753,399.129h596.751V577.829z M685.766,247.188l-67.077,262.64H131.199L81.928,246.756L685.766,247.188z"></path>
                             <path d="M578.418,825.641c59.961,0,108.743-48.783,108.743-108.744s-48.782-108.742-108.743-108.742H168.717 c-59.961,0-108.744,48.781-108.744,108.742s48.782,108.744,108.744,108.744c59.962,0,108.743-48.783,108.743-108.744 c0-14.4-2.821-28.152-7.927-40.742h208.069c-5.107,12.59-7.928,26.342-7.928,40.742 C469.675,776.858,518.457,825.641,578.418,825.641z M209.46,716.897c0,22.467-18.277,40.744-40.743,40.744 c-22.466,0-40.744-18.277-40.744-40.744c0-22.465,18.277-40.742,40.744-40.742C191.183,676.155,209.46,694.432,209.46,716.897z M619.162,716.897c0,22.467-18.277,40.744-40.743,40.744s-40.743-18.277-40.743-40.744c0-22.465,18.277-40.742,40.743-40.742 S619.162,694.432,619.162,716.897z"></path> 
@@ -88,7 +125,7 @@
                     </button>
                 {:else}
                     <AnchorContext
-                        href="/profile/{$page.data.me.user_id}"
+                        href="{$page.data?.lang}/profile/{$page.data.me.user_id}"
                         items={profileContextMenu}
                     >
                         <div class="profile-info">
@@ -121,7 +158,7 @@
             <a data-sveltekit-reload href="/">{$page.data.locale.store}</a>
             <a data-sveltekit-reload href="/">{$page.data.locale.community}</a>
             {#if $page.data.me !== undefined}
-                <a data-sveltekit-reload href="/cart" class="cart">
+                <a data-sveltekit-reload href="{$page.data?.lang}/cart" class="cart">
                     <span>Cart</span>
                     &nbsp;
                     <span>{count}</span>
@@ -134,7 +171,7 @@
                     Login
                 </button>
             {:else}
-                <a data-sveltekit-reload href="/profile/{$page.data.me.user_id}">
+                <a data-sveltekit-reload href="{$page.data?.lang}/profile/{$page.data.me.user_id}">
                     <div>
                         {$page.data.me.user_id}
                     </div>
@@ -156,12 +193,12 @@
         font-size: 12px;
     }
 
-    .cart > svg {
+    .svg-icon > svg {
         width: 24px;
         height: 24px;
     }
 
-    .cart > svg.active {
+    .svg-icon > svg.active {
         animation-duration: 0.45s;
         animation-name: active;
         transform-origin: center;
@@ -182,7 +219,7 @@
         }
     }
 
-    .cart {
+    .svg-icon {
         /* color: #b7bdbf; */
         display: flex;
         align-items: center;

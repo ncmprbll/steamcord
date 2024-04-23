@@ -11,6 +11,7 @@ DROP TABLE IF EXISTS products_platforms CASCADE;
 DROP TABLE IF EXISTS products_genres CASCADE;
 DROP TABLE IF EXISTS products_featured CASCADE;
 DROP TABLE IF EXISTS currencies CASCADE;
+DROP TABLE IF EXISTS locales CASCADE;
 
 CREATE TABLE currencies
 (

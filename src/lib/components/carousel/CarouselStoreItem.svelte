@@ -80,7 +80,7 @@
 />
 
 {#if game !== undefined}
-<a href="/app/{game.id}" bind:clientWidth={clientWidth} bind:this={element} class="big-store-container">
+<a href="{$page.data?.lang}/app/{game.id}" bind:clientWidth={clientWidth} bind:this={element} class="big-store-container">
     <div class="screenshot" style="{style}">
         <picture>
             <source type="image/jpeg" class="big-spot__background-source" srcset={game.featured_background_img}>

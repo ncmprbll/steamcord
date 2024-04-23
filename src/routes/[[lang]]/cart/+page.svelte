@@ -59,7 +59,7 @@
         {:else}
             {#each cart as game, index}
                 <div class="item">
-                    <a class="image-center" href="/">
+                    <a class="image-center" href="{$page.data?.lang}/app/{game.id}">
                         <img class="item-image" src={game.tier_background_img} alt="Game"/>
                     </a>
                     <div class="item-info text-styling">
