@@ -28,10 +28,10 @@ func (s *Repository) Cart(ctx context.Context, currencyCode string, user *models
 						products.id,
 						products.name,
 						products.discount,
-						jsonb_build_object('original', h.price, 'final', h.final, 'symbol', currencies.symbol) as price,
+						jsonb_build_object('original', h.price, 'final', h.final, 'symbol', currencies.symbol) AS price,
 						products_images.tier_background_img
 					FROM products
-					JOIN LATERAL (SELECT *, (price - (price * products.discount / 100)::NUMERIC(16, 2)) as final FROM products_prices WHERE currency_code = $1) h ON products.id = h.product_id
+					JOIN LATERAL (SELECT *, (price - (price * products.discount / 100)::NUMERIC(16, 2)) AS final FROM products_prices WHERE currency_code = $1) h ON products.id = h.product_id
 						JOIN currencies ON currencies.code = h.currency_code
 						JOIN products_images ON products.id = products_images.product_id
 					WHERE id IN (SELECT product_id FROM cart_ids)
@@ -43,7 +43,7 @@ func (s *Repository) Cart(ctx context.Context, currencyCode string, user *models
 						discount,
 						price,
 						tier_background_img,
-						jsonb_agg(products_platforms.platform) as platforms
+						jsonb_agg(products_platforms.platform) AS platforms
 					FROM cart_items_price_image
 						JOIN products_platforms ON id = products_platforms.product_id
 					GROUP BY id, name, discount, price, tier_background_img
@@ -71,7 +71,7 @@ func (s *Repository) Cart(ctx context.Context, currencyCode string, user *models
 
 func (s *Repository) CartIDs(ctx context.Context, user *models.User) (*models.JSONCartProducts, error) {
 	const query = `
-				SELECT COALESCE(json_agg(product_id), '[]'::json) as products FROM users_cart WHERE user_id = $1;
+				SELECT COALESCE(json_agg(product_id), '[]'::json) AS products FROM users_cart WHERE user_id = $1;
 				`
 	json := &models.JSONCartProducts{}
 	if err := s.database.QueryRowxContext(ctx, query, user.UUID).Scan(json); err != nil {
@@ -103,7 +103,7 @@ func (s *Repository) Purchase(ctx context.Context, user *models.User) error {
 	const queryTotal = `
 						SELECT
 							users.balance,
-							SUM(price - (price * discount / 100)::NUMERIC(16, 2)) as total
+							SUM(price - (price * discount / 100)::NUMERIC(16, 2)) AS total
 						FROM users_cart
 							JOIN users ON users_cart.user_id = $1
 							JOIN products ON users_cart.product_id = products.id
@@ -146,7 +146,7 @@ func (s *Repository) Purchase(ctx context.Context, user *models.User) error {
 	const queryGames = `
 						WITH operation AS (
 							SELECT
-								(price - (price * discount / 100)::NUMERIC(16, 2)) as spent
+								(price - (price * discount / 100)::NUMERIC(16, 2)) AS spent
 							FROM products
 								JOIN products_prices ON products_prices.product_id = products.id
 							WHERE id = $1 AND currency_code = $2

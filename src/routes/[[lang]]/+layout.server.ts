@@ -1,18 +1,6 @@
 import type { User } from '$lib/types/user.type';
 
-// REDO?
-import * as en from '$lib/lang/en.ts';
-import * as ru from '$lib/lang/ru.ts';
-
-const locales: Record<string, Record<string, string>> = {
-	en: en.localization,
-	ru: ru.localization,
-};
-//
-
 export async function load({ params, cookies }) {
-    const locale = locales[params.lang ?? 'en'] ?? locales['en'];
-
     let localization: Record<string, string> | undefined;
 	try {
 		const imported = await import(`../../lib/lang/${params.lang || "en"}/nav.ts`); // Vite, please (sveltejs/kit#9296, vitejs/vite#10460)
@@ -24,7 +12,7 @@ export async function load({ params, cookies }) {
 
     let error: string | undefined;
     let me: User | undefined;
-    let dbLocales: Record<string, string>[] | undefined;
+    let locales: Record<string, string>[] | undefined;
     let lang: string = "";
 
     if (params.lang !== undefined) {
@@ -33,7 +21,7 @@ export async function load({ params, cookies }) {
 
     let result = await fetch('http://localhost:3000/locales/');
     if (result.status === 200) {
-        dbLocales = await result.json();
+        locales = await result.json();
     }
 
     const sessionId = cookies.get('session_id');
@@ -43,7 +31,7 @@ export async function load({ params, cookies }) {
             me: me,
             error: error,
             localization: localization,
-            locales: dbLocales,
+            locales: locales,
             lang: lang
         };
     }
@@ -93,7 +81,7 @@ export async function load({ params, cookies }) {
         me: me,
         error: error,
 		localization: localization,
-        locales: dbLocales,
+        locales: locales,
         lang: lang
 	};
 }

@@ -21,6 +21,7 @@ type JSONPrice struct {
 }
 
 type JSONPlatforms []string
+type Screenshots []string
 
 type TierRow struct {
 	ID                int       `json:"id"`
@@ -38,6 +39,15 @@ type FeaturedRow struct {
 	FeaturedBackgroundImg string        `json:"featured_background_img"`
 	FeaturedLogoImg       string        `json:"featured_logo_img"`
 	Platforms             JSONPlatforms `json:"platforms"`
+}
+
+type Product struct {
+	ID          int           `json:"id" db:"id"`
+	Name        string        `json:"name" db:"name"`
+	Discount    int           `json:"discount" db:"discount"`
+	Price       JSONPrice     `json:"price" db:"price"`
+	Screenshots Screenshots   `json:"screenshots" db:"screenshots"`
+	Platforms   JSONPlatforms `json:"platforms" db:"platforms"`
 }
 
 func (p *JSONPrice) Scan(src any) error {
@@ -61,6 +71,16 @@ func (p *JSONPlatforms) Scan(src any) error {
 }
 
 func (p *JSONOwnedProducts) Scan(src any) error {
+	bytes, ok := src.([]byte)
+
+	if !ok {
+		return errors.New("not a bytes array")
+	}
+
+	return json.Unmarshal(bytes, p)
+}
+
+func (p *Screenshots) Scan(src any) error {
 	bytes, ok := src.([]byte)
 
 	if !ok {

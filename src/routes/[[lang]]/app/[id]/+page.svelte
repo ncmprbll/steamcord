@@ -5,21 +5,14 @@
     import mac from '$lib/assets/os/mac.png';
     import linux from '$lib/assets/os/linux.png';
     import { goto } from "$app/navigation";
-import { page } from "$app/stores"; 
+    import { page } from "$app/stores"; 
     import { formatPrice } from '$lib/types/game.type';
 
     export let data;
 
-    let screenshots = [
-        "https://cdn.akamai.steamstatic.com/steam/apps/2881650/ss_86404e1606ca67a485e20c71cddd3cffdc511c71.jpg",
-        "https://cdn.akamai.steamstatic.com/steam/apps/2881650/ss_35c0fbe15af6816fd0d53156f0330e78a73c533d.jpg",
-        "https://cdn.akamai.steamstatic.com/steam/apps/2881650/ss_371cb06f9f6a6bc9e5273b4d6b8168ce00f4ff34.jpg",
-        "https://cdn.akamai.steamstatic.com/steam/apps/2881650/ss_0639604a881c0a0c9e02960b61d108c1f643809d.jpg",
-        "https://cdn.akamai.steamstatic.com/steam/apps/2881650/ss_86404e1606ca67a485e20c71cddd3cffdc511c71.jpg",
-        "https://cdn.akamai.steamstatic.com/steam/apps/2881650/ss_35c0fbe15af6816fd0d53156f0330e78a73c533d.jpg",
-        "https://cdn.akamai.steamstatic.com/steam/apps/2881650/ss_371cb06f9f6a6bc9e5273b4d6b8168ce00f4ff34.jpg",
-        "https://cdn.akamai.steamstatic.com/steam/apps/2881650/ss_0639604a881c0a0c9e02960b61d108c1f643809d.jpg"
-    ]
+    console.log(data.product, data.product.screenshots)
+
+    let screenshots = data.product.screenshots;
 
     let description = `
 Squad is the embodiment of tactical military action. Compete in massive-scale 50 vs. 50 battles in the most realistic combined-arms first-person shooter. Squad emphasizes combat realism through teamwork, tactics, and authentic warfare. A wide selection of realistic faction-specific weapons and vehicles allow players to build their own loadouts that best suit their preferred tactics. And with Squad’s unique Picture-in-Picture scopes, it’s like you’re really aiming at the enemy through real military-issue scopes.

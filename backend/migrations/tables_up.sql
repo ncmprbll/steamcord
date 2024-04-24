@@ -7,6 +7,7 @@ DROP TABLE IF EXISTS genres CASCADE;
 DROP TABLE IF EXISTS products CASCADE;
 DROP TABLE IF EXISTS products_prices CASCADE;
 DROP TABLE IF EXISTS products_images CASCADE;
+DROP TABLE IF EXISTS products_screenshots CASCADE;
 DROP TABLE IF EXISTS products_platforms CASCADE;
 DROP TABLE IF EXISTS products_genres CASCADE;
 DROP TABLE IF EXISTS products_featured CASCADE;
@@ -48,6 +49,13 @@ CREATE TABLE products_images
     featured_background_img TEXT DEFAULT '',
     featured_logo_img TEXT DEFAULT '',
     tier_background_img TEXT DEFAULT ''
+);
+
+CREATE TABLE products_screenshots
+(
+    product_id BIGINT REFERENCES products(id),
+    img TEXT DEFAULT '',
+    PRIMARY KEY (product_id, img)
 );
 
 CREATE TABLE products_platforms
@@ -216,6 +224,17 @@ INSERT INTO products_images (product_id, tier_background_img) VALUES (2440, '/co
 INSERT INTO products_images (product_id, tier_background_img) VALUES (2540, '/content/apps/2540/2540_tier.jpg');
 INSERT INTO products_images (product_id, tier_background_img) VALUES (2640, '/content/apps/2640/2640_tier.jpg');
 
+INSERT INTO products_screenshots (product_id, img) VALUES (440, '/content/apps/440/ss_284ba40590de8f604ae693631c751a0aefdc452e.jpg');
+INSERT INTO products_screenshots (product_id, img) VALUES (440, '/content/apps/440/ss_4bda6f67580d94832ed2d5814e41ebe018ba1d9e.jpg');
+INSERT INTO products_screenshots (product_id, img) VALUES (440, '/content/apps/440/ss_4eb068b1cf52c91b57157b84bed18a186ed7714b.jpg');
+INSERT INTO products_screenshots (product_id, img) VALUES (440, '/content/apps/440/ss_7924f64b6e5d586a80418c9896a1c92881a7905b.jpg');
+INSERT INTO products_screenshots (product_id, img) VALUES (440, '/content/apps/440/ss_9284d1c5b248726760233a933dbb83757d7d5d95.jpg');
+INSERT INTO products_screenshots (product_id, img) VALUES (440, '/content/apps/440/ss_ae4465fa8a44dd330dbeb7992ba196c2f32cabb1.jpg');
+INSERT INTO products_screenshots (product_id, img) VALUES (440, '/content/apps/440/ss_b20689e73e3ac19bcc5fad2c18d0353c769de144.jpg');
+INSERT INTO products_screenshots (product_id, img) VALUES (440, '/content/apps/440/ss_b529b0abc43f55fc23fe8058eddb6e37c9629a6a.jpg');
+INSERT INTO products_screenshots (product_id, img) VALUES (440, '/content/apps/440/ss_bb1a60b8e5061caef7208369f42c5c9d574c9ac4.jpg');
+INSERT INTO products_screenshots (product_id, img) VALUES (440, '/content/apps/440/ss_e5a94665dbfa5a30931cff2f45cdc0ebea9fcebb.jpg');
+
 INSERT INTO products_platforms (product_id, platform) VALUES (440, 'windows');
 INSERT INTO products_platforms (product_id, platform) VALUES (540, 'windows');
 INSERT INTO products_platforms (product_id, platform) VALUES (540, 'mac');
@@ -229,16 +248,24 @@ INSERT INTO products_platforms (product_id, platform) VALUES (1140, 'windows');
 INSERT INTO products_platforms (product_id, platform) VALUES (1240, 'windows');
 INSERT INTO products_platforms (product_id, platform) VALUES (1340, 'windows');
 INSERT INTO products_platforms (product_id, platform) VALUES (1440, 'windows');
+INSERT INTO products_platforms (product_id, platform) VALUES (1440, 'mac');
 INSERT INTO products_platforms (product_id, platform) VALUES (1540, 'windows');
 INSERT INTO products_platforms (product_id, platform) VALUES (1640, 'windows');
 INSERT INTO products_platforms (product_id, platform) VALUES (1740, 'windows');
+INSERT INTO products_platforms (product_id, platform) VALUES (1740, 'mac');
+INSERT INTO products_platforms (product_id, platform) VALUES (1740, 'linux');
 INSERT INTO products_platforms (product_id, platform) VALUES (1840, 'windows');
 INSERT INTO products_platforms (product_id, platform) VALUES (1940, 'windows');
+INSERT INTO products_platforms (product_id, platform) VALUES (1940, 'linux');
 INSERT INTO products_platforms (product_id, platform) VALUES (2040, 'windows');
+INSERT INTO products_platforms (product_id, platform) VALUES (2040, 'mac');
 INSERT INTO products_platforms (product_id, platform) VALUES (2140, 'windows');
 INSERT INTO products_platforms (product_id, platform) VALUES (2240, 'windows');
+INSERT INTO products_platforms (product_id, platform) VALUES (2240, 'mac');
 INSERT INTO products_platforms (product_id, platform) VALUES (2340, 'windows');
 INSERT INTO products_platforms (product_id, platform) VALUES (2440, 'windows');
+INSERT INTO products_platforms (product_id, platform) VALUES (2440, 'mac');
+INSERT INTO products_platforms (product_id, platform) VALUES (2440, 'linux');
 INSERT INTO products_platforms (product_id, platform) VALUES (2540, 'windows');
 INSERT INTO products_platforms (product_id, platform) VALUES (2640, 'windows');
 

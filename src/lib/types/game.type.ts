@@ -16,6 +16,15 @@ export type TierGame = {
 	tier_background_img: string;
 };
 
+export type Product = {
+	id: string | number;
+	name: string;
+	discount: number;
+	prices: Record<string, number>;
+	screenshots: string[];
+	platforms: string[];
+};
+
 export type Price = {
 	original: number;
 	final: number;

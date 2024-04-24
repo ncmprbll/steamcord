@@ -5,6 +5,7 @@ const localization: Record<string, string> = {
     'inCart': 'В корзине',
     'owned': 'Куплено',
     'popularGames': 'Популярные игры',
+    'free': 'Бесплатно',
 };
 
 export { localization };

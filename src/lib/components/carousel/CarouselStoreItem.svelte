@@ -130,9 +130,9 @@
                     {/if}
                     <div class="discount-prices">
                         {#if game.discount !== 0 && game.discount !== undefined}
-                            <div class="discount-original-price">{formatPrice(game.price, true)}</div>
+                            <div class="discount-original-price">{formatPrice(game.price, true, $page.data.localization.free)}</div>
                         {/if}
-                        <div class="discount-final-price">{formatPrice(game.price)}</div>
+                        <div class="discount-final-price">{formatPrice(game.price, false, $page.data.localization.free)}</div>
                     </div>
                 </div>
                 <div class="actions-right-side">

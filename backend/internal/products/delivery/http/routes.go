@@ -14,6 +14,7 @@ func NewRouter(h *handlers, mw *middleware.MiddlewareManager) http.Handler {
 		r.Use(mw.GetUserMiddleware)
 		r.Get("/tier", h.GetTier())
 		r.Get("/featured", h.GetFeatured())
+		r.Get("/{product_id}", h.FindByID())
 	})
 
 	r.Group(func(r chi.Router) {

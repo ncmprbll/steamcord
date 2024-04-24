@@ -22,10 +22,10 @@ func (s *Repository) GetTier(ctx context.Context, currencyCode, limit string) ([
 						products.id,
 						products.name,
 						products.discount,
-						jsonb_build_object('original', h.price, 'final', h.final, 'symbol', currencies.symbol) as price,
+						jsonb_build_object('original', h.price, 'final', h.final, 'symbol', currencies.symbol) AS price,
 						products_images.tier_background_img
 					FROM products
-						JOIN LATERAL (SELECT *, (price - (price * products.discount / 100)::NUMERIC(16, 2)) as final FROM products_prices WHERE currency_code = $1) h ON products.id = h.product_id
+						JOIN LATERAL (SELECT *, (price - (price * products.discount / 100)::NUMERIC(16, 2)) AS final FROM products_prices WHERE currency_code = $1) h ON products.id = h.product_id
 						JOIN currencies ON currencies.code = h.currency_code
 						JOIN products_images ON products.id = products_images.product_id
 					GROUP BY products.id, products_images.tier_background_img, price, currencies.symbol, final
@@ -60,10 +60,10 @@ func (s *Repository) GetTierByGenre(ctx context.Context, currencyCode, genre, li
 						products.id,
 						products.name,
 						products.discount,
-						jsonb_build_object('original', h.price, 'final', h.final, 'symbol', currencies.symbol) as price,
+						jsonb_build_object('original', h.price, 'final', h.final, 'symbol', currencies.symbol) AS price,
 						products_images.tier_background_img
 					FROM products
-						JOIN LATERAL (SELECT *, (price - (price * products.discount / 100)::NUMERIC(16, 2)) as final FROM products_prices WHERE currency_code = $1) h ON products.id = h.product_id
+						JOIN LATERAL (SELECT *, (price - (price * products.discount / 100)::NUMERIC(16, 2)) AS final FROM products_prices WHERE currency_code = $1) h ON products.id = h.product_id
 						JOIN currencies ON currencies.code = h.currency_code
 						JOIN products_images ON products.id = products_images.product_id
 						JOIN products_genres ON products.id = products_genres.product_id
@@ -101,12 +101,12 @@ func (s *Repository) GetFeatured(ctx context.Context, currencyCode string) ([]*m
 						products.id,
 						products.name,
 						products.discount,
-						jsonb_build_object('original', h.price, 'final', h.final, 'symbol', currencies.symbol) as price,
+						jsonb_build_object('original', h.price, 'final', h.final, 'symbol', currencies.symbol) AS price,
 						products_images.featured_background_img,
 						products_images.featured_logo_img
 					FROM products
 						JOIN products_featured ON products.id = products_featured.product_id
-						JOIN LATERAL (SELECT *, (price - (price * products.discount / 100)::NUMERIC(16, 2)) as final FROM products_prices WHERE currency_code = $1) h ON products.id = h.product_id
+						JOIN LATERAL (SELECT *, (price - (price * products.discount / 100)::NUMERIC(16, 2)) AS final FROM products_prices WHERE currency_code = $1) h ON products.id = h.product_id
 						JOIN currencies ON currencies.code = h.currency_code
 						JOIN products_images ON products.id = products_images.product_id
 					GROUP BY id, featured_background_img, featured_logo_img, price, currencies.symbol, final
@@ -118,7 +118,7 @@ func (s *Repository) GetFeatured(ctx context.Context, currencyCode string) ([]*m
 						price,
 						featured_background_img,
 						featured_logo_img,
-						jsonb_agg(products_platforms.platform) as platforms
+						jsonb_agg(products_platforms.platform) AS platforms
 					FROM cart_items_price_image_featured
 						JOIN products_platforms ON id = products_platforms.product_id
 					GROUP BY id, name, discount, price, featured_background_img, featured_logo_img
@@ -146,7 +146,7 @@ func (s *Repository) GetFeatured(ctx context.Context, currencyCode string) ([]*m
 
 func (s *Repository) GetOwnedIDs(ctx context.Context, user *models.User) (*models.JSONOwnedProducts, error) {
 	const query = `
-				SELECT COALESCE(json_agg(product_id), '[]'::json) as products FROM users_games WHERE user_id = $1;
+				SELECT COALESCE(json_agg(product_id), '[]'::json) AS products FROM users_games WHERE user_id = $1;
 				`
 	json := &models.JSONOwnedProducts{}
 	if err := s.database.QueryRowxContext(ctx, query, user.UUID).Scan(json); err != nil {
@@ -154,4 +154,43 @@ func (s *Repository) GetOwnedIDs(ctx context.Context, user *models.User) (*model
 	}
 
 	return json, nil
+}
+
+func (s *Repository) FindByID(ctx context.Context, product *models.Product, currencyCode string) (*models.Product, error) {
+	const query = `
+				WITH product_price_screenshots AS (
+					SELECT
+						products.id,
+						products.name,
+						products.discount,
+						jsonb_build_object('original', h.price, 'final', h.final, 'symbol', currencies.symbol) AS price,
+						COALESCE(jsonb_agg(products_screenshots.img) FILTER (WHERE products_screenshots.img IS NOT NULL), '[]'::jsonb) AS screenshots
+					FROM products
+						JOIN LATERAL (SELECT *, (price - (price * products.discount / 100)::NUMERIC(16, 2)) AS final FROM products_prices WHERE currency_code = $1) h ON products.id = h.product_id
+						JOIN currencies ON currencies.code = h.currency_code
+						LEFT JOIN products_screenshots ON products.id = products_screenshots.product_id
+					WHERE id = $2
+					GROUP BY id, price, currencies.symbol, final
+				), product_platforms AS (
+					SELECT
+						id,
+						name,
+						discount,
+						price,
+						screenshots,
+						jsonb_agg(products_platforms.platform) AS platforms
+					FROM product_price_screenshots
+						JOIN products_platforms ON id = products_platforms.product_id
+					GROUP BY id, name, discount, price, screenshots
+				)
+				SELECT
+					*
+				FROM product_platforms;
+				`
+	err := s.database.QueryRowxContext(ctx, query, currencyCode, product.ID).StructScan(product)
+	if err != nil {
+		return nil, err
+	}
+
+	return product, nil
 }

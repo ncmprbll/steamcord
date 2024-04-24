@@ -30,10 +30,10 @@
         <div class="price-block">
             {#if game.discount !== 0 && game.discount !== undefined}
                 <div class="discount">-{game.discount}%</div>
-                <div class="discount-original-price">{formatPrice(game.price, true)}</div>
-                <div class="discount-final-price">{formatPrice(game.price)}</div>
+                <div class="discount-original-price">{formatPrice(game.price, true, $page.data.localization.free)}</div>
+                <div class="discount-final-price">{formatPrice(game.price, false, $page.data.localization.free)}</div>
             {:else}
-                <div class="discount-final-price">{formatPrice(game.price, true)}</div>
+                <div class="discount-final-price">{formatPrice(game.price, true, $page.data.localization.free)}</div>
             {/if}
         </div>
     </div>
