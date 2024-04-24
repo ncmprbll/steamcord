@@ -109,7 +109,7 @@
                     </div>
                     {#if game.platforms !== undefined}
                         <div>
-                            <div>{locale.availableFor}</div>
+                            <div>{$page.data.localization.availableFor}</div>
                             {#if game.platforms.includes("windows")}
                                 <img src={windows} alt="Windows">
                             {/if}
@@ -138,18 +138,18 @@
                 <div class="actions-right-side">
                     {#if $page.data?.me?.owned.includes(game.id)}
                         <div class="button owned">
-                            <span>Owned</span>
+                            <span>{$page.data.localization.owned}</span>
                         </div>
                     {:else if !alreadyInCart}
                         <button class="button" disabled={loading} on:click|stopPropagation|preventDefault={addToCart}>
-                            <span class:loading={loading}>{locale.addToCart}</span>
+                            <span class:loading={loading}>{$page.data.localization.addToCart}</span>
                             {#if loading}
                                 <Spinner absolute={true} size="16"/>
                             {/if}
                         </button>
                     {:else if alreadyInCart}
                         <div class="button in-cart">
-                            <span>In cart</span>
+                            <span>{$page.data.localization.inCart}</span>
                         </div>
                     {/if}
                 </div>

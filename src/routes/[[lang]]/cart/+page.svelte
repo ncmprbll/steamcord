@@ -51,15 +51,15 @@
     }
 </script>
 
-<p>Your shopping cart</p>
+<p>{data.localization.yourCart}</p>
 <div class="container">
     <div class="items">
         {#if cart === undefined || cart.length === 0}
-            <span>No items in the cart</span>
+            <span>{data.localization.noItems}</span>
         {:else}
             {#each cart as game, index}
                 <div class="item">
-                    <a class="image-center" href="{$page.data?.lang}/app/{game.id}">
+                    <a class="image-center" href="{data.lang}/app/{game.id}">
                         <img class="item-image" src={game.tier_background_img} alt="Game"/>
                     </a>
                     <div class="item-info text-styling">
@@ -83,14 +83,14 @@
                             {/if}
                             <div class="discount-prices">
                                 {#if game.discount !== 0 && game.discount !== undefined}
-                                    <div class="discount-original-price">{formatPrice(game.price, true)}</div>
+                                    <div class="discount-original-price">{formatPrice(game.price, true, data.localization.free)}</div>
                                 {/if}
-                                <div class="discount-final-price">{formatPrice(game.price)}</div>
+                                <div class="discount-final-price">{formatPrice(game.price, false, data.localization.free)}</div>
                             </div>
                         </div>
                         <div class="remove-from-cart-div">
                             <button class="button remove-from-cart" disabled={loadings[game.id]} on:click|preventDefault={() => {removeFromCart(game.id)}}>
-                                <span class:loading={loadings[game.id]}>Remove</span>
+                                <span class:loading={loadings[game.id]}>{data.localization.remove}</span>
                                 {#if loadings[game.id]}
                                     <Spinner absolute={true} size="16"/>
                                 {/if}
@@ -105,18 +105,18 @@
         <div class="checkout-box">
             <div class="estimated">
                 {#if data.cart.length === 0}
-                    <span>No items in the cart</span>
+                    <span>{data.localization.noItems}</span>
                 {:else}
-                    <span>Estimated total</span>
+                    <span>{data.localization.total}</span>
                     {#if estimated != 0}
                         <span class="span-price">{estimated} {symbol}</span>
                     {:else}
-                        <span class="span-price">Free</span>
+                        <span class="span-price">{data.localization.free}</span>
                     {/if}
                 {/if}
             </div>
             <button class="button" disabled={data.cart.length === 0} on:click|preventDefault={() => {}}>
-                Purchase
+                {data.localization.purchase}
             </button>
         </div>
     </div>

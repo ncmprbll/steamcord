@@ -13,6 +13,15 @@ const locales: Record<string, Record<string, string>> = {
 export async function load({ params, cookies }) {
     const locale = locales[params.lang ?? 'en'] ?? locales['en'];
 
+    let localization: Record<string, string> | undefined;
+	try {
+		const imported = await import(`../../lib/lang/${params.lang || "en"}/nav.ts`); // Vite, please (sveltejs/kit#9296, vitejs/vite#10460)
+		localization = imported.localization;
+	} catch {
+		const imported = await import("../../lib/lang/en/nav.ts");
+		localization = imported.localization;
+	}
+
     let error: string | undefined;
     let me: User | undefined;
     let dbLocales: Record<string, string>[] | undefined;
@@ -33,7 +42,7 @@ export async function load({ params, cookies }) {
         return {
             me: me,
             error: error,
-            locale: locale,
+            localization: localization,
             locales: dbLocales,
             lang: lang
         };
@@ -83,7 +92,7 @@ export async function load({ params, cookies }) {
 	return {
         me: me,
         error: error,
-		locale: locale,
+		localization: localization,
         locales: dbLocales,
         lang: lang
 	};

@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { page } from '$app/stores';
     import { onMount } from 'svelte';
     import CarouselStoreItem from '$lib/components/carousel/CarouselStoreItem.svelte';
 
@@ -134,7 +135,7 @@
 />
 
 {#if highlights.length > 2}
-    <p bind:this={paragraph}>{locale.highlights}</p>
+    <p bind:this={paragraph}>{$page.data.localization.highlights}</p>
     <div bind:this={carousel} class="carousel">
         <div class="carousel-wrapper">
             <div bind:this={items} class="items" on:transitionstart={transitionstart} on:transitionend={transitionend} style="transition: transform {speed}ms cubic-bezier(0.165, 0.84, 0.44, 1) 0s; transform: translate3d({offset}px, 0px, 0px);">

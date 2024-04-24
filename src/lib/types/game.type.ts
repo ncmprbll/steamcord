@@ -22,13 +22,13 @@ export type Price = {
 	symbol: string;
 }
 
-export function formatPrice(price: Price, original: boolean): string {
+export function formatPrice(price: Price, original: boolean, freeString: string | undefined): string {
 	if (original) {
 		return price.original.toFixed(2) + " " + price.symbol;
 	}
 
 	if (price.final === 0) {
-		return "Free";
+		return freeString || "Free";
 	}
 
 	return price.final.toFixed(2) + " " + price.symbol;

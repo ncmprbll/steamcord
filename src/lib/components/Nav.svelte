@@ -51,12 +51,12 @@
 
     let profileContextMenu = [
         {
-            text: "Profile",
+            text: $page.data.localization.profile,
             type: "anchor",
             href: `${$page.data?.lang}/profile/${$page.data?.me?.user_id}`
         },
         {
-            text: "Sign out",
+            text: $page.data.localization.signOut,
             type: "button",
             callback: async () => {
                 const result = await fetch("/api/auth/logout", {
@@ -88,15 +88,15 @@
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 21 20" preserveAspectRatio="xMidYMid meet"><g transform="scale(1 -1) rotate(-45 -11.93502884 -2)" stroke="currentColor" stroke-width="1.65" fill="none" fill-rule="evenodd"><circle cx="7.70710678" cy="7.70710678" r="7"></circle><path d="M15.2071068 8.62132034h5.6923881" stroke-linecap="square"></path></g></svg>
             </span>
             <div class="search-input-wrapper">
-                <input placeholder={$page.data.locale.search} value="">
+                <input placeholder={$page.data.localization.search} value="">
             </div>
         </div>
 		<div class="menu-items">
             <div class="menu-left">
                 <AnchorContext href="{$page.data?.lang}">
-                    {$page.data.locale.store}
+                    {$page.data.localization.store}
                 </AnchorContext>
-                <a data-sveltekit-reload href="/">{$page.data.locale.community}</a>
+                <a data-sveltekit-reload href="/">{$page.data.localization.community}</a>
             </div>
             <div class="menu-right">
                 <AnchorContext
@@ -152,11 +152,11 @@
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 21 20" preserveAspectRatio="xMidYMid meet"><g transform="scale(1 -1) rotate(-45 -11.93502884 -2)" stroke="currentColor" stroke-width="1.65" fill="none" fill-rule="evenodd"><circle cx="7.70710678" cy="7.70710678" r="7"></circle><path d="M15.2071068 8.62132034h5.6923881" stroke-linecap="square"></path></g></svg>
                 </span>
                 <div class="search-input-wrapper">
-                    <input placeholder={$page.data.locale.search} value="">
+                    <input placeholder={$page.data.localization.search} value="">
                 </div>
             </div>
-            <a data-sveltekit-reload href="/">{$page.data.locale.store}</a>
-            <a data-sveltekit-reload href="/">{$page.data.locale.community}</a>
+            <a data-sveltekit-reload href="/">{$page.data.localization.store}</a>
+            <a data-sveltekit-reload href="/">{$page.data.localization.community}</a>
             {#if $page.data.me !== undefined}
                 <a data-sveltekit-reload href="{$page.data?.lang}/cart" class="cart">
                     <span>Cart</span>

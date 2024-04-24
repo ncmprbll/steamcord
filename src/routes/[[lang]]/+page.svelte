@@ -1,16 +1,14 @@
 <script lang="ts">
     export let data;
 
-    console.log(data)
-
     import Carousel from '$lib/components/carousel/Carousel.svelte';
     import Tier from '$lib/components/tier/Tier.svelte';
     import Discover from '$lib/components/Discover/Discover.svelte';
 </script>
 
-<Carousel locale={data.locale} highlights={data.highlights} />
+<Carousel locale={data.localization} highlights={data.highlights} />
 
-<Tier locale={data.locale} games={data.tier1} />
-<Tier locale={data.locale} games={data.tier2} name="Horror" />
+<Tier locale={data.localization} games={data.tier1} />
+<Tier locale={data.localization} games={data.tier2} name="Horror" />
 
 <Discover />

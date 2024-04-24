@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { page } from '$app/stores';
     import TierStoreItem from '$lib/components/tier/TierStoreItem.svelte';
 
     export let name: string = "";
@@ -31,7 +32,7 @@
     {#if name !== ''}
         <p>{name}</p>
     {:else}
-        <p>{locale.popularGames}
+        <p>{$page.data.localization.popularGames}
     {/if}
 
     <div class="tier">

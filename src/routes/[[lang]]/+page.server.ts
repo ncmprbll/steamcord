@@ -1,6 +1,7 @@
 import type { FeaturedGame, TierGame } from "$lib/types/game.type";
 
-export const load = async ({ cookies }) => {
+export const load = async ({ cookies, params, parent }) => {
+    const data = await parent();
     const sessionId = cookies.get('session_id');
 	// shortestDescription: "Cyberpunk 2077: Phantom Liberty",
     // shortDescription: "FREEDOM ALWAYS COMES AT A PRICE",
@@ -34,7 +35,19 @@ export const load = async ({ cookies }) => {
     if (horrorGamesResult.status === 200)
         horrorGames = await horrorGamesResult.json();
 
+    let localization: Record<string, string> | undefined;
+	try {
+		const imported = await import(`../../lib/lang/${params.lang || "en"}/main.ts`); // Vite, please (sveltejs/kit#9296, vitejs/vite#10460)
+		localization = imported.localization;
+	} catch {
+		const imported = await import("../../lib/lang/en/main.ts");
+		localization = imported.localization;
+	}
+
+	let merged = {...data.localization, ...localization}
+
     return {
+        localization: merged,
 		highlights: highlights,
         tier1: randomGames,
         tier2: horrorGames
