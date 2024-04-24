@@ -10,8 +10,6 @@
 
     export let data;
 
-    console.log(data.product, data.product.screenshots)
-
     let screenshots = data.product.screenshots;
 
     let description = `
@@ -46,28 +44,32 @@ Solid communication is a soldier's best friend when engaging the enemy. To help 
 
 <div class="header-content">
     <div class="media-content">
-        {#each screenshots as src, index}
-            <div class="screenshot-holder" class:previous={previous == index} class:active={selected == index}>
-                <img {src} alt="Game screenshot">
-            </div>
-        {/each}
-        <div class="screenshots-slider">
+        {#if screenshots.length !== 0}
             {#each screenshots as src, index}
-                <img {src} class:active={selected == index} alt="Game screenshot" on:click={() => {
-                    if (selected !== index) {
-                        previous = selected;
-                        selected = index;
-                    }
-                }}>
+                <div class="screenshot-holder" class:previous={previous == index} class:active={selected == index}>
+                    <img {src} alt="Game screenshot">
+                </div>
             {/each}
-        </div>
+            <div class="screenshots-slider">
+                {#each screenshots as src, index}
+                    <img {src} class:active={selected == index} alt="Game screenshot" on:click={() => {
+                        if (selected !== index) {
+                            previous = selected;
+                            selected = index;
+                        }
+                    }}>
+                {/each}
+            </div>
+        {:else}
+            <div class="no-image">{data.localization.noScreenshots}</div>
+        {/if}
     </div>
     <div class="info-block">
-        <img class="item-image" src="/content/apps/440/440_tier.jpg" alt="Game"/>
+        <img class="item-image" src={data.product.tier_background_img} alt="Game"/>
         <div class="short-description">Squad is a tactical FPS that provides authentic combat experiences through teamwork, communication, and realistic combat. It bridges the gap between arcade shooter and military realism with 100-player battles, combined-arms warfare, and base building.</div>
         <div class="meta-summary">
             <div class="meta-row">
-                <div class="subtitle">Reviews:</div>
+                <div class="subtitle">{data.localization.reviews}:</div>
                 <div class="summary">Positive</div>
             </div>
             <div class="meta-row">
@@ -75,7 +77,7 @@ Solid communication is a soldier's best friend when engaging the enemy. To help 
                 <div class="summary">24 Sep, 2020</div>
             </div>
             <div class="meta-row">
-                <div class="subtitle">Release date:</div>
+                <div class="subtitle">{data.localization.releaseDate}:</div>
                 <div class="summary">26 Dec, 2007</div>
             </div>
         </div>
@@ -84,50 +86,50 @@ Solid communication is a soldier's best friend when engaging the enemy. To help 
 
 <div class="main-content">
     <div class="main">
-        <p class="breaker">About this game</p>
+        <p class="breaker">{data.localization.about}</p>
         <div class="description">
             {@html marked.parse(description)}
         </div>
-        <p class="breaker">System requirements</p>
+        <p class="breaker">{data.localization.system}</p>
         <div class="system-requirements">
             <table>
                 <tr>
                     <th></th>
-                    <th>Minimum</th>
-                    <th>Recommended</th>
+                    <th>{data.localization.systemMinimum}</th>
+                    <th>{data.localization.systemRecommended}</th>
                 </tr>
                 <tr>
-                    <th scope="row">OS</th>
+                    <th scope="row">{data.localization.systemOS}</th>
                     <td>Win 10</td>
                     <td>Win 11</td>
                 </tr>
                 <tr>
-                    <th scope="row">Processor</th>
+                    <th scope="row">{data.localization.systemProcessor}</th>
                     <td>Intel Core i5 @ 2.5 GHz or equivalent</td>
                     <td>Intel Core i5 @ 3.0 GHz or AMD Ryzen 5 or equivalent</td>
                 </tr>
                 <tr>
-                    <th scope="row">Memory</th>
+                    <th scope="row">{data.localization.systemMemory}</th>
                     <td>8 GB RAM</td>
                     <td>16 GB RAM</td>
                 </tr>
                 <tr>
-                    <th scope="row">Graphics</th>
+                    <th scope="row">{data.localization.systemGraphics}</th>
                     <td>NVIDIA GeForce GTX 1050 ti or AMD R9 380</td>
                     <td>NVIDIA GeForce GTX 1060 or AMD RX 470 or equivalent</td>
                 </tr>
                 <tr>
-                    <th scope="row">DirectX</th>
+                    <th scope="row">{data.localization.systemDirectX}</th>
                     <td>Version 11</td>
                     <td>Version 12</td>
                 </tr>
                 <tr>
-                    <th scope="row">Network</th>
+                    <th scope="row">{data.localization.systemNetwork}</th>
                     <td>Broadband Internet connection</td>
                     <td>Broadband Internet connection</td>
                 </tr>
                 <tr>
-                    <th scope="row">Storage</th>
+                    <th scope="row">{data.localization.systemStorage}</th>
                     <td>4 GB available space</td>
                     <td>6 GB available space</td>
                 </tr>
@@ -138,36 +140,38 @@ Solid communication is a soldier's best friend when engaging the enemy. To help 
         <div class="price-block">
             <!-- {#if game.discount !== 0 && game.discount !== undefined} -->
             {#if true}
-                <div class="discount">-{5}%</div>
-                <div class="discount-original-price">$5.55</div>
-                <div class="discount-final-price">$5.55</div>
+                <div class="discount">-{data.product.discount}%</div>
+                <div class="discount-original-price">{formatPrice(data.product.price, true, data.localization.free)}</div>
+                <div class="discount-final-price">{formatPrice(data.product.price, false, data.localization.free)}</div>
             {:else}
-                <div class="discount-final-price">$5.55</div>
+                <div class="discount-final-price">{formatPrice(data.product.price, true, data.localization.free)}</div>
             {/if}
         </div>
-        <div class="button">
-            <span>Add to cart</span>
-        </div>
-        <div class="button">
-            <span>Add to wishlist</span>
-        </div>
+        {#if data.me !== undefined}
+            <div class="button">
+                <span>{data.localization.addToCart}</span>
+            </div>
+            <div class="button">
+                <span>{data.localization.addToWishlist}</span>
+            </div>
+        {/if}
         <div class="meta-data">
             <div class="meta-row">
-                <div class="meta-subtitle">Platforms</div>
+                <div class="meta-subtitle">{data.localization.platforms}</div>
                 <div class="platforms-icons">
-                    {#if true}
+                    {#if data.product.platforms.includes("windows")}
                         <img src={windows} alt="Windows">
                     {/if}
-                    {#if true}
+                    {#if data.product.platforms.includes("mac")}
                         <img src={mac} alt="Mac">
                     {/if}
-                    {#if true}
+                    {#if data.product.platforms.includes("linux")}
                         <img src={linux} alt="Linux">
                     {/if}
                 </div>
             </div>
             <div class="meta-row">
-                <div class="meta-subtitle">Publisher</div>
+                <div class="meta-subtitle">{data.localization.publisher}</div>
                 <div class="platforms-icons">
                     Landfall Games
                 </div>
@@ -176,7 +180,7 @@ Solid communication is a soldier's best friend when engaging the enemy. To help 
     </div>
 </div>
 
-<p class="breaker">Reviews</p>
+<p class="breaker">{data.localization.reviews}</p>
 <div class="reviews">
     <div class="review">
         <div class="left">
@@ -216,6 +220,43 @@ Solid communication is a soldier's best friend when engaging the enemy. To help 
 <style lang="postcss">
     :root {
         --right-side-size: 324px;
+    }
+
+    .no-image {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 22px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: #90989b;
+        height: 100%;
+        border-radius: 4px;
+        background: rgb(32,32,32);
+        background: linear-gradient(90deg, rgba(32,32,32,1) 0%, rgba(57,57,57,1) 28%, rgba(56,56,56,1) 47%, rgba(40,39,39,1) 65%, rgba(53,53,53,1) 84%, rgba(62,62,62,1) 89%, rgba(45,45,45,1) 100%);
+        background-size: 1800% 1800%;
+        animation-duration: 18s;
+        animation-name: pulsate;
+        animation-iteration-count: infinite;
+        transform-origin: center;
+    }
+
+    .container {
+        position: relative;
+    }
+
+    @keyframes pulsate { 
+        0% {
+            background-position: 0% 82%
+        }
+
+        50% {
+            background-position: 100% 19%
+        }
+
+        100% {
+            background-position: 0% 82%
+        }
     }
 
     .review {
@@ -507,6 +548,10 @@ Solid communication is a soldier's best friend when engaging the enemy. To help 
 
         .meta-summary {
             overflow: hidden;
+        }
+
+        .no-image {
+            display: none;
         }
     }
 

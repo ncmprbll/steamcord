@@ -21,6 +21,7 @@ export type Product = {
 	name: string;
 	discount: number;
 	prices: Record<string, number>;
+	tier_background_img: string;
 	screenshots: string[];
 	platforms: string[];
 };
