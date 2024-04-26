@@ -10,5 +10,5 @@ type Repository interface {
 	GetTierByGenre(context.Context, string, string, string) ([]*models.TierRow, error)
 	GetFeatured(context.Context, string) ([]*models.FeaturedRow, error)
 	GetOwnedIDs(context.Context, *models.User) (*models.JSONOwnedProducts, error)
-	FindByID(context.Context, *models.Product, string) (*models.Product, error)
+	FindByID(context.Context, *models.Product, string, string) (*models.Product, error)
 }

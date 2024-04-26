@@ -4,7 +4,9 @@ import { type Product } from '$lib/types/game.type';
 
 export async function load({ params, parent }) {
     const data = await parent();
-    const result = await fetch("http://localhost:3000/products/" + encodeURIComponent(params.id));
+    let url = new URL("http://localhost:3000/products/" + encodeURIComponent(params.id));
+    url.searchParams.append("lang", params.lang || "en");
+    const result = await fetch(url);
 
     let localization: Record<string, string> | undefined;
 	try {

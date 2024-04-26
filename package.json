@@ -23,6 +23,7 @@
 	"type": "module",
 	"dependencies": {
 		"@types/node": "^20.12.7",
+		"dompurify": "^3.1.0",
 		"siema": "^1.5.1"
 	}
 }

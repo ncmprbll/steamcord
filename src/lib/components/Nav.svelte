@@ -121,7 +121,7 @@
                     <button class="login" on:click={() => {
                         loginVisible = !loginVisible
                     }}>
-                        Login
+                        {$page.data.localization.signin}
                     </button>
                 {:else}
                     <AnchorContext
@@ -345,6 +345,7 @@
         letter-spacing: 0.2px;
         transition: color 350ms;
         color: #b7bdbf;
+        white-space: nowrap;
     }
 
     .login:hover {

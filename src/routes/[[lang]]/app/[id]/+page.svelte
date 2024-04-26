@@ -1,4 +1,5 @@
 <script lang="ts">
+    import DOMPurify from 'dompurify';
     import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
 
     import windows from '$lib/assets/os/windows.png';
@@ -11,28 +12,8 @@
     export let data;
 
     let screenshots = data.product.screenshots;
-
-    let description = `
-Squad is the embodiment of tactical military action. Compete in massive-scale 50 vs. 50 battles in the most realistic combined-arms first-person shooter. Squad emphasizes combat realism through teamwork, tactics, and authentic warfare. A wide selection of realistic faction-specific weapons and vehicles allow players to build their own loadouts that best suit their preferred tactics. And with Squad’s unique Picture-in-Picture scopes, it’s like you’re really aiming at the enemy through real military-issue scopes.
-
-Featuring 13 factions, 24 massive maps, and a sweeping arsenal of weapons and vehicles, Squad creates a heart-thumping, visceral shooter experience that requires split-second decision-making in intense, realistic firefights.
-
-## Massive 50 vs. 50 Battles
-
-Squad creates authentic combat experiences while pitting conventional and unconventional factions against each other. As part of a 50 person team, join a nine-person squad to face off against opposing factions in intense combat across large real-world environments. Squad features 13 factions from all over the world, including the United States Marine Corps, Australian Defence Force, and Canadian Army among many others.
-
-## Ultra-Realistic Infantry Combat
-
-Squad’s combat was designed to provide the most fun, immersive, and authentic infantry experience possible. With Squad’s core tenets of teamwork and tactics, you’ll have to work together to outmaneuver your enemies with realistic Picture-in-Picture scopes and Squad’s unique Suppression system. Work with your squad to overwhelm the enemy and snatch victory from the jaws of defeat!
-
-## Building & Logistics System
-
-Adapt to the ever-changing needs of the battlefield. By building fortifications and emplacements or supplying your team with ammunition and materials, you can give your squad the edge. Whether it’s placing HMGs and AT guns or fortifying a position with sandbags, razor wire, and some much-needed ammo, the battlefield is yours to change, if you have the courage to do so.
-
-## Communication
-
-Solid communication is a soldier's best friend when engaging the enemy. To help facilitate navigating the complexity of communication on the battlefield, Squad provides a world-class in-game VoIP system that allows players to talk to other soldiers locally, in-squad, between squad leaders, or even to the overall team commander. Map tools and in-world markers aid fire team leads and squad leaders to inform their soldiers of on-the-fly engagement tactics.
-`
+    let about = data.product.about.String;
+    let description = data.product.description.String;
 
     let previous = -1;
     let selected = 0;
@@ -47,10 +28,17 @@ Solid communication is a soldier's best friend when engaging the enemy. To help 
         {#if screenshots.length !== 0}
             {#each screenshots as src, index}
                 <div class="screenshot-holder" class:previous={previous == index} class:active={selected == index}>
-                    <img {src} alt="Game screenshot">
+                    <img {src} alt="Game screenshot" on:click={function() {
+                        previous = selected;
+                        selected += 1;
+
+                        if (selected >= screenshots.length) {
+                            selected = 0;
+                        }
+                    }}>
                 </div>
             {/each}
-            <div class="screenshots-slider">
+            <div id="slider" class="screenshots-slider">
                 {#each screenshots as src, index}
                     <img {src} class:active={selected == index} alt="Game screenshot" on:click={() => {
                         if (selected !== index) {
@@ -88,7 +76,7 @@ Solid communication is a soldier's best friend when engaging the enemy. To help 
     <div class="main">
         <p class="breaker">{data.localization.about}</p>
         <div class="description">
-            {@html marked.parse(description)}
+            {@html DOMPurify.sanitize(marked.parse(about), {ALLOWED_TAGS: ["h2", "h3", "p"]})}
         </div>
         <p class="breaker">{data.localization.system}</p>
         <div class="system-requirements">
@@ -222,6 +210,10 @@ Solid communication is a soldier's best friend when engaging the enemy. To help 
         --right-side-size: 324px;
     }
 
+    .description {
+        margin-bottom: 16px;
+    }
+
     .no-image {
         display: flex;
         justify-content: center;
@@ -239,10 +231,6 @@ Solid communication is a soldier's best friend when engaging the enemy. To help 
         animation-name: pulsate;
         animation-iteration-count: infinite;
         transform-origin: center;
-    }
-
-    .container {
-        position: relative;
     }
 
     @keyframes pulsate { 
@@ -489,6 +477,7 @@ Solid communication is a soldier's best friend when engaging the enemy. To help 
 
     .screenshot-holder > img {
         display: block;
+        cursor: pointer;
     }
 
     .info-block {

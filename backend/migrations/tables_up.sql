@@ -13,6 +13,8 @@ DROP TABLE IF EXISTS products_genres CASCADE;
 DROP TABLE IF EXISTS products_featured CASCADE;
 DROP TABLE IF EXISTS currencies CASCADE;
 DROP TABLE IF EXISTS locales CASCADE;
+DROP TABLE IF EXISTS translations_tokens CASCADE;
+DROP TABLE IF EXISTS translations CASCADE;
 
 CREATE TABLE currencies
 (
@@ -26,13 +28,34 @@ CREATE TABLE genres
     genre VARCHAR(32) NOT NULL CHECK ( genre <> '' )
 );
 
+CREATE TABLE locales
+(
+    code VARCHAR(5) PRIMARY KEY,
+    name TEXT NOT NULL CHECK ( name <> '' )
+);
+
+CREATE TABLE translations_tokens
+(
+    token TEXT PRIMARY KEY
+);
+
+CREATE TABLE translations
+(
+    token TEXT REFERENCES translations_tokens(token),
+    locale VARCHAR(5) REFERENCES locales(code),
+    text TEXT NOT NULL CHECK ( text <> '' ),
+    PRIMARY KEY (token, locale)
+);
+
 CREATE SEQUENCE products_sequence INCREMENT BY 100 MINVALUE 440;
 
 CREATE TABLE products
 (
     id BIGINT PRIMARY KEY DEFAULT nextval('products_sequence'),
     name VARCHAR(64) NOT NULL CHECK ( name <> '' ),
-    discount SMALLINT DEFAULT 0 NOT NULL CHECK ( discount >= 0 AND discount <= 100 )
+    discount SMALLINT DEFAULT 0 NOT NULL CHECK ( discount >= 0 AND discount <= 100 ),
+    about_token TEXT REFERENCES translations_tokens(token),
+    description_token TEXT REFERENCES translations_tokens(token)
 );
 
 CREATE TABLE products_prices
@@ -109,12 +132,6 @@ CREATE TABLE users_games
     PRIMARY KEY (user_id, product_id)
 );
 
-CREATE TABLE locales
-(
-    code VARCHAR(4) PRIMARY KEY,
-    name TEXT NOT NULL CHECK ( name <> '' )
-);
-
 INSERT INTO locales (code, name) VALUES ('ru', 'Русский');
 INSERT INTO locales (code, name) VALUES ('en', 'English');
 
@@ -123,7 +140,62 @@ INSERT INTO currencies (code, symbol) VALUES ('USD', '$');
 
 INSERT INTO genres (genre) VALUES ('Horror'), ('Survival');
 
-INSERT INTO products (id, name, discount) VALUES (440, 'Cyberpunk 2077: Phantom Liberty', 100);
+INSERT INTO translations_tokens (token) VALUES ('#440_about');
+INSERT INTO translations_tokens (token) VALUES ('#440_description');
+
+INSERT INTO translations (token, locale, text) VALUES ('#440_about', 'en', '
+Cyberpunk 2077 is an open-world, action-adventure RPG set in the megalopolis of Night City, where you play as a cyberpunk mercenary wrapped up in a do-or-die fight for survival. Improved and featuring all-new free additional content, customize your character and playstyle as you take on jobs, build a reputation, and unlock upgrades. The relationships you forge and the choices you make will shape the story and the world around you. Legends are made here. What will yours be?
+
+### IMMERSE YOURSELF WITH UPDATE 2.1
+Night City feels more alive than ever with the free Update 2.1! Take a ride on the fully functional NCART metro system, listen to music as you explore the city with the Radioport, hang out with your partner in V’s apartment, compete in replayable races, ride new vehicles, enjoy improved bike combat and handling, discover hiddens secrets and much, much more!
+
+### CREATE YOUR OWN CYBERPUNK
+Become an urban outlaw equipped with cybernetic enhancements and build your legend on the streets of Night City.
+
+### EXPLORE THE CITY OF THE FUTURE
+Night City is packed to the brim with things to do, places to see, and people to meet. And it’s up to you where to go, when to go, and how to get there.
+
+### BUILD YOUR LEGEND
+Go on daring adventures and build relationships with unforgettable characters whose fates are shaped by the choices you make.
+
+### EQUIPPED WITH IMPROVEMENTS
+Experience Cyberpunk 2077 with a host of changes and improvements to gameplay and economy, the city, map usage, and more.
+
+### CLAIM EXCLUSIVE ITEMS
+Claim in-game swag & digital goodies inspired by CD PROJEKT RED games as part of the My Rewards program.
+');
+
+INSERT INTO translations (token, locale, text) VALUES ('#440_about', 'ru', '
+Cyberpunk 2077 — приключенческая ролевая игра с открытым миром, рассказывающая о киберпанке-наёмнике Ви и борьбе за жизнь в мегаполисе Найт-Сити. Мрачное будущее стало ещё более впечатляющим в улучшенной версии, в которую вошли новые дополнительные материалы. Создайте персонажа, выберите стиль игры и начните свой путь к высшей лиге, выполняя заказы, улучшая репутацию и оттачивая навыки. Ваши поступки влияют на происходящее и на весь город. В нём рождаются легенды. Какую сложат о вас?
+
+### ИГРАЙТЕ ПО-НОВОМУ С ПАТЧЕМ 2.1
+После обновления игры до версии 2.1 улицы Найт-Сити стали ещё более живыми. Катайтесь на полноценном метро, слушайте музыку через радиопорт во время прогулок, устраивайте свидания в своей квартире, участвуйте в гонках, осваивайте новые транспортные средства, учитесь делать трюки и сражаться на мотоциклах, раскрывайте новые секреты — словом, делайте всё, что душе угодно!
+
+### СОЗДАЙТЕ СВОЙ МИР КИБЕРПАНКА
+Станьте оснащённым имплантами преступником и сделайте себе имя на улицах Найт-Сити.
+
+### ПОСЕЛИТЕСЬ В ГОРОДЕ БУДУЩЕГО
+В Найт-Сити всегда есть чем заняться, куда сходить и с кем поговорить. Место, время и способ передвижения выбираете только вы.
+
+### СТАНЬТЕ ЛЕГЕНДОЙ
+Проворачивайте смелые аферы и заводите дружбу с харизматичными персонажами, на жизнь которых влияют ваши решения.
+
+### ОЦЕНИТЕ УЛУЧШЕНИЯ
+Посмотрите, как изменился Cyberpunk 2077 после усовершенствования игрового процесса, экономики, функционирования города, карты и прочих элементов.
+
+### ПОЛУЧИТЕ ЭКСКЛЮЗИВНЫЕ НАГРАДЫ
+Получите игровые предметы и цифровые материалы, посвящённые играм CD PROJEKT RED, в рамках программы «Мои награды».
+');
+
+INSERT INTO translations (token, locale, text) VALUES ('#440_description', 'en', '
+test
+');
+
+INSERT INTO translations (token, locale, text) VALUES ('#440_description', 'ru', '
+тест
+');
+
+INSERT INTO products (id, name, discount, about_token, description_token) VALUES (440, 'Cyberpunk 2077: Phantom Liberty', 100, '#440_about', '#440_description');
 INSERT INTO products (id, name, discount) VALUES (540, 'Baldur''s Gate 3', 10);
 INSERT INTO products (id, name, discount) VALUES (640, 'Fallout 4: Game of the Year Edition', 75);
 INSERT INTO products (id, name, discount) VALUES (740, 'Divinity: Original Sin 2 - Definitive Edition', 69);

@@ -131,7 +131,7 @@ func (h *handlers) FindByID() http.HandlerFunc {
 			currencyCode = found.CurrencyCode
 		}
 
-		product, err := h.productsRepository.FindByID(r.Context(), &models.Product{ID: i}, currencyCode)
+		product, err := h.productsRepository.FindByID(r.Context(), &models.Product{ID: i}, currencyCode, r.URL.Query().Get("lang"))
 		if err != nil {
 			util.HandleError(w, err)
 			return

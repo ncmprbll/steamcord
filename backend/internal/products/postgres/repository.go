@@ -156,7 +156,7 @@ func (s *Repository) GetOwnedIDs(ctx context.Context, user *models.User) (*model
 	return json, nil
 }
 
-func (s *Repository) FindByID(ctx context.Context, product *models.Product, currencyCode string) (*models.Product, error) {
+func (s *Repository) FindByID(ctx context.Context, product *models.Product, currencyCode, locale string) (*models.Product, error) {
 	const query = `
 				WITH product_price_screenshots AS (
 					SELECT
@@ -165,7 +165,9 @@ func (s *Repository) FindByID(ctx context.Context, product *models.Product, curr
 						products.discount,
 						jsonb_build_object('original', h.price, 'final', h.final, 'symbol', currencies.symbol) AS price,
 						products_images.tier_background_img,
-						COALESCE(jsonb_agg(products_screenshots.img) FILTER (WHERE products_screenshots.img IS NOT NULL), '[]'::jsonb) AS screenshots
+						COALESCE(jsonb_agg(products_screenshots.img) FILTER (WHERE products_screenshots.img IS NOT NULL), '[]'::jsonb) AS screenshots,
+						about_token,
+						description_token
 					FROM products
 						JOIN LATERAL (SELECT *, (price - (price * products.discount / 100)::NUMERIC(16, 2)) AS final FROM products_prices WHERE currency_code = $1) h ON products.id = h.product_id
 						JOIN currencies ON currencies.code = h.currency_code
@@ -181,16 +183,31 @@ func (s *Repository) FindByID(ctx context.Context, product *models.Product, curr
 						price,
 						tier_background_img,
 						screenshots,
+						about_token,
+						description_token,
 						jsonb_agg(products_platforms.platform) AS platforms
 					FROM product_price_screenshots
 						JOIN products_platforms ON id = products_platforms.product_id
-					GROUP BY id, name, discount, price, tier_background_img, screenshots
+					GROUP BY id, name, discount, price, tier_background_img, screenshots, about_token, description_token
+				), translated AS (
+						SELECT
+						id,
+						name,
+						discount,
+						price,
+						tier_background_img,
+						screenshots,
+						CASE WHEN token = about_token THEN COALESCE(text, '') END about,
+						CASE WHEN token = description_token THEN COALESCE(text, '') END description,
+						platforms
+					FROM translations
+						RIGHT JOIN product_platforms ON locale = $3 AND (token = about_token OR token = description_token)
 				)
 				SELECT
 					*
-				FROM product_platforms;
+				FROM translated;
 				`
-	err := s.database.QueryRowxContext(ctx, query, currencyCode, product.ID).StructScan(product)
+	err := s.database.QueryRowxContext(ctx, query, currencyCode, product.ID, locale).StructScan(product)
 	if err != nil {
 		return nil, err
 	}

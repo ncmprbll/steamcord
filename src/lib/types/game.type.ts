@@ -1,3 +1,8 @@
+type NullString = {
+	String: string;
+	Valid: boolean;
+}
+
 export type FeaturedGame = {
 	id: string | number;
 	name: string;
@@ -23,6 +28,8 @@ export type Product = {
 	prices: Record<string, number>;
 	tier_background_img: string;
 	screenshots: string[];
+	about: NullString;
+	description: NullString;
 	platforms: string[];
 };
 
