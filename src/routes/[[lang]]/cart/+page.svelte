@@ -11,6 +11,7 @@
     export let data;
     let estimated: number = 0.00;
     let symbol: string = '';
+    let purchaseLoading: boolean = false;
     let loadings: boolean[] = [];
 
     $: ({ cart } = data);
@@ -48,6 +49,30 @@
                 return cart.filter(id => id !== gameId);
             });
         }
+    }
+
+    async function purchase() {
+        if (data === undefined || data.me === undefined) {
+            return;
+        }
+
+        purchaseLoading = true;
+
+        const result = await fetch("/api/cart/purchase", {
+            method: "POST",
+            credentials: 'include'
+        });
+
+        await new Promise(r => setTimeout(r, 750)); // Artificial delay
+
+        purchaseLoading = false;
+
+        // if (result.status === 200) {
+        //     data.me.cart.update((cart) => {
+        //         return cart.filter(id => id !== gameId);
+        //     });
+        // }
+        window.location.reload();
     }
 </script>
 
@@ -115,8 +140,11 @@
                     {/if}
                 {/if}
             </div>
-            <button class="button" disabled={data.cart.length === 0} on:click|preventDefault={() => {}}>
-                {data.localization.purchase}
+            <button class="button" disabled={data.cart.length === 0 || data.me.balance < estimated} on:click|preventDefault={purchase}>
+                <span class:loading={purchaseLoading}>{data.localization.purchase}</span>
+                {#if purchaseLoading}
+                    <Spinner absolute={true} size="16"/>
+                {/if}
             </button>
         </div>
     </div>

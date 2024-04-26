@@ -54,7 +54,7 @@
     </div>
     <div class="info-block">
         <img class="item-image" src={data.product.tier_background_img} alt="Game"/>
-        <div class="short-description">Squad is a tactical FPS that provides authentic combat experiences through teamwork, communication, and realistic combat. It bridges the gap between arcade shooter and military realism with 100-player battles, combined-arms warfare, and base building.</div>
+        <div class="short-description">{description}</div>
         <div class="meta-summary">
             <div class="meta-row">
                 <div class="subtitle">{data.localization.reviews}:</div>
@@ -76,7 +76,7 @@
     <div class="main">
         <p class="breaker">{data.localization.about}</p>
         <div class="description">
-            {@html DOMPurify.sanitize(marked.parse(about), {ALLOWED_TAGS: ["h2", "h3", "p"]})}
+            {@html DOMPurify.sanitize(marked.parse(about), {ALLOWED_TAGS: ["h2", "h3", "p", "ul", "li", "ol", "blockquote", "strong"]})}
         </div>
         <p class="breaker">{data.localization.system}</p>
         <div class="system-requirements">
@@ -212,6 +212,15 @@
 
     .description {
         margin-bottom: 16px;
+    }
+
+    :global(.description ul) {
+        padding: 0;
+        margin-left: 16px;
+    }
+
+    :global(.description blockquote) {
+        margin: 0
     }
 
     .no-image {

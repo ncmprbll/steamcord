@@ -9,17 +9,11 @@ export async function POST({ cookies, request }) {
 		});
 	}
 
-	const result = await fetch("http://localhost:3000/auth/logout", {
+	return await fetch("http://localhost:3000/cart/purchase", {
 		method: request.method,
-		credentials: 'include',
+		credentials: "include",
 		headers: {
-			Cookie: 'session_id=' + sessionId
+			Cookie: "session_id=" + sessionId
 		}
 	});
-
-	if (result.status === 200) {
-		cookies.delete("session_id", { path: "/" });
-	}
-
-	return new Response(result.body, result);
 }

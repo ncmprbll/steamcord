@@ -197,20 +197,37 @@ func (s *Repository) FindByID(ctx context.Context, product *models.Product, curr
 						price,
 						tier_background_img,
 						screenshots,
-						CASE WHEN token = about_token THEN COALESCE(text, '') END about,
-						CASE WHEN token = description_token THEN COALESCE(text, '') END description,
+						locale,
+						MAX(CASE WHEN token = about_token THEN COALESCE(text, '') END) about,
+						MAX(CASE WHEN token = description_token THEN COALESCE(text, '') END) description,
 						platforms
 					FROM translations
-						RIGHT JOIN product_platforms ON locale = $3 AND (token = about_token OR token = description_token)
+						RIGHT JOIN product_platforms ON (locale = $3 OR locale = 'en') AND (token = about_token OR token = description_token)
+					GROUP BY id, name, discount, price, tier_background_img, screenshots, locale, platforms
 				)
 				SELECT
 					*
 				FROM translated;
 				`
-	err := s.database.QueryRowxContext(ctx, query, currencyCode, product.ID, locale).StructScan(product)
+	rows, err := s.database.QueryxContext(ctx, query, currencyCode, product.ID, locale)
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
-	return product, nil
+	result := []*models.Product{}
+
+	for rows.Next() {
+		row := &models.Product{}
+		rows.StructScan(row)
+		result = append(result, row)
+	}
+
+	for _, v := range result {
+		if v.Locale == locale {
+			return v, nil
+		}
+	}
+
+	return result[0], nil
 }
