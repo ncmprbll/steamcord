@@ -224,7 +224,7 @@ func (s *Repository) FindByID(ctx context.Context, product *models.Product, curr
 	}
 
 	for _, v := range result {
-		if v.Locale == locale {
+		if v.Locale.String == locale {
 			return v, nil
 		}
 	}

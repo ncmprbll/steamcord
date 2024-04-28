@@ -49,7 +49,7 @@ type Product struct {
 	Price             JSONPrice      `json:"price" db:"price"`
 	TierBackgroundImg string         `json:"tier_background_img" db:"tier_background_img"`
 	Screenshots       Screenshots    `json:"screenshots" db:"screenshots"`
-	Locale            string         `db:"locale"`
+	Locale            sql.NullString `json:"-" db:"locale"`
 	About             sql.NullString `json:"about" db:"about"`
 	Description       sql.NullString `json:"description" db:"description"`
 	Platforms         JSONPlatforms  `json:"platforms" db:"platforms"`
