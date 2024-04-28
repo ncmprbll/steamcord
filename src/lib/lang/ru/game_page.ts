@@ -3,6 +3,8 @@ const localization: Record<string, string> = {
     "reviews": "Отзывы",
     "releaseDate": "Дата выхода",
     "addToCart": "В корзину",
+    'inCart': 'В корзине',
+    'owned': 'Куплено',
     "addToWishlist": "В список желамеого",
     "platforms": "Платформы",
     "publisher": "Издатель",

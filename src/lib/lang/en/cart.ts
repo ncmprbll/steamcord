@@ -3,7 +3,8 @@ const localization: Record<string, string> = {
     "total": "Estimated total",
     "purchase": "Purchase",
     "remove": "Remove",
-    "noItems": "No items in the cart"
+    "noItems": "No items in the cart",
+    "free": "Free"
 };
 
 export { localization };

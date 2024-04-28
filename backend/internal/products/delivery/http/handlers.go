@@ -152,12 +152,30 @@ func (h *handlers) Search() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		term := r.URL.Query().Get("term")
 		priceRange := r.URL.Query().Get("priceRange")
-		priceRangeArray := []string{"0", "540000.00"}
-		if priceRange != "" {
-			priceRangeArray = strings.Split(priceRange, ",")
-		}
-		if len(priceRangeArray) != 2 {
-			priceRangeArray = []string{"0", "540000.00"}
+		priceRangeSplit := strings.Split(priceRange, ",")
+		priceRangeArray := []float32{0, 540000.00}
+		if priceRange != "" && len(priceRangeSplit) == 2 {
+			min, err := strconv.ParseFloat(priceRangeSplit[0], 32)
+			if err != nil {
+				util.HandleError(w, err)
+				return
+			}
+			max, err := strconv.ParseFloat(priceRangeSplit[1], 32)
+			if err != nil {
+				util.HandleError(w, err)
+				return
+			}
+			if min > max {
+				w.Header().Set("Content-Type", "application/json")
+				if err := json.NewEncoder(w).Encode([]*models.SearchProduct{}); err != nil {
+					util.HandleError(w, err)
+					return
+				}
+		
+				w.WriteHeader(http.StatusOK)
+			}
+			priceRangeArray[0] = float32(min)
+			priceRangeArray[1] = float32(max)
 		}
 
 		specials := r.URL.Query().Get("specials")
@@ -209,14 +227,14 @@ func (h *handlers) Search() http.HandlerFunc {
 			currencyCode = found.CurrencyCode
 		}
 
-		product, err := h.productsRepository.Search(r.Context(), currencyCode, term, priceRangeArray, specials, genresArray, pageLimitInteger, pageOffsetInteger)
+		products, err := h.productsRepository.Search(r.Context(), currencyCode, term, priceRangeArray, specials, genresArray, pageLimitInteger, pageOffsetInteger)
 		if err != nil {
 			util.HandleError(w, err)
 			return
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		if err := json.NewEncoder(w).Encode(product); err != nil {
+		if err := json.NewEncoder(w).Encode(products); err != nil {
 			util.HandleError(w, err)
 			return
 		}

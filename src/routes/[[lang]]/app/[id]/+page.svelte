@@ -8,8 +8,45 @@
     import { goto } from "$app/navigation";
     import { page } from "$app/stores"; 
     import { formatPrice } from '$lib/types/game.type';
+    import Spinner from '$lib/components/Spinner.svelte';
 
     export let data;
+
+    let loadingCart: boolean = false;
+    let alreadyInCart: boolean = false;
+
+    if (data.me?.cart) {
+        data.me.cart.subscribe((cart) => {
+            alreadyInCart = cart.includes(data.product.id);
+        });
+    };
+
+    async function addToCart() {
+        if (data === undefined || data.me === undefined) {
+            return;
+        }
+
+        loadingCart = true;
+
+        const result = await fetch("/api/cart/", {
+            method: "POST",
+            credentials: 'include',
+            body: JSON.stringify({product_id: data.product.id})
+        });
+
+        await new Promise(r => setTimeout(r, 750)); // Artificial delay
+
+        loadingCart = false;
+
+        if (result.status === 200) {
+            data.me.cart.update((cart) => {
+                cart.push(data.product.id);
+                return cart;
+            });
+        } else if (result.status === 409) {
+            window.location.reload();
+        }
+    }
 
     let screenshots = data.product.screenshots;
     let about = data.product.about.String;
@@ -136,9 +173,22 @@
             {/if}
         </div>
         {#if data.me !== undefined}
-            <div class="button">
-                <span>{data.localization.addToCart}</span>
-            </div>
+            {#if $page.data?.me?.owned.includes(data.product.id)}
+                <div class="button owned">
+                    <span>{$page.data.localization.owned}</span>
+                </div>
+            {:else if !alreadyInCart}
+                <button class="button" disabled={loadingCart} on:click|stopPropagation|preventDefault={addToCart}>
+                    <span class:loading={loadingCart}>{data.localization.addToCart}</span>
+                    {#if loadingCart}
+                        <Spinner absolute={true} size="16"/>
+                    {/if}
+                </button>
+            {:else if alreadyInCart}
+                <a href="{data.lang}/cart" class="button in-cart">
+                    <span>{$page.data.localization.inCart}</span>
+                </a>
+            {/if}
             <div class="button">
                 <span>{data.localization.addToWishlist}</span>
             </div>
@@ -208,6 +258,10 @@
 <style lang="postcss">
     :root {
         --right-side-size: 324px;
+    }
+
+    .loading {
+        opacity: 0;
     }
 
     .description {
@@ -370,6 +424,17 @@
     .button:disabled {
         cursor: default;
         pointer-events: none;
+    }
+
+    .button.owned {
+        background: rgb(61, 67, 77);
+        color: #d1cdcd;
+        cursor: default;
+    }
+
+    .button.in-cart {
+        background: rgb(57 157 69);
+        color: #ffffff;
     }
 
     .button > span {

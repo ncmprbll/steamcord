@@ -232,7 +232,7 @@ func (s *Repository) FindByID(ctx context.Context, product *models.Product, curr
 	return result[0], nil
 }
 
-func (s *Repository) Search(ctx context.Context, currencyCode, name string, priceRange []string, specials string, genres []string, pageLimit, pageOffset int) ([]*models.SearchProduct, error) {
+func (s *Repository) Search(ctx context.Context, currencyCode, name string, priceRange []float32, specials string, genres []string, pageLimit, pageOffset int) ([]*models.SearchProduct, error) {
 	const baseQuery = `
 				WITH products_price AS (
 					SELECT
@@ -262,7 +262,7 @@ func (s *Repository) Search(ctx context.Context, currencyCode, name string, pric
 						created_at
 					FROM products_price
 						JOIN products_platforms ON id = products_platforms.product_id
-						WHERE genres::text[] @> $6
+						WHERE LOWER(genres::TEXT)::TEXT[] @> LOWER($6::TEXT[]::TEXT)::TEXT[]
 					GROUP BY id, name, discount, price, genres, tier_background_img, created_at
 				)
 				SELECT
@@ -271,13 +271,13 @@ func (s *Repository) Search(ctx context.Context, currencyCode, name string, pric
 				ORDER BY created_at, id
 				LIMIT $7 OFFSET $8;
 				`
+	result := []*models.SearchProduct{}
+
 	rows, err := s.database.QueryxContext(ctx, baseQuery, currencyCode, name, priceRange[0], priceRange[1], specials, genres, pageLimit, pageOffset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-
-	result := []*models.SearchProduct{}
 
 	for rows.Next() {
 		row := &models.SearchProduct{}

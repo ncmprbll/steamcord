@@ -33,8 +33,6 @@
         } else {
             window.location.pathname = path.replace($page.params.lang, code);
         }
-
-        console.log(code, $page.params, $page.url, $page.url.pathname);
     }
 
     if ($page.data?.locales) {
