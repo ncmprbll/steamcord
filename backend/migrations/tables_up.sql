@@ -55,7 +55,8 @@ CREATE TABLE products
     name VARCHAR(64) NOT NULL CHECK ( name <> '' ),
     discount SMALLINT DEFAULT 0 NOT NULL CHECK ( discount >= 0 AND discount <= 100 ),
     about_token TEXT REFERENCES translations_tokens(token),
-    description_token TEXT REFERENCES translations_tokens(token)
+    description_token TEXT REFERENCES translations_tokens(token),
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE products_prices

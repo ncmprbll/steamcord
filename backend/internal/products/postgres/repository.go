@@ -231,3 +231,59 @@ func (s *Repository) FindByID(ctx context.Context, product *models.Product, curr
 
 	return result[0], nil
 }
+
+func (s *Repository) Search(ctx context.Context, currencyCode, name string, priceRange []string, specials string, genres []string, pageLimit, pageOffset int) ([]*models.SearchProduct, error) {
+	const baseQuery = `
+				WITH products_price AS (
+					SELECT
+						products.id,
+						products.name,
+						products.discount,
+						jsonb_build_object('original', h.price, 'final', h.final, 'symbol', currencies.symbol) AS price,
+						products_images.tier_background_img,
+						ARRAY_AGG(genres.genre) AS genres,
+						created_at
+					FROM products
+						JOIN LATERAL (SELECT *, (price - (price * products.discount / 100)::NUMERIC(16, 2)) AS final FROM products_prices WHERE currency_code = $1) h ON products.id = h.product_id
+						JOIN currencies ON currencies.code = h.currency_code
+						JOIN products_images ON products.id = products_images.product_id
+						LEFT JOIN products_genres ON products.id = products_genres.product_id
+						LEFT JOIN genres ON products_genres.genre_id = genres.id
+					WHERE LOWER(name) LIKE '%' || LOWER($2) || '%' AND h.final BETWEEN $3 AND $4 AND discount <> $5
+					GROUP BY products.id, price, currencies.symbol, final, tier_background_img, created_at
+				), product_platforms AS (
+					SELECT
+						id,
+						name,
+						discount,
+						price,
+						tier_background_img,
+						jsonb_agg(products_platforms.platform) AS platforms,
+						created_at
+					FROM products_price
+						JOIN products_platforms ON id = products_platforms.product_id
+						WHERE genres::text[] @> $6
+					GROUP BY id, name, discount, price, genres, tier_background_img, created_at
+				)
+				SELECT
+					*
+				FROM product_platforms
+				ORDER BY created_at, id
+				LIMIT $7 OFFSET $8;
+				`
+	rows, err := s.database.QueryxContext(ctx, baseQuery, currencyCode, name, priceRange[0], priceRange[1], specials, genres, pageLimit, pageOffset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := []*models.SearchProduct{}
+
+	for rows.Next() {
+		row := &models.SearchProduct{}
+		rows.StructScan(row)
+		result = append(result, row)
+	}
+
+	return result, nil
+}

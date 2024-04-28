@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"time"
 )
 
 type JSONOwnedProducts []int
@@ -53,6 +54,16 @@ type Product struct {
 	About             sql.NullString `json:"about" db:"about"`
 	Description       sql.NullString `json:"description" db:"description"`
 	Platforms         JSONPlatforms  `json:"platforms" db:"platforms"`
+}
+
+type SearchProduct struct {
+	ID                int           `json:"id" db:"id"`
+	Name              string        `json:"name" db:"name"`
+	Discount          int           `json:"discount" db:"discount"`
+	Price             JSONPrice     `json:"price" db:"price"`
+	TierBackgroundImg string        `json:"tier_background_img" db:"tier_background_img"`
+	Platforms         JSONPlatforms `json:"platforms" db:"platforms"`
+	CreatedAt         time.Time     `json:"-" db:"created_at"`
 }
 
 func (p *JSONPrice) Scan(src any) error {

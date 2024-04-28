@@ -8,6 +8,7 @@ import (
 	"main/backend/internal/util"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -132,6 +133,83 @@ func (h *handlers) FindByID() http.HandlerFunc {
 		}
 
 		product, err := h.productsRepository.FindByID(r.Context(), &models.Product{ID: i}, currencyCode, r.URL.Query().Get("lang"))
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(product); err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}
+}
+
+func (h *handlers) Search() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		term := r.URL.Query().Get("term")
+		priceRange := r.URL.Query().Get("priceRange")
+		priceRangeArray := []string{"0", "540000.00"}
+		if priceRange != "" {
+			priceRangeArray = strings.Split(priceRange, ",")
+		}
+		if len(priceRangeArray) != 2 {
+			priceRangeArray = []string{"0", "540000.00"}
+		}
+
+		specials := r.URL.Query().Get("specials")
+
+		if specials == "1" {
+			specials = "0"
+		} else {
+			specials = "-1"
+		}
+
+		genres := r.URL.Query().Get("genres")
+		genresArray := []string{}
+		if genres != "" {
+			genresArray = strings.Split(genres, ",")
+		}
+
+		pageLimit := r.URL.Query().Get("pageLimit")
+		pageLimitInteger := 15 // REDO to constants
+		if pageLimit != "" {
+			var err error
+			pageLimitInteger, err = strconv.Atoi(pageLimit)
+			if err != nil {
+				util.HandleError(w, err)
+				return
+			}
+			if pageLimitInteger > 15 {
+				pageLimitInteger = 15
+			}
+		}
+
+		pageOffset := r.URL.Query().Get("pageOffset")
+		pageOffsetInteger := 0 // REDO to constants
+		if pageOffset != "" {
+			var err error
+			pageOffsetInteger, err = strconv.Atoi(pageOffset)
+			if err != nil {
+				util.HandleError(w, err)
+				return
+			}
+			if pageOffsetInteger < 0 {
+				pageOffsetInteger = 0
+			}
+		}
+
+		currencyCode := "USD"
+		found, ok := r.Context().Value("user").(*models.User)
+
+		if ok {
+			currencyCode = found.CurrencyCode
+		}
+
+		product, err := h.productsRepository.Search(r.Context(), currencyCode, term, priceRangeArray, specials, genresArray, pageLimitInteger, pageOffsetInteger)
 		if err != nil {
 			util.HandleError(w, err)
 			return

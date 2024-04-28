@@ -11,4 +11,5 @@ type Repository interface {
 	GetFeatured(context.Context, string) ([]*models.FeaturedRow, error)
 	GetOwnedIDs(context.Context, *models.User) (*models.JSONOwnedProducts, error)
 	FindByID(context.Context, *models.Product, string, string) (*models.Product, error)
+	Search(context.Context, string, string, []string, string, []string, int, int) ([]*models.SearchProduct, error)
 }
