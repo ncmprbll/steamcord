@@ -18,11 +18,11 @@ const (
 )
 
 type User struct {
-	UUID         uuid.UUID `json:"user_id" db:"user_id"`
+	UUID         uuid.UUID `json:"user_id,omitempty" db:"user_id"`
 	Login        string    `json:"login,omitempty" db:"login"`
 	DisplayName  string    `json:"display_name" db:"display_name"`
 	CurrencyCode string    `json:"currency_code,omitempty" db:"currency_code"`
-	Balance      float32   `json:"balance" db:"balance"`
+	Balance      float32   `json:"balance,omitempty" db:"balance"`
 	Email        string    `json:"email,omitempty" db:"email"`
 	Password     string    `json:"password,omitempty" db:"password"`
 	Role         string    `json:"role,omitempty" db:"role"`

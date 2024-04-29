@@ -1,25 +1,100 @@
 <script lang="ts">
+    import DOMPurify from 'dompurify';
+    import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
+
     export let data;
+
+    let name: string = "Test Name Test Name Test Name";
+    let about: string = DOMPurify.sanitize(marked.parse("about\n\n\n about about about about about aboutaboutaboutaboutabout aboutaboutabout  aboutabout   aboutaboutabout"), {ALLOWED_TAGS: ["p", "br"]});
 </script>
 
 {#if data.user !== undefined}
 <div class="profile-header">
-    <div class="profile-avatar">
-        <img src="https://preview.redd.it/imrpoved-steam-default-avatar-v0-ffxjnceu7vf81.png?width=640&crop=smart&auto=webp&s=0f8cbc4130a94fc83f19418f1a734209108c2a4b" alt="User avatar"/>
+    <div class="profile-name mobile">
+        <span class="profile-display-name">{data.user.display_name === undefined || data.user.display_name === "" ? name : data.user.display_name}</span>
     </div>
-    <div class="profile-summary">
-        <div class="profile-names">
-            <span class="profile-display-name">{data.user.display_name === undefined || data.user.display_name === "" ? "User has not set up their profile, encourage them to do so!" : data.user.display_name}</span>
-            <span class="profile-real-name">real name</span>
+    <div class="desktop-layout">
+        <div class="profile-avatar">
+            <img src="https://preview.redd.it/imrpoved-steam-default-avatar-v0-ffxjnceu7vf81.png?width=640&crop=smart&auto=webp&s=0f8cbc4130a94fc83f19418f1a734209108c2a4b" alt="User avatar"/>
         </div>
-        <div>
-            <span class="profile-description">description</span>
+        <div class="profile-summary">
+            <div class="profile-name">
+                <span class="profile-display-name">{data.user.display_name === undefined || data.user.display_name === "" ? name : data.user.display_name}</span>
+                <!-- <span class="profile-real-name">real name</span> -->
+            </div>
+            <div class="profile-description">
+                <span class="about">{@html about}</span>
+            </div>
         </div>
+        <div class="profile-right-pane">
+            <div class="right-pane-layout">
+                <div class="games-owned">Games owned: 0</div>
+                <a href="" class="profile-button">
+                    <span>Settings</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="profile-description mobile">
+        <span class="profile-description">{@html about}</span>
     </div>
 </div>
 {/if}
 
 <style lang="postcss">
+    .profile-button {
+        border-radius: 2px;
+        padding: 1px;
+        display: inline-block;
+        text-decoration: none;
+        cursor: pointer;
+        background-color: rgb(66, 66, 90);
+        transition: all 0.1s ease-in-out;
+        width: fit-content;
+    }
+
+    :global(.about > p) {
+        margin: 8px 0;
+    }
+
+    .profile-right-pane {
+        display: flex;
+        flex: 1 0 256px;
+        flex-grow: 1;
+        justify-content: end;
+        padding: 16px 0;
+        white-space: nowrap;
+        min-width: 0;
+    }
+
+    .right-pane-layout {
+        flex: 1 0 256px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-width: 0;
+    }
+
+    .games-owned {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .profile-button > span {
+        padding: 4px 10px;
+        border-radius: 2px;
+        display: block;
+        background-color: rgb(66, 66, 90);
+    }
+
+    .profile-button:hover {
+        background-color: rgb(74, 74, 98);
+    }
+
+    .profile-button:hover > span {
+        background-color: rgb(74, 74, 98);
+    }
+
     img {
         width: 100%;
         height: 100%;
@@ -27,18 +102,36 @@
     }
 
     span {
-        word-wrap:break-word;
+        /* word-wrap: break-word; */
     }
 
     .profile-display-name {
         font-size: 24px;
         line-height: 20px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-weight: 300;
+        letter-spacing: 1px;
     }
 
-    .profile-names {
+    .profile-name {
         display: flex;
         flex-direction: column;
         margin-bottom: 20px;
+    }
+
+    .profile-name.mobile {
+        display: none;
+    }
+
+    .profile-description {
+        overflow: auto;
+        max-height: 100px;
+    }
+
+    .profile-description.mobile {
+        display: none;
     }
 
     .profile-summary {
@@ -54,24 +147,50 @@
         box-sizing: border-box;
         padding: 8px;
         background-color: red;
-        overflow: auto;
+        overflow: hidden;
     }
 
     .profile-header {
-        display: flex;
         width: 100%;
         background: rgb(24,24,28);
         background: linear-gradient(45deg, rgb(27 27 32) 0%, rgb(42 42 56) 100%);
         border-radius: 4px;
-        overflow: auto;
+        overflow: hidden;
+    }
+
+    .desktop-layout {
+        display: flex;
+        gap: 20px;
     }
 
     .profile-avatar {
         width: 166px;
         height: 166px;
         flex: 0 0 166px;
-        margin-right: 20px;
+        /* margin-right: 20px; */
         background-color: blue;
         border-radius: 4px;
+    }
+
+    @media (max-width: 700px) {
+        .profile-summary {
+            display: none;
+        }
+
+        .profile-right-pane {
+            justify-content: start;
+        }
+
+        .profile-name.mobile {
+            display: flex;
+            margin-top: 8px;
+            margin-bottom: 16px;
+        }
+
+        .profile-description.mobile {
+            display: block;
+            margin-top: 16px;
+            margin-bottom: 8px;
+        }
     }
 </style>
