@@ -39,9 +39,66 @@
         <span class="profile-description">{@html about}</span>
     </div>
 </div>
+
+<div class="main-content">
+    <div class="main">
+        <p class="breaker">Comments</p>
+        <div class="description">
+            {@html DOMPurify.sanitize(marked.parse(about), {ALLOWED_TAGS: ["h2", "h3", "p", "ul", "li", "ol", "blockquote", "strong"]})}
+        </div>
+    </div>
+    <div class="aside">
+        <a href="{window.location.href}/games">
+            Games
+        </a>
+        <a href="{window.location.href}/friends">
+            Friends
+        </a>
+    </div>
+</div>
 {/if}
 
 <style lang="postcss">
+    :root {
+        --right-side-size: 324px;
+    }
+
+    .main-content {
+        display: flex;
+        gap: 16px;
+        width: 100%;
+        margin-bottom: 16px;
+    }
+
+    .main {
+        flex: 1;
+    }
+
+    .breaker {
+        margin-top: 0;
+        margin-bottom: 1em;
+        border-bottom: 1px solid #3b3b3b;
+        height: 32px;
+        text-transform: uppercase;
+        font-size: 18px;
+        font-weight: 600;
+        letter-spacing: 3px;
+    }
+
+    .aside {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        box-sizing: border-box;
+        border-radius: 4px;
+        padding: 16px;
+        background-color: rgb(32, 32, 32);
+        width: var(--right-side-size);
+        height: fit-content;
+        position: sticky;
+        top: 96px; /* 80 (navbar height) + 16 (margin) */
+    }
+
     .profile-button {
         border-radius: 2px;
         padding: 1px;
@@ -132,6 +189,7 @@
 
     .profile-description.mobile {
         display: none;
+        margin-bottom: 16px;
     }
 
     .profile-summary {
@@ -148,6 +206,7 @@
         padding: 8px;
         background-color: red;
         overflow: hidden;
+        margin-bottom: 16px;
     }
 
     .profile-header {
@@ -172,7 +231,7 @@
         border-radius: 4px;
     }
 
-    @media (max-width: 700px) {
+    @media (max-width: 740px) {
         .profile-summary {
             display: none;
         }
@@ -191,6 +250,16 @@
             display: block;
             margin-top: 16px;
             margin-bottom: 8px;
+        }
+
+        .main-content {
+            flex-direction: column;
+        }
+
+        .aside {
+            order: -1;
+            width: 100%;
+            position: static;
         }
     }
 </style>
