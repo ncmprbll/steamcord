@@ -21,6 +21,8 @@
         });
     };
 
+    console.log($page.data.me)
+
     let languagesContextMenu = [];
 
     function setLanguage(code: string) {

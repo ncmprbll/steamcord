@@ -2,7 +2,11 @@
     import DOMPurify from 'dompurify';
     import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
 
+    import { formatDate } from "$lib/util/date";
+
     export let data;
+
+    console.log(formatDate, data.user, data.localization)
 
     let name: string = "Test Name Test Name Test Name";
     let about: string = DOMPurify.sanitize(marked.parse("about\n\n\n about about about about about aboutaboutaboutaboutabout aboutaboutabout  aboutabout   aboutaboutabout"), {ALLOWED_TAGS: ["p", "br"]});
@@ -28,7 +32,16 @@
         </div>
         <div class="profile-right-pane">
             <div class="right-pane-layout">
-                <div class="games-owned">Games owned: 0</div>
+                <div>
+                    <div class="milestone">
+                        <div class="milestone-text">{data.localization.gamesOwned}</div>
+                        <div class="milestone-value">0</div>
+                    </div>
+                    <div class="milestone">
+                        <div class="milestone-text">{data.localization.dateJoined}</div>
+                        <div class="milestone-value">{formatDate(data.user.created_at, data.localization)}</div>
+                    </div>
+                </div>
                 <a href="" class="profile-button">
                     <span>Settings</span>
                 </a>
@@ -56,12 +69,38 @@
         </a>
     </div>
 </div>
+{:else}
+    <div class="error-box">
+        <h1>{data.localization.somethingsWrong}</h1>
+        <h2>{data.localization.profileNotFound}</h2>
+    </div>
 {/if}
 
 <style lang="postcss">
     :root {
         --right-side-size: 324px;
     }
+
+    .error-box {
+        text-align: center;
+        width: 100%;
+        min-width: 0;
+        line-height: normal;
+        margin-top: 5%;
+    }
+
+    .error-box > h1 {
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: #90989b;
+        margin: auto;
+    }
+
+    .error-box > h2 {
+        letter-spacing: 1px;
+        margin: auto;
+    }
+
 
     .main-content {
         display: flex;
@@ -132,7 +171,20 @@
         min-width: 0;
     }
 
-    .games-owned {
+    .milestone {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .milestone-text {
+        font-weight: 600;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .milestone-value {
+        font-weight: 600;
+        color: #90989b;
         overflow: hidden;
         text-overflow: ellipsis;
     }
@@ -232,6 +284,12 @@
     }
 
     @media (max-width: 740px) {
+        .milestone {
+            flex-direction: column;
+            justify-content: normal;
+            margin-bottom: 8px;
+        }
+
         .profile-summary {
             display: none;
         }
