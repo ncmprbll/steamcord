@@ -42,8 +42,8 @@
                         <div class="milestone-value">{formatDate(data.user.created_at, data.localization)}</div>
                     </div>
                 </div>
-                <a href="" class="profile-button">
-                    <span>Settings</span>
+                <a href="{window.location.href}/settings" class="profile-button">
+                    <span>{data.localization.settings}</span>
                 </a>
             </div>
         </div>
@@ -55,17 +55,17 @@
 
 <div class="main-content">
     <div class="main">
-        <p class="breaker">Comments</p>
+        <p class="breaker">{data.localization.comments}</p>
         <div class="description">
             {@html DOMPurify.sanitize(marked.parse(about), {ALLOWED_TAGS: ["h2", "h3", "p", "ul", "li", "ol", "blockquote", "strong"]})}
         </div>
     </div>
     <div class="aside">
         <a href="{window.location.href}/games">
-            Games
+            {data.localization.games}
         </a>
         <a href="{window.location.href}/friends">
-            Friends
+            {data.localization.friends}
         </a>
     </div>
 </div>

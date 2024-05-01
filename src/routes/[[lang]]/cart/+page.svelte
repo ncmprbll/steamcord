@@ -350,7 +350,7 @@
         }
 
         .items > span {
-        margin-top: 8px;
-    }
+            margin-top: 8px;
+        }
     }
 </style>
