@@ -106,6 +106,7 @@ CREATE TABLE users
     user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     login VARCHAR(32) UNIQUE NOT NULL CHECK ( login <> '' ),
     display_name VARCHAR(32) DEFAULT '' NOT NULL,
+    about VARCHAR(256) DEFAULT '' NOT NULL,
     currency_code CHAR(3) DEFAULT 'RUB' REFERENCES currencies(code),
     balance NUMERIC(16, 2) DEFAULT 0.00 NOT NULL CHECK ( balance >= 0 ),
     email VARCHAR(64) NOT NULL CHECK ( email <> '' ),

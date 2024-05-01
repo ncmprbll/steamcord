@@ -1,4 +1,4 @@
-export async function POST({ cookies, request }) {
+export async function POST({ request }) {
 	const data = await request.formData();
 	let object = {};
 	data.forEach((value, key) => object[key] = value);

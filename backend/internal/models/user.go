@@ -15,20 +15,30 @@ const (
 	MAX_PASSWORD = 48
 	MIN_LOGIN    = 6
 	MAX_LOGIN    = 20
+
+	MIN_DISPLAY_NAME_LENGTH = 1
+	MAX_DISPLAY_NAME_LENGTH = 16
+	MAX_ABOUT_LENGTH        = 256
 )
 
 type User struct {
 	UUID         uuid.UUID `json:"user_id,omitempty" db:"user_id"`
 	Login        string    `json:"login,omitempty" db:"login"`
 	DisplayName  string    `json:"display_name" db:"display_name"`
+	About        string    `json:"about" db:"about"`
 	CurrencyCode string    `json:"currency_code,omitempty" db:"currency_code"`
-	Balance      *float32   `json:"balance,omitempty" db:"balance"`
+	Balance      *float32  `json:"balance,omitempty" db:"balance"`
 	Email        string    `json:"email,omitempty" db:"email"`
 	Password     string    `json:"password,omitempty" db:"password"`
 	Role         string    `json:"role,omitempty" db:"role"`
 	CreatedAt    time.Time `json:"created_at,omitempty" db:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at,omitempty" db:"updated_at"`
 	LoginDate    time.Time `json:"login_date,omitempty" db:"login_date"`
+}
+
+type UserGeneralUpdate struct {
+	DisplayName string `json:"display_name" db:"display_name"`
+	About       string `json:"about" db:"about"`
 }
 
 func (u *User) HashPassword() error {
@@ -85,6 +95,34 @@ func (u *User) Validate() error {
 
 	if email != u.Email {
 		return errors.New("validation error: email space characters")
+	}
+
+	return nil
+}
+
+func (u *UserGeneralUpdate) Sanitize() {
+	str := strings.TrimSpace(u.DisplayName)
+	pattern := regexp.MustCompile(`\s+`)
+
+	u.DisplayName = pattern.ReplaceAllString(str, " ")
+}
+
+func (u *UserGeneralUpdate) Validate() error {
+	displayName := u.DisplayName
+	about := u.About
+
+	if displayName != "" {
+		if len(displayName) < MIN_DISPLAY_NAME_LENGTH {
+			return errors.New("validation error: displayName too short")
+		} else if len(displayName) > MAX_DISPLAY_NAME_LENGTH {
+			return errors.New("validation error: displayName too long")
+		}
+	}
+
+	if about != "" {
+		if len(about) > MAX_ABOUT_LENGTH {
+			return errors.New("validation error: about too long")
+		}
 	}
 
 	return nil

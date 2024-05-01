@@ -1,7 +1,7 @@
 const localization: Record<string, string> = {
 	'store': 'Магазин',
     'community': 'Сообщество',
-    'loginTitle': 'Dход',
+    'loginTitle': 'Вход',
     'signupTitle': 'Регистрация',
     'login': 'Логин',
     'password': 'Пароль',

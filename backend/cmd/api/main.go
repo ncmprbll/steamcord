@@ -14,11 +14,13 @@ import (
 	productsDelivery "main/backend/internal/products/delivery/http"
 	cartDelivery "main/backend/internal/cart/delivery/http"
 	languageDelivery "main/backend/internal/language/delivery/http"
+	profileDelivery "main/backend/internal/profile/delivery/http"
 	authRepository "main/backend/internal/auth/postgres"
 	productsRepository "main/backend/internal/products/postgres"
 	sessionRepository "main/backend/internal/session/redis"
 	cartRepository "main/backend/internal/cart/postgres"
 	languageRepository "main/backend/internal/language/postgres"
+	profileRepository "main/backend/internal/profile/postgres"
 
 	mw "main/backend/internal/middleware"
 
@@ -75,6 +77,7 @@ func main() {
 	productsPostgres := productsRepository.New(database)
 	cartPostgres := cartRepository.New(database)
 	languagePostgres := languageRepository.New(database)
+	profilePostgres := profileRepository.New(database)
 
 	// Middleware Manager
 	manager := mw.NewMiddlewareManager(authPostgres, sessionRedis)
@@ -84,17 +87,20 @@ func main() {
 	productsHandlers := productsDelivery.NewAuthHandlers(productsPostgres)
 	cartHandlers := cartDelivery.NewAuthHandlers(cartPostgres, authPostgres, sessionRedis)
 	languageHandlers := languageDelivery.NewAuthHandlers(languagePostgres)
+	profileHandlers := profileDelivery.NewAuthHandlers(profilePostgres)
 
 	// Routers
 	authRouter := authDelivery.NewRouter(authHandlers, manager)
 	productsRouter := productsDelivery.NewRouter(productsHandlers, manager)
 	cartRouter := cartDelivery.NewRouter(cartHandlers, manager)
 	languageRouter := languageDelivery.NewRouter(languageHandlers)
-	
+	profileRouter := profileDelivery.NewRouter(profileHandlers, manager)
+
 	r.Mount("/auth", authRouter)
 	r.Mount("/products", productsRouter)
 	r.Mount("/cart", cartRouter)
 	r.Mount("/locales", languageRouter)
+	r.Mount("/profile", profileRouter)
 
 	http.ListenAndServe(":"+port, r)
 }

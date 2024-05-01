@@ -7,6 +7,7 @@ export type User = {
 	user_id: string
 	login: string
 	display_name: string
+	about: string
 	currency_code: string
 	balance: number
 	email: string

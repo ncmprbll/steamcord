@@ -6,10 +6,10 @@
 
     export let data;
 
-    console.log(formatDate, data.user, data.localization)
+    console.log(data.user.about, marked.parse(data.user.about, { breaks: true }))
 
-    let name: string = "Test Name Test Name Test Name";
-    let about: string = DOMPurify.sanitize(marked.parse("about\n\n\n about about about about about aboutaboutaboutaboutabout aboutaboutabout  aboutabout   aboutaboutabout"), {ALLOWED_TAGS: ["p", "br"]});
+    let name: string = data.user.display_name;
+    let about: string = DOMPurify.sanitize(marked.parse(data.user.about, { breaks: true }), {ALLOWED_TAGS: ["p", "br"]});
 </script>
 
 {#if data.user !== undefined}
@@ -57,7 +57,8 @@
     <div class="main">
         <p class="breaker">{data.localization.comments}</p>
         <div class="description">
-            {@html DOMPurify.sanitize(marked.parse(about), {ALLOWED_TAGS: ["h2", "h3", "p", "ul", "li", "ol", "blockquote", "strong"]})}
+            123
+            {@html DOMPurify.sanitize(marked.parse(about, { breaks: true }), {ALLOWED_TAGS: ["h2", "h3", "p", "ul", "li", "ol", "blockquote", "strong"]})}
         </div>
     </div>
     <div class="aside">
@@ -100,7 +101,6 @@
         letter-spacing: 1px;
         margin: auto;
     }
-
 
     .main-content {
         display: flex;
@@ -155,20 +155,16 @@
 
     .profile-right-pane {
         display: flex;
-        flex: 1 0 256px;
-        flex-grow: 1;
-        justify-content: end;
         padding: 16px 0;
         white-space: nowrap;
-        min-width: 0;
     }
 
     .right-pane-layout {
-        flex: 1 0 256px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
         min-width: 0;
+        width: 256px;
     }
 
     .milestone {
@@ -216,7 +212,7 @@
 
     .profile-display-name {
         font-size: 24px;
-        line-height: 20px;
+        line-height: normal;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -250,6 +246,7 @@
         min-width: 0;
         box-sizing: border-box;
         padding: 16px 0;
+        flex-grow: 1;
     }
 
     .profile-header {
