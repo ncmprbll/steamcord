@@ -6,5 +6,5 @@ import (
 )
 
 type Repository interface {
-	Update(context.Context, *models.User) error
+	Update(context.Context, *models.UserGeneralUpdate) error
 }

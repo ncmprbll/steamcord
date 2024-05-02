@@ -24,6 +24,7 @@ const (
 type User struct {
 	UUID         uuid.UUID `json:"user_id,omitempty" db:"user_id"`
 	Login        string    `json:"login,omitempty" db:"login"`
+	Avatar       string    `json:"avatar" db:"avatar"`
 	DisplayName  string    `json:"display_name" db:"display_name"`
 	About        string    `json:"about" db:"about"`
 	CurrencyCode string    `json:"currency_code,omitempty" db:"currency_code"`
@@ -37,8 +38,10 @@ type User struct {
 }
 
 type UserGeneralUpdate struct {
-	DisplayName string `json:"display_name" db:"display_name"`
-	About       string `json:"about" db:"about"`
+	UUID        uuid.UUID `json:"user_id,omitempty" db:"user_id"`
+	Avatar      string    `json:"avatar" db:"avatar"`
+	DisplayName string    `json:"display_name" db:"display_name"`
+	About       string    `json:"about" db:"about"`
 }
 
 func (u *User) HashPassword() error {

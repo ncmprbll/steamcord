@@ -6,10 +6,12 @@
 
     export let data;
 
-    console.log(data.user.about, marked.parse(data.user.about, { breaks: true }))
+    let name: string = data.user?.display_name;
+    let about: string = data.user?.about || "";
+    about = about.replace(/\r?\n/g, "<br>");
+    // about = DOMPurify.sanitize(marked.parse(about, { breaks: true }), {ALLOWED_TAGS: ["br"]});
 
-    let name: string = data.user.display_name;
-    let about: string = DOMPurify.sanitize(marked.parse(data.user.about, { breaks: true }), {ALLOWED_TAGS: ["p", "br"]});
+    console.log(marked.parse(data.user?.about || "", { breaks: true }), about)
 </script>
 
 {#if data.user !== undefined}
@@ -19,7 +21,7 @@
     </div>
     <div class="desktop-layout">
         <div class="profile-avatar">
-            <img src="https://preview.redd.it/imrpoved-steam-default-avatar-v0-ffxjnceu7vf81.png?width=640&crop=smart&auto=webp&s=0f8cbc4130a94fc83f19418f1a734209108c2a4b" alt="User avatar"/>
+            <img src={data.user.avatar || "/content/avatars/default.png"} alt="User avatar"/>
         </div>
         <div class="profile-summary">
             <div class="profile-name">
@@ -42,9 +44,11 @@
                         <div class="milestone-value">{formatDate(data.user.created_at, data.localization)}</div>
                     </div>
                 </div>
-                <a href="{window.location.href}/settings" class="profile-button">
-                    <span>{data.localization.settings}</span>
-                </a>
+                {#if data.me !== undefined && data.user.user_id === data.me.user_id}
+                    <a href="{window.location.href}/settings" class="profile-button">
+                        <span>{data.localization.settings}</span>
+                    </a>
+                {/if}
             </div>
         </div>
     </div>
@@ -58,7 +62,6 @@
         <p class="breaker">{data.localization.comments}</p>
         <div class="description">
             123
-            {@html DOMPurify.sanitize(marked.parse(about, { breaks: true }), {ALLOWED_TAGS: ["h2", "h3", "p", "ul", "li", "ol", "blockquote", "strong"]})}
         </div>
     </div>
     <div class="aside">
@@ -232,7 +235,7 @@
 
     .profile-description {
         overflow: auto;
-        max-height: 100px;
+        max-height: 115px;
     }
 
     .profile-description.mobile {
@@ -245,7 +248,7 @@
         flex-direction: column;
         min-width: 0;
         box-sizing: border-box;
-        padding: 16px 0;
+        padding-top: 16px;
         flex-grow: 1;
     }
 
@@ -272,9 +275,9 @@
     }
 
     .profile-avatar {
-        width: 166px;
-        height: 166px;
-        flex: 0 0 166px;
+        width: 184px;
+        height: 184px;
+        flex: 0 0 184px;
         /* margin-right: 20px; */
         background-color: blue;
         border-radius: 4px;

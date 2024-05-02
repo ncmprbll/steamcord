@@ -15,22 +15,26 @@ func New(database *sqlx.DB) *Repository {
 	return &Repository{database: database}
 }
 
-func (s *Repository) Update(ctx context.Context, user *models.User) error {
+func (s *Repository) Update(ctx context.Context, user *models.UserGeneralUpdate) error {
 	const query = `
 				UPDATE
 					users
 				SET
-					display_name = CASE
-						WHEN $1 = '' THEN display_name
+					avatar = CASE
+						WHEN $1 = '' THEN avatar
 						WHEN $1 <> '' THEN $1
 					END,
-					about = CASE
-						WHEN $2 = '' THEN about
+					display_name = CASE
+						WHEN $2 = '' THEN display_name
 						WHEN $2 <> '' THEN $2
+					END,
+					about = CASE
+						WHEN $3 = '' THEN about
+						WHEN $3 <> '' THEN $3
 					END
-				WHERE user_id = $3;
+				WHERE user_id = $4;
 				`
-	_, err := s.database.ExecContext(ctx, query, user.DisplayName, user.About, user.UUID)
+	_, err := s.database.ExecContext(ctx, query, user.Avatar, user.DisplayName, user.About, user.UUID)
 	if err != nil {
 		return err
 	}

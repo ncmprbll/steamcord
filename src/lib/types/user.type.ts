@@ -6,6 +6,7 @@ type Owned = Cart
 export type User = {
 	user_id: string
 	login: string
+	about: string
 	display_name: string
 	about: string
 	currency_code: string
@@ -18,6 +19,12 @@ export type User = {
 	login_date: string
 	cart: Cart
 	owned: Owned
+}
+
+export type UserGeneralUpdate = {
+	avatar: string | undefined
+	display_name: string | undefined
+	about: string | undefined
 }
 
 const currencies: Record<string, string> = {

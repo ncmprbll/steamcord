@@ -3,6 +3,7 @@ package http
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"main/backend/internal/models"
 	"main/backend/internal/profile"
 	"main/backend/internal/util"
@@ -36,15 +37,16 @@ func (h *handlers) Update() http.HandlerFunc {
 			util.HandleError(w, err)
 			return
 		}
-		found.DisplayName = fields.DisplayName
-		found.About = fields.About
+		fields.UUID = found.UUID
 
-		if found.DisplayName == "" && found.About == "" {
+		fmt.Println(fields)
+
+		if fields.Avatar == "" && fields.DisplayName == "" && fields.About == "" {
 			w.WriteHeader(http.StatusNotModified)
 			return
 		}
 
-		if err := h.profileRepository.Update(r.Context(), found); err != nil {
+		if err := h.profileRepository.Update(r.Context(), fields); err != nil {
 			util.HandleError(w, err)
 			return
 		}

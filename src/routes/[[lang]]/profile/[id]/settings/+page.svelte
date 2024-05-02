@@ -6,6 +6,7 @@
 
     const MAX_DISPLAY_NAME_LENGTH = 16
 	const MAX_ABOUT_LENGTH = 256
+    const avatarExtensions = [".jpg", ".jpeg", ".png"];
 
     let displayName: string = data.me.display_name;
     let about: string = data.me.about;
@@ -43,6 +44,7 @@
 	async function handleUpdate(event) {
 		const url = event.target.action;
 
+        console.log(new FormData(event.target));
         loading = true;
 
         const result = await fetch(url, {
@@ -51,7 +53,7 @@
         });
 
         if (result.status === 200 || result.status === 304) {
-            window.location.reload();
+           // window.location.reload();
         } else {
             loading = false;
         }
@@ -72,6 +74,15 @@
     <div class="settings">
         {#if categories[selected].id === "general"}
             <div class="dialog-body">{@html DOMPurify.sanitize(marked.parse(data.localization.generalDesc), {ALLOWED_TAGS: ["p", "br"]})}</div>
+            <p class="breaker">Avatar</p>
+            <form method="PATCH" action="/api/profile" class="form" on:submit|preventDefault={handleUpdate}>
+                <div class="group">
+                  <label for="file">Upload yout profile picture</label>
+                  <input type="file" id="file" name="fileToUpload" accept={avatarExtensions.join(',')} required />
+                </div>
+               
+                <button type="submit">Submit</button>
+              </form>
             <p class="breaker">{data.localization.categoryGeneral}</p>
             <form method="PATCH" action="/api/profile" class="form" on:submit|preventDefault={handleUpdate}>
                 <div class="box-input">
@@ -173,6 +184,7 @@
         box-sizing: border-box;
         width: 100%;
         height: 160px;
+        line-height: normal
     }
 
     .dialog-body {
