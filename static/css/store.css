@@ -6,6 +6,9 @@
     --store-width: 1060px;
     --store-nav-height: 80px;
     --store-line-height: 20px;
+    --avatar-big: 184px;
+    --avatar-medium: 64px;
+    --avatar-small: 32px;
 }
 
 input, label, select, button, textarea {

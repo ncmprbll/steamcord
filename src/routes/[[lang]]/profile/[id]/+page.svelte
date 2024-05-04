@@ -10,8 +10,6 @@
     let about: string = data.user?.about || "";
     about = about.replace(/\r?\n/g, "<br>");
     // about = DOMPurify.sanitize(marked.parse(about, { breaks: true }), {ALLOWED_TAGS: ["br"]});
-
-    console.log(marked.parse(data.user?.about || "", { breaks: true }), about)
 </script>
 
 {#if data.user !== undefined}
@@ -275,11 +273,9 @@
     }
 
     .profile-avatar {
-        width: 184px;
-        height: 184px;
-        flex: 0 0 184px;
-        /* margin-right: 20px; */
-        background-color: blue;
+        width: var(--avatar-big);
+        height: var(--avatar-big);
+        flex: 0 0 var(--avatar-big);
         border-radius: 4px;
     }
 

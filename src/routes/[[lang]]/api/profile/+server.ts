@@ -5,7 +5,7 @@ import type { ISizeCalculationResult } from 'image-size/dist/types/interface';
 
 import { type UserGeneralUpdate } from '$lib/types/user.type';
 
-const MAX_FILE_SIZE_BYTES = 1024 * 1024 // Megabyte
+const MAX_FILE_SIZE_BYTES = 1024 * 1024; // Megabyte
 
 export async function PATCH({ cookies, request }) {
 	const sessionId = cookies.get('session_id');
@@ -16,6 +16,7 @@ export async function PATCH({ cookies, request }) {
 	const file = object.fileToUpload as File;
 	delete object.fileToUpload;
 
+	var path: string | undefined;
 	if (file && file.size <= MAX_FILE_SIZE_BYTES) {
 		const reader = file.stream().getReader();
 		let uint8 = new Uint8Array(file.size);
@@ -36,10 +37,10 @@ export async function PATCH({ cookies, request }) {
 				if (file.type === "image/png") {
 					fileName += ".png";
 				} else if (file.type === "image/jpeg") {
-					filename += ".jpg";
+					fileName += ".jpg";
 				}
 				let base = "./src/lib/assets"
-				var path = `/content/avatars/${fileName}`;
+				path  = `/content/avatars/${fileName}`;
 				writeFileSync(`${base}${path}`, Buffer.from(await file.arrayBuffer()));
 			}
 		} catch (error) {

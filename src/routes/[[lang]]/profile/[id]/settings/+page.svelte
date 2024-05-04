@@ -1,17 +1,30 @@
 <script lang="ts">
     import DOMPurify from 'dompurify';
     import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
+    import { scale } from 'svelte/transition';
+    import { quintOut } from 'svelte/easing';
+
+    import Spinner from '$lib/components/Spinner.svelte';
 
     export let data;
 
-    const MAX_DISPLAY_NAME_LENGTH = 16
-	const MAX_ABOUT_LENGTH = 256
+    const MAX_DISPLAY_NAME_LENGTH = 16;
+	const MAX_ABOUT_LENGTH = 256;
+    const MAX_FILE_SIZE_BYTES = 1024 * 1024; // Megabyte
+    const AVATAR_ERROR_DURATION = 6000;
     const avatarExtensions = [".jpg", ".jpeg", ".png"];
+
+    let fileInput;
 
     let displayName: string = data.me.display_name;
     let about: string = data.me.about;
     let displayNameLength: number = 0;
     let aboutLength: number = 0;
+
+    let hasAvatarToUpload = false;
+    let avatarUploadLoading = false;
+    let avatarSaveLoading = false;
+    let generalSaveLoading = false;
 
     $: {
         displayNameLength = displayName.length;
@@ -38,14 +51,25 @@
             name: data.localization.categoryPrivacy
         }
     ]
-    let loading = false;
     let selected = 0;
 
 	async function handleUpdate(event) {
 		const url = event.target.action;
+        const data = new FormData(event.target);
 
-        console.log(new FormData(event.target));
-        loading = true;
+        const fileToUpload = data.get("fileToUpload");
+        const displayName = data.get("display_name");
+        const about = data.get("about");
+
+        if (fileToUpload !== null) {
+            if (fileToUpload.size !== 0) {
+                avatarSaveLoading = true;
+            } else {
+                return;
+            }
+        } else if (displayName !== null || about !== null) {
+            generalSaveLoading = true;
+        }
 
         const result = await fetch(url, {
             method: "PATCH",
@@ -53,11 +77,66 @@
         });
 
         if (result.status === 200 || result.status === 304) {
-           // window.location.reload();
-        } else {
-            loading = false;
+            window.location.reload();
         }
 	}
+
+    $: avatarErrorString = "";
+    function avatarError(error: string) {
+        avatarErrorString = error;
+        avatarUploadLoading = false;
+        setInterval(() => avatarErrorString = '', AVATAR_ERROR_DURATION);
+    }
+
+    function onAvatarUpload(event) {
+        avatarUploadLoading = true;
+
+        let input = event.target;
+        let files = input.files;
+        if (files === undefined || files.length === 0) {
+            input.value = null;
+            avatarError("noFilesProvided");
+            return;
+        } else if (files.length > 1) {
+            avatarError("tooManyFilesProvided");
+            return;
+        }
+
+        const file = input.files[0];
+        if (file === undefined) {
+            input.value = null;
+            avatarError("invalidFile");
+            return;
+        } else if (file.size > MAX_FILE_SIZE_BYTES) {
+            input.value = null;
+            avatarError("fileTooBig");
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.addEventListener("load", function () {
+            const img = new Image();
+            img.onload = function() {
+                if (this.width !== this.height) {
+                    input.value = null;
+                    avatarError("fileNotSquare");
+                    return;
+                }
+
+                for (const previewImage of document.getElementsByClassName("preview-image")) {
+                    previewImage.setAttribute("src", reader.result);
+                }
+                hasAvatarToUpload = true;
+                avatarUploadLoading = false;
+            }
+            img.onerror = function() {
+                input.value = null;
+                avatarError("invalidFile");
+            }
+            img.src = reader.result
+        });
+        reader.readAsDataURL(file);
+    }
 </script>
 
 <p class="breaker">{data.localization.title.replace("[login]", data.me.login)}</p>
@@ -75,22 +154,46 @@
         {#if categories[selected].id === "general"}
             <div class="dialog-body">{@html DOMPurify.sanitize(marked.parse(data.localization.generalDesc), {ALLOWED_TAGS: ["p", "br"]})}</div>
             <p class="breaker">Avatar</p>
-            <form method="PATCH" action="/api/profile" class="form" on:submit|preventDefault={handleUpdate}>
-                <div class="group">
-                  <label for="file">Upload yout profile picture</label>
-                  <input type="file" id="file" name="fileToUpload" accept={avatarExtensions.join(',')} required />
+            <div class="dialog-body">{@html DOMPurify.sanitize(marked.parse(data.localization.avatarDesc), {ALLOWED_TAGS: ["p", "br"]})}</div>
+            {#if avatarErrorString !== undefined && avatarErrorString !== ""}
+                <div transition:scale={{ duration: 500, opacity: 0, start: 0, easing: quintOut }} class="dialog-body error">{@html DOMPurify.sanitize(marked.parse(data.localization[avatarErrorString]), {ALLOWED_TAGS: ["p", "br"]})}</div>
+            {/if}
+            <div class="preview-images-holder">
+                <div class="preview-box">
+                    <img class="preview-image avatar-big" src={data.me.avatar || "/content/avatars/default.png"} alt="Preview" />
+                    <div class="preview-dimensions">184px</div>
                 </div>
-               
-                <button type="submit">Submit</button>
+                <div class="preview-box">
+                    <img class="preview-image avatar-medium" src={data.me.avatar || "/content/avatars/default.png"} alt="Preview" />
+                    <div class="preview-dimensions">64px</div>
+                </div>
+                <div class="preview-box">
+                    <img class="preview-image avatar-small" src={data.me.avatar || "/content/avatars/default.png"} alt="Preview" />
+                    <div class="preview-dimensions">32px</div>
+                </div>
+            </div>
+            <form method="PATCH" action="/api/profile" class="form" on:submit|preventDefault={handleUpdate}>
+                <div class="actions">
+                    <button class="form-button" type="submit" disabled={!hasAvatarToUpload}>
+                        <span class:loading={avatarSaveLoading}>{data.localization.save}</span>
+                        {#if avatarSaveLoading}
+                            <Spinner size="16"/>
+                        {/if}
+                    </button>
+                    <input bind:this={fileInput} type="file" name="fileToUpload" accept={avatarExtensions.join(',')} on:change={onAvatarUpload} style="display: none;" />
+                    <button class="form-button upload" type="button" on:click={() => fileInput.click()}>
+                        <span class:loading={avatarUploadLoading}>{data.localization.upload}</span>
+                        {#if avatarUploadLoading}
+                            <Spinner size="16"/>
+                        {/if}
+                    </button>
+                </div>
               </form>
             <p class="breaker">{data.localization.categoryGeneral}</p>
             <form method="PATCH" action="/api/profile" class="form" on:submit|preventDefault={handleUpdate}>
                 <div class="box-input">
                     <label for="display_name">{data.localization.profileName} {`(${displayNameLength}/${MAX_DISPLAY_NAME_LENGTH})`}</label>
                     <input id="display_name" name="display_name" type="text" required minlength="1" maxlength="{MAX_DISPLAY_NAME_LENGTH}" bind:value={displayName}>
-                    <!-- {#if code === 404} -->
-                        <!-- <span class="input-message">{data.localization.badCredentials}</span> -->
-                    <!-- {/if} -->
                 </div>
                 <div class="box-input">
                     <label for="about">{data.localization.about} {`(${aboutLength}/${MAX_ABOUT_LENGTH})`}</label>
@@ -98,11 +201,10 @@
                 </div>
                 <div class="actions">
                     <button class="form-button" type="submit">
-                        <!-- {#if loading} -->
-                            <!-- <Spinner size="16"/> -->
-                        <!-- {:else} -->
-                            {data.localization.save}
-                        <!-- {/if} -->
+                        <span class:loading={generalSaveLoading}>{data.localization.save}</span>
+                        {#if generalSaveLoading}
+                            <Spinner size="16"/>
+                        {/if}
                     </button>
                 </div>
             </form>
@@ -115,9 +217,50 @@
 </div>
 
 <style lang="postcss">
+    .loading {
+        display: none;
+    }
+
+    .preview-images-holder {
+        display: flex;
+        align-items: end;
+        gap: 24px;
+        margin-bottom: 16px;
+    }
+
+    .preview-dimensions {
+        padding-top: 4px;
+        font-size: 12px;
+        letter-spacing: 0.5px;
+        line-height: 1.3333;
+        font-weight: 500;
+        user-select: none;
+    }
+
+    .preview-image {
+        border-radius: 4px;
+    }
+
+    .preview-image.avatar-big {
+        width: var(--avatar-big);
+        height: var(--avatar-big);
+    }
+
+    .preview-image.avatar-medium {
+        width: var(--avatar-medium);
+        height: var(--avatar-medium);
+    }
+
+    .preview-image.avatar-small {
+        width: var(--avatar-small);
+        height: var(--avatar-small);
+    }
+
     .actions {
         display: flex;
         flex-direction: row-reverse;
+        margin-bottom: 16px;
+        gap: 12px;
     }
 
     .form-button {
@@ -133,6 +276,25 @@
         text-align: center;
         cursor: pointer;
         width: 256px;
+    }
+
+    .form-button:disabled {
+        background: rgba(61, 67, 77, .35);
+        color: #464d58;
+        box-shadow: none;
+        cursor: default;
+        pointer-events: none;
+    }
+
+    .form-button.upload {
+        transition-property: opacity,background,color,box-shadow;
+        transition-duration: .2s;
+        transition-timing-function: ease-out;
+        background: #3d4450;
+    }
+
+    .form-button.upload:hover {
+        background: #464d58;
     }
 
     .form-button:hover {
@@ -195,6 +357,16 @@
         margin-top: 0;
     }
 
+    .dialog-body.error {
+        padding: 16px;
+        border: 2px #7c0000 solid;
+        border-radius: 4px;
+    }
+
+    :global(.dialog-body.error > p:last-child) {
+        margin-bottom: 0;
+    }
+
     .categories-breaker {
         width: 100%;
         border-bottom: 1px solid #3b3b3b;
@@ -255,5 +427,37 @@
     .settings {
         flex: 1;
         min-width: 0;
+    }
+
+    @media (max-width: 740px) {
+        .settings-window {
+            flex-direction: column;
+        }
+
+        .settings-categories {
+            display: flex;
+            width: auto;
+            max-width: none;
+            margin-right: 0;
+            overflow-x: auto;
+            gap: 4px;
+            padding-bottom: 4px;
+            margin-bottom: 4px;
+        }
+
+        .category {
+            overflow: visible;
+        }
+
+        .categories-breaker {
+            display: none;
+        }
+    }
+
+    @media (max-width: 342px) {
+        .preview-images-holder {
+            justify-content: space-between;
+            gap: 0px;
+        }
     }
 </style>

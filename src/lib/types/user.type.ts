@@ -6,7 +6,7 @@ type Owned = Cart
 export type User = {
 	user_id: string
 	login: string
-	about: string
+	avatar: string
 	display_name: string
 	about: string
 	currency_code: string
@@ -22,6 +22,7 @@ export type User = {
 }
 
 export type UserGeneralUpdate = {
+	fileToUpload: File | undefined
 	avatar: string | undefined
 	display_name: string | undefined
 	about: string | undefined
