@@ -7,4 +7,5 @@ import (
 
 type Repository interface {
 	Update(context.Context, *models.UserGeneralUpdate) error
+	PasswordUpdate(context.Context, *models.UserPasswordUpdate) error
 }

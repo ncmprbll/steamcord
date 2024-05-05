@@ -82,7 +82,7 @@ func ErrorResponse(err error) *ErrorWrapper {
 	case strings.Contains(strings.ToLower(err.Error()), "token"):
 		return newErrorWrapper(http.StatusUnauthorized, Unauthorized)
 	case strings.Contains(strings.ToLower(err.Error()), "bcrypt"):
-		return newErrorWrapper(http.StatusUnauthorized, Unauthorized)
+		return newErrorWrapper(http.StatusBadRequest, BadRequest)
 	default:
 		return newErrorWrapper(http.StatusInternalServerError, ServerError)
 	}

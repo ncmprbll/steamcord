@@ -38,3 +38,19 @@ func (s *Repository) Update(ctx context.Context, user *models.UserGeneralUpdate)
 
 	return nil
 }
+
+func (s *Repository) PasswordUpdate(ctx context.Context, user *models.UserPasswordUpdate) error {
+	const query = `
+				UPDATE
+					users
+				SET
+					password = $1
+				WHERE user_id = $2;
+				`
+	_, err := s.database.ExecContext(ctx, query, user.NewPassword, user.UUID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -13,9 +13,10 @@
 
     const MAX_DISPLAY_NAME_LENGTH = 20;
 	const MAX_ABOUT_LENGTH = 256;
+	const MIN_PASSWORD_LENGTH = 8;
     const MAX_PASSWORD_LENGTH = 48
     const MAX_FILE_SIZE_BYTES = 1024 * 1024; // Megabyte
-    const AVATAR_ERROR_DURATION = 6000;
+    const ERROR_DURATION = 6000;
     const avatarExtensions = [".jpg", ".jpeg", ".png"];
 
     let fileInput;
@@ -33,6 +34,7 @@
     let avatarUploadLoading = false;
     let avatarSaveLoading = false;
     let generalSaveLoading = false;
+    let passwordSaveLoading = false;
 
     $: {
         displayNameLength = displayName.length;
@@ -105,42 +107,49 @@
         }
 	}
 
+    let passwordUpdateErrorInterval;
+    let passwordUpdateErrorString: string = "";
+    function passwordUpdateError(error: string) {
+        passwordUpdateErrorString = error;
+        passwordSaveLoading = false;
+        clearInterval(passwordUpdateErrorInterval);
+        passwordUpdateErrorInterval = setInterval(() => passwordUpdateErrorString = '', ERROR_DURATION);
+    }
+
     async function handlePasswordUpdate(event) {
 		const url = event.target.action;
         const data = new FormData(event.target);
 
-        const fileToUpload = data.get("fileToUpload");
-        const displayName = data.get("display_name");
-        const about = data.get("about");
+        const newPassword = data.get("new_password");
+        const confirmNewPassword = data.get("confirm_new_password");
 
-        if (fileToUpload !== null) {
-            if (fileToUpload.size !== 0) {
-                avatarSaveLoading = true;
-            } else {
-                return;
-            }
-        } else if (displayName !== null || about !== null) {
-            generalSaveLoading = true;
+        passwordSaveLoading = true;
+
+        if (newPassword !== confirmNewPassword) {
+            passwordUpdateError("passMismatch");
+            return;
         }
 
         const result = await fetch(url, {
             method: "PATCH",
             body: new FormData(event.target)
         });
+        passwordUpdateError((await result.text()).replaceAll("\n", ""));
 
-        if (result.status === 200 || result.status === 304) {
+        if (result.status === 200) {
             window.location.reload();
+        } else {
+            passwordSaveLoading = false;
         }
 	}
 
-
-    let interval;
+    let avatarErrorInterval;
     $: avatarErrorString = "";
     function avatarError(error: string) {
         avatarErrorString = error;
         avatarUploadLoading = false;
-        clearInterval(interval);
-        interval = setInterval(() => avatarErrorString = '', AVATAR_ERROR_DURATION);
+        clearInterval(avatarErrorInterval);
+        avatarErrorInterval = setInterval(() => avatarErrorString = '', ERROR_DURATION);
     }
 
     function onAvatarUpload(event) {
@@ -271,25 +280,28 @@
                 </div>
             </form>
         {:else if selected === "security"}
-        <div class="dialog-body">{@html DOMPurify.sanitize(marked.parse(data.localization.securityDesc), {ALLOWED_TAGS: ["p", "br"]})}</div>
+            <div class="dialog-body">{@html DOMPurify.sanitize(marked.parse(data.localization.securityDesc), {ALLOWED_TAGS: ["p", "br"]})}</div>
             <p class="breaker">{data.localization.categorySecurity}</p>
-            <form method="PATCH" action="/api/profile/password" class="form" on:submit|preventDefault={handleUpdate}>
+            {#if passwordUpdateErrorString !== undefined && passwordUpdateErrorString in data.localization}
+                <div transition:scale={{ duration: 500, opacity: 0, start: 0, easing: quintOut }} class="dialog-body error">{@html DOMPurify.sanitize(marked.parse(data.localization[passwordUpdateErrorString]), {ALLOWED_TAGS: ["p", "br"]})}</div>
+            {/if}
+            <form method="PATCH" action="/api/profile/password" class="form" on:submit|preventDefault={handlePasswordUpdate}>
                 <div class="box-input">
                     <label for="old_password">{data.localization.oldPassword}</label>
-                    <input id="old_password" name="old_password" type="password" required maxlength="{MAX_PASSWORD_LENGTH}">
+                    <input id="old_password" name="old_password" type="password" required minlength="{MIN_PASSWORD_LENGTH}" maxlength="{MAX_PASSWORD_LENGTH}">
                 </div>
                 <div class="box-input">
                     <label for="new_password">{data.localization.newPassword} {`(${newPasswordLength}/${MAX_PASSWORD_LENGTH})`}</label>
-                    <input id="new_password" name="new_password" type="password" required minlength="1" maxlength="{MAX_PASSWORD_LENGTH}" bind:value={newPassword}>
+                    <input id="new_password" name="new_password" type="password" required minlength="{MIN_PASSWORD_LENGTH}" maxlength="{MAX_PASSWORD_LENGTH}" bind:value={newPassword}>
                 </div>
                 <div class="box-input">
                     <label for="confirm_new_password">{data.localization.confirmNewPassword} {`(${confirmNewPasswordLength}/${MAX_PASSWORD_LENGTH})`}</label>
-                    <input id="confirm_new_password" name="confirm_new_password" type="password" required minlength="1" maxlength="{MAX_PASSWORD_LENGTH}" bind:value={confirmNewPassword}>
+                    <input id="confirm_new_password" name="confirm_new_password" type="password" required minlength="{MIN_PASSWORD_LENGTH}" maxlength="{MAX_PASSWORD_LENGTH}" bind:value={confirmNewPassword}>
                 </div>
                 <div class="actions">
                     <button class="form-button" type="submit">
-                        <span class:loading={generalSaveLoading}>{data.localization.save}</span>
-                        {#if generalSaveLoading}
+                        <span class:loading={passwordSaveLoading}>{data.localization.save}</span>
+                        {#if passwordSaveLoading}
                             <Spinner size="16"/>
                         {/if}
                     </button>

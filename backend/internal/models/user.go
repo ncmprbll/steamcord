@@ -11,10 +11,10 @@ import (
 )
 
 const (
-	MIN_PASSWORD = 8
-	MAX_PASSWORD = 48
-	MIN_LOGIN    = 6
-	MAX_LOGIN    = 20
+	MIN_PASSWORD_LENGTH = 8
+	MAX_PASSWORD_LENGTH = 48
+	MIN_LOGIN_LENGTH    = 6
+	MAX_LOGIN_LENGTH    = 20
 
 	MIN_DISPLAY_NAME_LENGTH = 1
 	MAX_DISPLAY_NAME_LENGTH = 20
@@ -42,6 +42,12 @@ type UserGeneralUpdate struct {
 	Avatar      string    `json:"avatar" db:"avatar"`
 	DisplayName string    `json:"display_name" db:"display_name"`
 	About       string    `json:"about" db:"about"`
+}
+
+type UserPasswordUpdate struct {
+	UUID        uuid.UUID `json:"user_id,omitempty"`
+	OldPassword string    `json:"old_password"`
+	NewPassword string    `json:"new_password"`
 }
 
 func (u *User) HashPassword() error {
@@ -78,15 +84,15 @@ func (u *User) Validate() error {
 	email := u.Email
 	password := u.Password
 
-	if len(login) < MIN_LOGIN {
+	if len(login) < MIN_LOGIN_LENGTH {
 		return errors.New("validation error: login too short")
-	} else if len(login) > MAX_LOGIN {
+	} else if len(login) > MAX_LOGIN_LENGTH {
 		return errors.New("validation error: login too long")
 	}
 
-	if len(password) < MIN_PASSWORD {
+	if len(password) < MIN_PASSWORD_LENGTH {
 		return errors.New("validation error: password too short")
-	} else if len(password) > MAX_PASSWORD {
+	} else if len(password) > MAX_PASSWORD_LENGTH {
 		return errors.New("validation error: password too long")
 	}
 
@@ -125,6 +131,34 @@ func (u *UserGeneralUpdate) Validate() error {
 
 	if len(about) > MAX_ABOUT_LENGTH {
 		return errors.New("validation error: about too long")
+	}
+
+	return nil
+}
+
+func (u *UserPasswordUpdate) HashPassword() error {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.NewPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+	u.NewPassword = string(hashedPassword)
+	return nil
+}
+
+func (u *UserPasswordUpdate) ComparePasswords(password string) error {
+	if err := bcrypt.CompareHashAndPassword([]byte(password), []byte(u.OldPassword)); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (u *UserPasswordUpdate) Validate() error {
+	password := u.NewPassword
+
+	if len(password) < MIN_PASSWORD_LENGTH {
+		return errors.New("validation error: password too short")
+	} else if len(password) > MAX_PASSWORD_LENGTH {
+		return errors.New("validation error: password too long")
 	}
 
 	return nil

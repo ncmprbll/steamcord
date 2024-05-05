@@ -61,12 +61,12 @@ func (h *handlers) Login() http.HandlerFunc {
 
 		found, err := h.authRepository.FindByLogin(r.Context(), user)
 		if err != nil {
-			util.HandleError(w, err)
+			http.Error(w, "wrong credentials", http.StatusNotFound)
 			return
 		}
 
 		if err := found.ComparePasswords(user.Password); err != nil {
-			util.HandleError(w, err)
+			http.Error(w, "wrong credentials", http.StatusNotFound)
 			return
 		}
 		found.SanitizePassword()

@@ -25,7 +25,7 @@ func format(sessionId string) string {
 }
 
 func (s *Repository) CreateSession(ctx context.Context, session *models.Session, expiration int) (string, error) {
-	sessionId := base64.StdEncoding.EncodeToString([]byte(uuid.New().String()))
+	sessionId := base64.StdEncoding.EncodeToString([]byte(uuid.New().String() + uuid.New().String()))
 
 	sessionJson, err := json.Marshal(&session)
 	if err != nil {
@@ -33,6 +33,11 @@ func (s *Repository) CreateSession(ctx context.Context, session *models.Session,
 	}
 
 	err = s.rdb.Set(ctx, format(sessionId), sessionJson, time.Duration(expiration) * time.Second).Err()
+	if err != nil {
+		return "", err
+	}
+
+	err = s.rdb.SAdd(ctx, format(session.UserID.String()), format(sessionId), 0).Err()
 	if err != nil {
 		return "", err
 	}
@@ -56,6 +61,32 @@ func (s *Repository) GetSessionByID(ctx context.Context, sessionId string) (*mod
 
 func (s *Repository) DeleteByID(ctx context.Context, sessionId string) error {
 	if err := s.rdb.Del(ctx, format(sessionId)).Err(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *Repository) InvalidateSessions(ctx context.Context, session *models.Session) error {
+	setKey := format(session.UserID.String()) 
+	setMembers := s.rdb.SMembers(context.TODO(), setKey)
+	err := setMembers.Err()
+	if err != nil {
+		return err
+	}
+
+	sessions, err := setMembers.Result()
+	if err != nil {
+		return err
+	}
+
+	for _, v := range sessions {
+		if err := s.rdb.Del(ctx, v).Err(); err != nil {
+			return err
+		}
+	}
+
+	if err := s.rdb.Del(ctx, setKey).Err(); err != nil {
 		return err
 	}
 

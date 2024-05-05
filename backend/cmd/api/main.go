@@ -1,9 +1,7 @@
 package main
 
 import (
-	"context"
 	"net/http"
-	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -11,16 +9,16 @@ import (
 	"github.com/redis/go-redis/v9"
 
 	authDelivery "main/backend/internal/auth/delivery/http"
-	productsDelivery "main/backend/internal/products/delivery/http"
-	cartDelivery "main/backend/internal/cart/delivery/http"
-	languageDelivery "main/backend/internal/language/delivery/http"
-	profileDelivery "main/backend/internal/profile/delivery/http"
 	authRepository "main/backend/internal/auth/postgres"
-	productsRepository "main/backend/internal/products/postgres"
-	sessionRepository "main/backend/internal/session/redis"
+	cartDelivery "main/backend/internal/cart/delivery/http"
 	cartRepository "main/backend/internal/cart/postgres"
+	languageDelivery "main/backend/internal/language/delivery/http"
 	languageRepository "main/backend/internal/language/postgres"
+	productsDelivery "main/backend/internal/products/delivery/http"
+	productsRepository "main/backend/internal/products/postgres"
+	profileDelivery "main/backend/internal/profile/delivery/http"
 	profileRepository "main/backend/internal/profile/postgres"
+	sessionRepository "main/backend/internal/session/redis"
 
 	mw "main/backend/internal/middleware"
 
@@ -49,11 +47,6 @@ func main() {
 		Password: "",
 		DB:       0,
 	})
-
-	err = rdb.Set(context.TODO(), "key", "value", time.Second * 5).Err()
-	if err != nil {
-		panic(err)
-	}
 
 	r := chi.NewRouter()
 	r.Use(middleware.DefaultLogger)
@@ -87,7 +80,7 @@ func main() {
 	productsHandlers := productsDelivery.NewAuthHandlers(productsPostgres)
 	cartHandlers := cartDelivery.NewAuthHandlers(cartPostgres, authPostgres, sessionRedis)
 	languageHandlers := languageDelivery.NewAuthHandlers(languagePostgres)
-	profileHandlers := profileDelivery.NewAuthHandlers(profilePostgres)
+	profileHandlers := profileDelivery.NewAuthHandlers(sessionRedis, profilePostgres)
 
 	// Routers
 	authRouter := authDelivery.NewRouter(authHandlers, manager)

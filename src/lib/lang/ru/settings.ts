@@ -14,7 +14,9 @@ const localization: Record<string, string> = {
     "oldPassword": "Старый пароль",
     "newPassword": "Новый пароль",
     "confirmNewPassword": "Подтвердить новый пароль",
+    "passMismatch": "Новые пароли не совпадают",
 
+    "wrong credentials": "Неверный старый пароль.",
     "noFilesProvided": "Нет файлов.",
     "tooManyFilesProvided": "Слишком много файлов.",
     "invalidFile": "Файл не является изображением.",
