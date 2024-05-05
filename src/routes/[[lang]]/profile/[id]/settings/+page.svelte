@@ -8,6 +8,9 @@
 
     export let data;
 
+    let searchParams = new URLSearchParams(window.location.search);
+    searchParams.get("category");
+
     const MAX_DISPLAY_NAME_LENGTH = 20;
 	const MAX_ABOUT_LENGTH = 256;
     const MAX_PASSWORD_LENGTH = 48
@@ -60,7 +63,19 @@
             name: data.localization.categoryPrivacy
         }
     ]
-    let selected = 0;
+    let selected = searchParams.get("category") || "";
+    let foundCategory = false;
+
+    for (let i = 0; i < categories.length; i++) {
+        if (categories[i].id === selected) {
+            foundCategory = true;
+            break;
+        }
+    }
+
+    if (!foundCategory) {
+        selected = categories[0].id;
+    }
 
 	async function handleUpdate(event) {
 		const url = event.target.action;
@@ -177,21 +192,28 @@
         });
         reader.readAsDataURL(file);
     }
+
+    function onClickCategory(id) {
+        selected = id;
+        const url = new URL(window.location.href);
+        url.searchParams.set('category', id);
+        window.history.pushState(null, '', url.toString());
+    }
 </script>
 
 <p class="breaker">{data.localization.title.replace("[login]", data.me.login)}</p>
 <div class="settings-window">
     <div class="settings-categories">
-        {#each categories as category, index}
+        {#each categories as category}
             {#if category.type === "category"}
-                <button class="category" class:active={index === selected} on:click={() => selected = index}>{category.name}</button>
+                <button class="category" class:active={category.id === selected} on:click={() => onClickCategory(category.id)}>{category.name}</button>
             {:else if category.type === "breaker"}
                 <div class="categories-breaker"/>
             {/if}
         {/each}
     </div>
     <div class="settings">
-        {#if categories[selected].id === "general"}
+        {#if selected === "general"}
             <div class="dialog-body">{@html DOMPurify.sanitize(marked.parse(data.localization.generalDesc), {ALLOWED_TAGS: ["p", "br"]})}</div>
             <p class="breaker">{data.localization.avatar}</p>
             <div class="dialog-body">{@html DOMPurify.sanitize(marked.parse(data.localization.avatarDesc), {ALLOWED_TAGS: ["p", "br"]})}</div>
@@ -248,7 +270,7 @@
                     </button>
                 </div>
             </form>
-        {:else if categories[selected].id === "security"}
+        {:else if selected === "security"}
         <div class="dialog-body">{@html DOMPurify.sanitize(marked.parse(data.localization.securityDesc), {ALLOWED_TAGS: ["p", "br"]})}</div>
             <p class="breaker">{data.localization.categorySecurity}</p>
             <form method="PATCH" action="/api/profile/password" class="form" on:submit|preventDefault={handleUpdate}>
@@ -273,7 +295,7 @@
                     </button>
                 </div>
             </form>
-        {:else if categories[selected].id === "privacy"}
+        {:else if selected === "privacy"}
             3
         {/if}
     </div>
