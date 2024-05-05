@@ -105,7 +105,7 @@ CREATE TABLE users
 (
     user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     login VARCHAR(32) UNIQUE NOT NULL CHECK ( login <> '' ),
-    display_name VARCHAR(32) DEFAULT '' NOT NULL,
+    display_name VARCHAR(32) NOT NULL DEFAULT SUBSTR(MD5(RANDOM()::TEXT), 1, 8),
     about VARCHAR(256) DEFAULT '' NOT NULL,
     avatar TEXT DEFAULT '',
     currency_code CHAR(3) DEFAULT 'RUB' REFERENCES currencies(code),

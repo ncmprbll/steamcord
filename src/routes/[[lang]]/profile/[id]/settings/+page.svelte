@@ -8,8 +8,9 @@
 
     export let data;
 
-    const MAX_DISPLAY_NAME_LENGTH = 16;
+    const MAX_DISPLAY_NAME_LENGTH = 20;
 	const MAX_ABOUT_LENGTH = 256;
+    const MAX_PASSWORD_LENGTH = 48
     const MAX_FILE_SIZE_BYTES = 1024 * 1024; // Megabyte
     const AVATAR_ERROR_DURATION = 6000;
     const avatarExtensions = [".jpg", ".jpeg", ".png"];
@@ -17,9 +18,13 @@
     let fileInput;
 
     let displayName: string = data.me.display_name;
-    let about: string = data.me.about;
+    let about: string = data.me.about.replace(/\r?/g, "");;
+    let newPassword: string = "";
+    let confirmNewPassword: string = "";
     let displayNameLength: number = 0;
     let aboutLength: number = 0;
+    let newPasswordLength: number = 0;
+    let confirmNewPasswordLength: number = 0;
 
     let hasAvatarToUpload = false;
     let avatarUploadLoading = false;
@@ -29,6 +34,10 @@
     $: {
         displayNameLength = displayName.length;
         aboutLength = about.length;
+    }
+    $: {
+        newPasswordLength = newPassword.length;
+        confirmNewPasswordLength = confirmNewPassword.length;
     }
 
     let categories = [
@@ -81,11 +90,42 @@
         }
 	}
 
+    async function handlePasswordUpdate(event) {
+		const url = event.target.action;
+        const data = new FormData(event.target);
+
+        const fileToUpload = data.get("fileToUpload");
+        const displayName = data.get("display_name");
+        const about = data.get("about");
+
+        if (fileToUpload !== null) {
+            if (fileToUpload.size !== 0) {
+                avatarSaveLoading = true;
+            } else {
+                return;
+            }
+        } else if (displayName !== null || about !== null) {
+            generalSaveLoading = true;
+        }
+
+        const result = await fetch(url, {
+            method: "PATCH",
+            body: new FormData(event.target)
+        });
+
+        if (result.status === 200 || result.status === 304) {
+            window.location.reload();
+        }
+	}
+
+
+    let interval;
     $: avatarErrorString = "";
     function avatarError(error: string) {
         avatarErrorString = error;
         avatarUploadLoading = false;
-        setInterval(() => avatarErrorString = '', AVATAR_ERROR_DURATION);
+        clearInterval(interval);
+        interval = setInterval(() => avatarErrorString = '', AVATAR_ERROR_DURATION);
     }
 
     function onAvatarUpload(event) {
@@ -153,7 +193,7 @@
     <div class="settings">
         {#if categories[selected].id === "general"}
             <div class="dialog-body">{@html DOMPurify.sanitize(marked.parse(data.localization.generalDesc), {ALLOWED_TAGS: ["p", "br"]})}</div>
-            <p class="breaker">Avatar</p>
+            <p class="breaker">{data.localization.avatar}</p>
             <div class="dialog-body">{@html DOMPurify.sanitize(marked.parse(data.localization.avatarDesc), {ALLOWED_TAGS: ["p", "br"]})}</div>
             {#if avatarErrorString !== undefined && avatarErrorString !== ""}
                 <div transition:scale={{ duration: 500, opacity: 0, start: 0, easing: quintOut }} class="dialog-body error">{@html DOMPurify.sanitize(marked.parse(data.localization[avatarErrorString]), {ALLOWED_TAGS: ["p", "br"]})}</div>
@@ -209,7 +249,30 @@
                 </div>
             </form>
         {:else if categories[selected].id === "security"}
-            2
+        <div class="dialog-body">{@html DOMPurify.sanitize(marked.parse(data.localization.securityDesc), {ALLOWED_TAGS: ["p", "br"]})}</div>
+            <p class="breaker">{data.localization.categorySecurity}</p>
+            <form method="PATCH" action="/api/profile/password" class="form" on:submit|preventDefault={handleUpdate}>
+                <div class="box-input">
+                    <label for="old_password">{data.localization.oldPassword}</label>
+                    <input id="old_password" name="old_password" type="password" required maxlength="{MAX_PASSWORD_LENGTH}">
+                </div>
+                <div class="box-input">
+                    <label for="new_password">{data.localization.newPassword} {`(${newPasswordLength}/${MAX_PASSWORD_LENGTH})`}</label>
+                    <input id="new_password" name="new_password" type="password" required minlength="1" maxlength="{MAX_PASSWORD_LENGTH}" bind:value={newPassword}>
+                </div>
+                <div class="box-input">
+                    <label for="confirm_new_password">{data.localization.confirmNewPassword} {`(${confirmNewPasswordLength}/${MAX_PASSWORD_LENGTH})`}</label>
+                    <input id="confirm_new_password" name="confirm_new_password" type="password" required minlength="1" maxlength="{MAX_PASSWORD_LENGTH}" bind:value={confirmNewPassword}>
+                </div>
+                <div class="actions">
+                    <button class="form-button" type="submit">
+                        <span class:loading={generalSaveLoading}>{data.localization.save}</span>
+                        {#if generalSaveLoading}
+                            <Spinner size="16"/>
+                        {/if}
+                    </button>
+                </div>
+            </form>
         {:else if categories[selected].id === "privacy"}
             3
         {/if}

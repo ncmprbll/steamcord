@@ -28,10 +28,7 @@ func (s *Repository) Update(ctx context.Context, user *models.UserGeneralUpdate)
 						WHEN $2 = '' THEN display_name
 						WHEN $2 <> '' THEN $2
 					END,
-					about = CASE
-						WHEN $3 = '' THEN about
-						WHEN $3 <> '' THEN $3
-					END
+					about = $3
 				WHERE user_id = $4;
 				`
 	_, err := s.database.ExecContext(ctx, query, user.Avatar, user.DisplayName, user.About, user.UUID)

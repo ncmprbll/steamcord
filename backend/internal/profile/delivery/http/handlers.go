@@ -3,7 +3,6 @@ package http
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"main/backend/internal/models"
 	"main/backend/internal/profile"
 	"main/backend/internal/util"
@@ -39,9 +38,7 @@ func (h *handlers) Update() http.HandlerFunc {
 		}
 		fields.UUID = found.UUID
 
-		fmt.Println(fields)
-
-		if fields.Avatar == "" && fields.DisplayName == "" && fields.About == "" {
+		if fields.Avatar == found.Avatar && fields.DisplayName == found.Avatar && fields.About == found.Avatar {
 			w.WriteHeader(http.StatusNotModified)
 			return
 		}

@@ -126,13 +126,16 @@
                         href="{$page.data?.lang}/profile/{$page.data.me.user_id}"
                         items={profileContextMenu}
                     >
-                        <div class="profile-info">
-                            <div class="login">
-                                {$page.data.me.login}
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div class="profile-info">
+                                <div class="login">
+                                    {$page.data.me.login}
+                                </div>
+                                <div class="balance">
+                                    {formatBalance($page.data.me.balance, $page.data.me.currency_code)}
+                                </div>
                             </div>
-                            <div class="balance">
-                                {formatBalance($page.data.me.balance, $page.data.me.currency_code)}
-                            </div>
+                            <img class="profile-avatar" src={$page.data.me.avatar || "/content/avatars/default.png"} alt="User avatar"/>
                         </div>
                     </AnchorContext>
                 {/if}
@@ -187,8 +190,15 @@
         text-align: right;
     }
 
+    .profile-avatar {
+        width: var(--avatar-small);
+        height: var(--avatar-small);
+        border-radius: 4px;
+    }
+
     .balance {
         font-size: 12px;
+        line-height: 16px;
     }
 
     .svg-icon > svg {
@@ -339,7 +349,7 @@
         font-family: Inter, sans-serif;
         font-size: 16px;
         font-weight: normal;
-        line-height: var(--store-line-height);
+        line-height: normal;
         letter-spacing: 0.2px;
         transition: color 350ms;
         color: #b7bdbf;

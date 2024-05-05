@@ -17,7 +17,7 @@ const (
 	MAX_LOGIN    = 20
 
 	MIN_DISPLAY_NAME_LENGTH = 1
-	MAX_DISPLAY_NAME_LENGTH = 16
+	MAX_DISPLAY_NAME_LENGTH = 20
 	MAX_ABOUT_LENGTH        = 256
 )
 
@@ -108,6 +108,7 @@ func (u *UserGeneralUpdate) Sanitize() {
 	pattern := regexp.MustCompile(`\s+`)
 
 	u.DisplayName = pattern.ReplaceAllString(str, " ")
+	u.About = strings.TrimSpace(strings.ReplaceAll(u.About, "\r", ""))
 }
 
 func (u *UserGeneralUpdate) Validate() error {
@@ -122,10 +123,8 @@ func (u *UserGeneralUpdate) Validate() error {
 		}
 	}
 
-	if about != "" {
-		if len(about) > MAX_ABOUT_LENGTH {
-			return errors.New("validation error: about too long")
-		}
+	if len(about) > MAX_ABOUT_LENGTH {
+		return errors.New("validation error: about too long")
 	}
 
 	return nil

@@ -7,6 +7,7 @@ const localization: Record<string, string> = {
     'comments': 'Комментарии',
     'games': 'Игры',
     'friends': 'Друзья',
+    'noInformation': 'Информация отсутствует.'
 };
 
 export { localization };

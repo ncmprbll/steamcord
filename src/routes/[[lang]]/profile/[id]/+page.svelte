@@ -23,11 +23,14 @@
         </div>
         <div class="profile-summary">
             <div class="profile-name">
-                <span class="profile-display-name">{data.user.display_name === undefined || data.user.display_name === "" ? name : data.user.display_name}</span>
-                <!-- <span class="profile-real-name">real name</span> -->
+                <span class="profile-display-name">{data.user.display_name}</span>
             </div>
             <div class="profile-description">
-                <span class="about">{@html about}</span>
+                {#if about === ""}
+                    <span class="about empty">{data.localization.noInformation}</span>
+                {:else}
+                    <span class="about">{@html about}</span>
+                {/if}
             </div>
         </div>
         <div class="profile-right-pane">
@@ -148,6 +151,10 @@
         background-color: rgb(66, 66, 90);
         transition: all 0.1s ease-in-out;
         width: fit-content;
+    }
+
+    .about.empty {
+        color: #8b8b8b;
     }
 
     :global(.about > p) {
