@@ -90,6 +90,10 @@
         if (fileToUpload !== null) {
             if (fileToUpload.size !== 0) {
                 avatarSaveLoading = true;
+
+                await fetch("/api/profile/avatar", {
+                    method: "DELETE"
+                });
             } else {
                 return;
             }

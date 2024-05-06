@@ -4,7 +4,7 @@ const localization: Record<string, string> = {
     "categorySecurity": "Security",
     "categoryPrivacy": "Privacy Settings",
     "generalDesc": "Here you can set your avatar, profile name and details.\n\nProviding additional information can help friends find you on the platform.",
-    "securityDesc": "Here you can set update your password.",
+    "securityDesc": "Here you can update your password.",
     "avatarDesc": "Upload a file from your device.\n\nImage should be square, at least 184px x 184px and not more than 1 MB in size.",
     "profileName": "Profile Name",
     "avatar": "Avatar",

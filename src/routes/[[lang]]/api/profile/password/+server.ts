@@ -1,5 +1,3 @@
-import { text, json } from '@sveltejs/kit';
-
 export async function PATCH({ cookies, request }) {
 	const sessionId = cookies.get('session_id');
 

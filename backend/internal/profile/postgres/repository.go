@@ -54,3 +54,23 @@ func (s *Repository) PasswordUpdate(ctx context.Context, user *models.UserPasswo
 
 	return nil
 }
+
+func (s *Repository) DeleteAvatar(ctx context.Context, user *models.User) (string, error) {
+	const query = `
+				WITH u AS (
+					SELECT avatar FROM users WHERE user_id = $1
+				)
+				UPDATE
+					users
+				SET
+					avatar = ''
+				WHERE user_id = $1
+				RETURNING (SELECT avatar FROM u);
+				`
+	var avatar string
+	if err := s.database.QueryRowxContext(ctx, query, user.UUID).Scan(&avatar); err != nil {
+		return "", err
+	}
+
+	return avatar, nil
+}

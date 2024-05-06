@@ -102,3 +102,22 @@ func (h *handlers) PasswordUpdate() http.HandlerFunc {
 		w.WriteHeader(http.StatusOK)
 	}
 }
+
+func (h *handlers) DeleteAvatar() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		found, ok := r.Context().Value("user").(*models.User)
+
+		if !ok {
+			util.HandleError(w, errors.New("no user"))
+			return
+		}
+
+		avatar, err := h.profileRepository.DeleteAvatar(r.Context(), found)
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		w.Write([]byte(avatar))
+	}
+}

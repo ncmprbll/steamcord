@@ -14,6 +14,7 @@ func NewRouter(h *handlers, mw *middleware.MiddlewareManager) http.Handler {
 		r.Use(mw.AuthSessionMiddleware)
 		r.Patch("/", h.Update())
 		r.Patch("/password", h.PasswordUpdate())
+		r.Delete("/avatar", h.DeleteAvatar())
 	})
 
 	return r

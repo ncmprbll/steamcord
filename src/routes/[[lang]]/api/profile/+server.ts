@@ -16,7 +16,7 @@ export async function PATCH({ cookies, request }) {
 	const file = object.fileToUpload as File;
 	delete object.fileToUpload;
 
-	var path: string | undefined;
+	let path: string | undefined;
 	if (file && file.size <= MAX_FILE_SIZE_BYTES) {
 		const reader = file.stream().getReader();
 		let uint8 = new Uint8Array(file.size);
@@ -40,7 +40,7 @@ export async function PATCH({ cookies, request }) {
 					fileName += ".jpg";
 				}
 				let base = "./src/lib/assets"
-				path  = `/content/avatars/${fileName}`;
+				path = `/content/avatars/${fileName}`;
 				writeFileSync(`${base}${path}`, Buffer.from(await file.arrayBuffer()));
 			}
 		} catch (error) {

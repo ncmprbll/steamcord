@@ -8,4 +8,5 @@ import (
 type Repository interface {
 	Update(context.Context, *models.UserGeneralUpdate) error
 	PasswordUpdate(context.Context, *models.UserPasswordUpdate) error
+	DeleteAvatar(context.Context, *models.User) (string, error)
 }
