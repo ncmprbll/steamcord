@@ -4,6 +4,7 @@
     import { scale } from 'svelte/transition';
     import { quintOut } from 'svelte/easing';
 
+    import Radio from '$lib/components/Radio.svelte';
     import Spinner from '$lib/components/Spinner.svelte';
 
     export let data;
@@ -103,7 +104,7 @@
 
         const result = await fetch(url, {
             method: "PATCH",
-            body: new FormData(event.target)
+            body: data
         });
 
         if (result.status === 200 || result.status === 304) {
@@ -136,7 +137,7 @@
 
         const result = await fetch(url, {
             method: "PATCH",
-            body: new FormData(event.target)
+            body: data
         });
         passwordUpdateError((await result.text()).replaceAll("\n", ""));
 
@@ -211,6 +212,34 @@
         const url = new URL(window.location.href);
         url.searchParams.set('category', id);
         window.history.pushState(null, '', url.toString());
+    }
+
+    const privacyOptions = [{
+		value: "private",
+		label: data.localization.private,
+	}, {
+		value: "friendsOnly",
+		label: data.localization.friendsOnly,
+	}, {
+		value: "public",
+		label: data.localization.public,
+	}]
+
+    let originalPrivacy = "public";
+    let selectedPrivacy = "public";
+    function onPrivacyChange(event) {
+        selectedPrivacy = event.detail;
+    }
+
+    async function handlePrivacyUpdate(event) {
+        const url = event.target.action;
+        const data = new FormData(event.target);
+        data.append("privacy", selectedPrivacy)
+
+        const result = await fetch(url, {
+            method: "PATCH",
+            body: data
+        });
     }
 </script>
 
@@ -312,7 +341,20 @@
                 </div>
             </form>
         {:else if selected === "privacy"}
-            3
+            <div class="dialog-body">{@html DOMPurify.sanitize(marked.parse(data.localization.privacyDesc), {ALLOWED_TAGS: ["p", "br"]})}</div>
+            <p class="breaker">{data.localization.profilePrivacy}</p>
+            <div class="dialog-body">{@html DOMPurify.sanitize(marked.parse(data.localization.profilePrivacyDesc.replace(/\r?\n/g, "<br>")), {ALLOWED_TAGS: ["p", "br", "em"]})}</div>
+            <form method="PATCH" action="/api/profile/privacy" class="form" on:submit|preventDefault={handlePrivacyUpdate}>
+                <Radio options={privacyOptions} userSelected={selectedPrivacy} on:change={onPrivacyChange}/>
+                <div class="actions">
+                    <button class="form-button" type="submit" disabled={originalPrivacy === selectedPrivacy}>
+                        <span class:loading={passwordSaveLoading}>{data.localization.save}</span>
+                        {#if passwordSaveLoading}
+                            <Spinner size="16"/>
+                        {/if}
+                    </button>
+                </div>
+            </form>
         {/if}
     </div>
 </div>
