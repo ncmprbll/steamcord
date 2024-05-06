@@ -94,11 +94,28 @@ func (h *handlers) PasswordUpdate() http.HandlerFunc {
 			return
 		}
 
-		if err := h.sessionRepository.InvalidateSessions(r.Context(), &models.Session{UserID: found.UUID}); err != nil {
+		session := &models.Session{UserID: found.UUID}
+		if err := h.sessionRepository.InvalidateSessions(r.Context(), session); err != nil {
+			util.HandleError(w, err)
+			return
+		}
+		sessionId, err := h.sessionRepository.CreateSession(r.Context(), session, 30005)
+		if err != nil {
 			util.HandleError(w, err)
 			return
 		}
 
+		cookie := &http.Cookie{
+			Name:     "session_id",
+			Value:    sessionId,
+			Path:     "/",
+			MaxAge:   3600,
+			HttpOnly: true,
+			Secure:   true,
+			SameSite: http.SameSiteLaxMode,
+		}
+
+		http.SetCookie(w, cookie)
 		w.WriteHeader(http.StatusOK)
 	}
 }
@@ -109,6 +126,11 @@ func (h *handlers) DeleteAvatar() http.HandlerFunc {
 
 		if !ok {
 			util.HandleError(w, errors.New("no user"))
+			return
+		}
+
+		if found.Avatar == "" {
+			w.WriteHeader(http.StatusNoContent)
 			return
 		}
 
