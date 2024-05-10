@@ -22,7 +22,7 @@ const (
 )
 
 type User struct {
-	UUID         uuid.UUID `json:"user_id,omitempty" db:"user_id"`
+	UUID         uuid.UUID `json:"id,omitempty" db:"id"`
 	Login        string    `json:"login,omitempty" db:"login"`
 	Avatar       string    `json:"avatar" db:"avatar"`
 	DisplayName  string    `json:"display_name" db:"display_name"`
@@ -38,14 +38,14 @@ type User struct {
 }
 
 type UserGeneralUpdate struct {
-	UUID        uuid.UUID `json:"user_id,omitempty" db:"user_id"`
+	UUID        uuid.UUID `json:"id,omitempty" db:"id"`
 	Avatar      string    `json:"avatar" db:"avatar"`
 	DisplayName string    `json:"display_name" db:"display_name"`
 	About       string    `json:"about" db:"about"`
 }
 
 type UserPasswordUpdate struct {
-	UUID        uuid.UUID `json:"user_id,omitempty"`
+	UUID        uuid.UUID `json:"id,omitempty"`
 	OldPassword string    `json:"old_password"`
 	NewPassword string    `json:"new_password"`
 }

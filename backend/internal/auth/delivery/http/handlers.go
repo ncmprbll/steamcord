@@ -25,7 +25,6 @@ func NewAuthHandlers(aR auth.Repository, sR session.Repository) *handlers {
 func (h *handlers) Register() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user := &models.User{}
-
 		if err := json.NewDecoder(r.Body).Decode(user); err != nil {
 			util.HandleError(w, err)
 			return

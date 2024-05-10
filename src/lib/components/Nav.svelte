@@ -49,7 +49,7 @@
         {
             text: $page.data.localization.profile,
             type: "anchor",
-            href: `${$page.data?.lang}/profile/${$page.data?.me?.user_id}`
+            href: `${$page.data?.lang}/profile/${$page.data?.me?.id}`
         },
         {
             text: $page.data.localization.signOut,
@@ -123,7 +123,7 @@
                     </button>
                 {:else}
                     <AnchorContext
-                        href="{$page.data?.lang}/profile/{$page.data.me.user_id}"
+                        href="{$page.data?.lang}/profile/{$page.data.me.id}"
                         items={profileContextMenu}
                     >
                         <div style="display: flex; align-items: center; gap: 8px;">
@@ -172,9 +172,9 @@
                     Login
                 </button>
             {:else}
-                <a data-sveltekit-reload href="{$page.data?.lang}/profile/{$page.data.me.user_id}">
+                <a data-sveltekit-reload href="{$page.data?.lang}/profile/{$page.data.me.id}">
                     <div>
-                        {$page.data.me.user_id}
+                        {$page.data.me.id}
                     </div>
                     <div>
                         {formatBalance($page.data.me.balance, $page.data.me.currency_code)}

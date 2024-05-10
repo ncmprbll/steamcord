@@ -45,7 +45,7 @@
                         <div class="milestone-value">{formatDate(data.user.created_at, data.localization)}</div>
                     </div>
                 </div>
-                {#if data.me !== undefined && data.user.user_id === data.me.user_id}
+                {#if data.me !== undefined && data.user.id === data.me.id}
                     <a href="{window.location.href}/settings" class="profile-button">
                         <span>{data.localization.settings}</span>
                     </a>

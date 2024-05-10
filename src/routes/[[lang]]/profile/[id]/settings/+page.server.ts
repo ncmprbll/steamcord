@@ -6,12 +6,12 @@ export const load = async ({ params, parent, url }) => {
 		redirect(302, url.pathname.replace("/settings", ""));
 	}
 
-	if (data.me.user_id !== params.id) {
+	if (data.me.id !== params.id) {
 		let base = "/";
 		if (params.lang !== undefined) {
 			base += params.lang + "/"
 		}
-		redirect(302, `${base}profile/${data.me.user_id}/settings`);
+		redirect(302, `${base}profile/${data.me.id}/settings`);
 	}
 
 	let localization: Record<string, string> | undefined;

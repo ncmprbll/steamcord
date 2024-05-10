@@ -3,6 +3,7 @@ DROP SEQUENCE IF EXISTS products_sequence CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS users_cart CASCADE;
 DROP TABLE IF EXISTS users_games CASCADE;
+DROP TABLE IF EXISTS users_comments CASCADE;
 DROP TABLE IF EXISTS genres CASCADE;
 DROP TABLE IF EXISTS products CASCADE;
 DROP TABLE IF EXISTS products_prices CASCADE;
@@ -103,7 +104,7 @@ CREATE TABLE products_featured
 
 CREATE TABLE users
 (
-    user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     login VARCHAR(32) UNIQUE NOT NULL CHECK ( login <> '' ),
     display_name VARCHAR(32) NOT NULL DEFAULT SUBSTR(MD5(RANDOM()::TEXT), 1, 8),
     about VARCHAR(256) DEFAULT '' NOT NULL,
@@ -120,19 +121,28 @@ CREATE TABLE users
 
 CREATE TABLE users_cart
 (
-    user_id UUID REFERENCES users(user_id),
+    user_id UUID REFERENCES users(id),
     product_id BIGINT REFERENCES products(id),
     PRIMARY KEY (user_id, product_id)
 );
 
 CREATE TABLE users_games
 (
-    user_id UUID REFERENCES users(user_id),
+    user_id UUID REFERENCES users(id),
     product_id BIGINT REFERENCES products(id),
     currency_code CHAR(3) REFERENCES currencies(code),
     bought_for NUMERIC(16, 2) NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     PRIMARY KEY (user_id, product_id)
+);
+
+CREATE TABLE users_comments
+(
+    id SERIAL PRIMARY KEY,
+    profile_id UUID REFERENCES users(id),
+    commentator UUID REFERENCES users(id),
+    text VARCHAR(128),
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
 INSERT INTO locales (code, name) VALUES ('ru', 'Русский');

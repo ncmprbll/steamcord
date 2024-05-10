@@ -4,7 +4,7 @@ type Cart = number[] | Writable<Cart>
 type Owned = Cart
 
 export type User = {
-	user_id: string
+	id: string
 	login: string
 	avatar: string
 	display_name: string

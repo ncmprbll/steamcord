@@ -124,7 +124,7 @@ func (s *Repository) Purchase(ctx context.Context, user *models.User) error {
 							users
 						SET
 							balance = balance - $1
-						WHERE users.user_id = $2
+						WHERE id = $2
 						`
 
 	if _, err = tx.ExecContext(ctx, queryBalance, total, user.UUID); err != nil {

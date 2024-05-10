@@ -4,6 +4,7 @@ import (
 	"context"
 	"main/backend/internal/models"
 
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -29,7 +30,7 @@ func (s *Repository) Update(ctx context.Context, user *models.UserGeneralUpdate)
 						WHEN $2 <> '' THEN $2
 					END,
 					about = $3
-				WHERE user_id = $4;
+				WHERE id = $4;
 				`
 	_, err := s.database.ExecContext(ctx, query, user.Avatar, user.DisplayName, user.About, user.UUID)
 	if err != nil {
@@ -45,7 +46,7 @@ func (s *Repository) PasswordUpdate(ctx context.Context, user *models.UserPasswo
 					users
 				SET
 					password = $1
-				WHERE user_id = $2;
+				WHERE id = $2;
 				`
 	_, err := s.database.ExecContext(ctx, query, user.NewPassword, user.UUID)
 	if err != nil {
@@ -58,13 +59,13 @@ func (s *Repository) PasswordUpdate(ctx context.Context, user *models.UserPasswo
 func (s *Repository) DeleteAvatar(ctx context.Context, user *models.User) (string, error) {
 	const query = `
 				WITH u AS (
-					SELECT avatar FROM users WHERE user_id = $1
+					SELECT avatar FROM users WHERE id = $1
 				)
 				UPDATE
 					users
 				SET
 					avatar = ''
-				WHERE user_id = $1
+				WHERE id = $1
 				RETURNING (SELECT avatar FROM u);
 				`
 	var avatar string
@@ -73,4 +74,45 @@ func (s *Repository) DeleteAvatar(ctx context.Context, user *models.User) (strin
 	}
 
 	return avatar, nil
+}
+
+func (s *Repository) CreateComment(ctx context.Context, comment *models.Comment) error {
+	const query = `
+				INSERT INTO
+					users_comments (profile_id, commentator, text)
+				VALUES ($1, $2, $3);
+				`
+	_, err := s.database.ExecContext(ctx, query, comment.ProfileID, comment.Commnetator, comment.Text)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Repository) GetComments(ctx context.Context, uuid uuid.UUID, pageLimit, pageOffset int) ([]*models.Comment, error) {
+	const query = `
+				SELECT
+					commentator,
+					text,
+					created_at
+				FROM users_comments
+				WHERE profile_id = $1
+				ORDER BY created_at DESC
+				LIMIT $2 OFFSET $3;
+				`
+	rows, err := s.database.QueryxContext(ctx, query, uuid, pageLimit, pageOffset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := []*models.Comment{}
+
+	for rows.Next() {
+		row := &models.Comment{}
+		rows.StructScan(&row)
+		result = append(result, row)
+	}
+
+	return result, nil
 }

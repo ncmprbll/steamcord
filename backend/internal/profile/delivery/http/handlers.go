@@ -8,7 +8,10 @@ import (
 	"main/backend/internal/session"
 	"main/backend/internal/util"
 	"net/http"
+	"strconv"
 
+	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -141,5 +144,93 @@ func (h *handlers) DeleteAvatar() http.HandlerFunc {
 		}
 
 		w.Write([]byte(avatar))
+	}
+}
+
+func (h *handlers) CreateComment() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		found := r.Context().Value("user").(*models.User)
+		userId := chi.URLParam(r, "user_id")
+
+		uuid, err := uuid.Parse(userId)
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		comment := &models.Comment{}
+		if err := json.NewDecoder(r.Body).Decode(comment); err != nil {
+			util.HandleError(w, err)
+			return
+		}
+		comment.Sanitize()
+
+		if comment.Text == "" {
+			http.Error(w, "empty comment", http.StatusBadRequest)
+			return
+		}
+
+		comment.ProfileID = uuid.String()
+		comment.Commnetator = found.UUID
+		if err := h.profileRepository.CreateComment(r.Context(), comment); err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		w.WriteHeader(http.StatusCreated)
+	}
+}
+
+func (h *handlers) GetComments() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		userId := chi.URLParam(r, "user_id")
+
+		uuid, err := uuid.Parse(userId)
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		pageLimit := r.URL.Query().Get("pageLimit")
+		pageLimitInteger := 10 // REDO to constants
+		if pageLimit != "" {
+			var err error
+			pageLimitInteger, err = strconv.Atoi(pageLimit)
+			if err != nil {
+				util.HandleError(w, err)
+				return
+			}
+			if pageLimitInteger > 10 {
+				pageLimitInteger = 10
+			}
+		}
+
+		pageOffset := r.URL.Query().Get("pageOffset")
+		pageOffsetInteger := 0 // REDO to constants
+		if pageOffset != "" {
+			var err error
+			pageOffsetInteger, err = strconv.Atoi(pageOffset)
+			if err != nil {
+				util.HandleError(w, err)
+				return
+			}
+			if pageOffsetInteger < 0 {
+				pageOffsetInteger = 0
+			}
+		}
+
+		comments, err := h.profileRepository.GetComments(r.Context(), uuid, pageLimitInteger, pageOffsetInteger)
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(comments); err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
 	}
 }
