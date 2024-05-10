@@ -17,24 +17,20 @@ func New(database *sqlx.DB) *Repository {
 
 func (s *Repository) GetTier(ctx context.Context, currencyCode, limit string) ([]*models.TierRow, error) {
 	const query = `
-				WITH cart_items_price_image AS (
-					SELECT
-						products.id,
-						products.name,
-						products.discount,
-						jsonb_build_object('original', h.price, 'final', h.final, 'symbol', currencies.symbol) AS price,
-						products_images.tier_background_img
-					FROM products
-						JOIN LATERAL (SELECT *, (price - (price * products.discount / 100)::NUMERIC(16, 2)) AS final FROM products_prices WHERE currency_code = $1) h ON products.id = h.product_id
-						JOIN currencies ON currencies.code = h.currency_code
-						JOIN products_images ON products.id = products_images.product_id
-					GROUP BY products.id, products_images.tier_background_img, price, currencies.symbol, final
-					ORDER BY RANDOM()
-					LIMIT $2
-				)
 				SELECT
-					*
-				FROM cart_items_price_image;
+					products.id,
+					products.name,
+					products.discount,
+					jsonb_build_object('original', h.price, 'final', h.final, 'symbol', currencies.symbol) AS price,
+					products_images.tier_background_img
+				FROM products
+					JOIN LATERAL (SELECT *, (price - (price * products.discount / 100)::NUMERIC(16, 2)) AS final FROM products_prices WHERE currency_code = $1) h
+						ON products.id = h.product_id
+					JOIN currencies ON currencies.code = h.currency_code
+					JOIN products_images ON products.id = products_images.product_id
+				GROUP BY products.id, products_images.tier_background_img, price, currencies.symbol, final
+				ORDER BY RANDOM()
+				LIMIT $2
 				`
 	rows, err := s.database.QueryxContext(ctx, query, currencyCode, limit)
 	if err != nil {

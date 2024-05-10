@@ -59,7 +59,6 @@ func (mw *MiddlewareManager) AuthSessionMiddleware(next http.Handler) http.Handl
 			util.HandleError(w, err)
 			return
 		}
-		// found.SanitizePassword()
 
 		ctx := context.WithValue(r.Context(), "user", found)
 

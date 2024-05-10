@@ -7,8 +7,6 @@
 </script>
 
 <Carousel locale={data.localization} highlights={data.highlights} />
-
 <Tier locale={data.localization} games={data.tier1} />
 <Tier locale={data.localization} games={data.tier2} name="Horror" />
-
 <Discover />
