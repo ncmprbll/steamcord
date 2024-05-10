@@ -123,6 +123,30 @@ func (h *handlers) PasswordUpdate() http.HandlerFunc {
 	}
 }
 
+func (h *handlers) PrivacyUpdate() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		found := r.Context().Value("user").(*models.User)
+
+		fields := &models.UserPrivacyUpdate{}
+		if err := json.NewDecoder(r.Body).Decode(fields); err != nil {
+			util.HandleError(w, err)
+			return
+		}
+		fields.UUID = found.UUID
+		if fields.Privacy == "" || found.Privacy == fields.Privacy {
+			w.WriteHeader(http.StatusNotModified)
+			return
+		}
+	
+		if err := h.profileRepository.PrivacyUpdate(r.Context(), fields); err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}
+}
+
 func (h *handlers) DeleteAvatar() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		found, ok := r.Context().Value("user").(*models.User)

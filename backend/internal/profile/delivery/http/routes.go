@@ -17,6 +17,7 @@ func NewRouter(h *handlers, mw *middleware.MiddlewareManager) http.Handler {
 		r.Post("/{user_id}/comments", h.CreateComment())
 		r.Patch("/", h.Update())
 		r.Patch("/password", h.PasswordUpdate())
+		r.Patch("/privacy", h.PrivacyUpdate())
 		r.Delete("/avatar", h.DeleteAvatar())
 	})
 

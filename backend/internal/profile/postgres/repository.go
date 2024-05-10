@@ -56,6 +56,22 @@ func (s *Repository) PasswordUpdate(ctx context.Context, user *models.UserPasswo
 	return nil
 }
 
+func (s *Repository) PrivacyUpdate(ctx context.Context, user *models.UserPrivacyUpdate) error {
+	const query = `
+				UPDATE
+					users
+				SET
+					privacy = $1
+				WHERE id = $2;
+				`
+	_, err := s.database.ExecContext(ctx, query, user.Privacy, user.UUID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (s *Repository) DeleteAvatar(ctx context.Context, user *models.User) (string, error) {
 	const query = `
 				WITH u AS (

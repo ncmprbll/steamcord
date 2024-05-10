@@ -104,11 +104,12 @@ CREATE TABLE products_featured
 
 CREATE TABLE users
 (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id UUID PRIMARY KEY DEFAULT GEN_RANDOM_UUID(),
     login VARCHAR(32) UNIQUE NOT NULL CHECK ( login <> '' ),
+    avatar TEXT DEFAULT '',
     display_name VARCHAR(32) NOT NULL DEFAULT SUBSTR(MD5(RANDOM()::TEXT), 1, 8),
     about VARCHAR(256) DEFAULT '' NOT NULL,
-    avatar TEXT DEFAULT '',
+    privacy TEXT DEFAULT 'public' CHECK ( privacy IN ('public', 'friendsOnly', 'private') ),
     currency_code CHAR(3) DEFAULT 'RUB' REFERENCES currencies(code),
     balance NUMERIC(16, 2) DEFAULT 0.00 NOT NULL CHECK ( balance >= 0 ),
     email VARCHAR(64) NOT NULL CHECK ( email <> '' ),

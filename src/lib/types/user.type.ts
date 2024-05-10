@@ -9,6 +9,7 @@ export type User = {
 	avatar: string
 	display_name: string
 	about: string
+	privacy: "public" | "friendsOnly" | "private"
 	currency_code: string
 	balance: number
 	email: string

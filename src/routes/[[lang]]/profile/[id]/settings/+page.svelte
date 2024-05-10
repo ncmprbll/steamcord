@@ -36,6 +36,7 @@
     let avatarSaveLoading = false;
     let generalSaveLoading = false;
     let passwordSaveLoading = false;
+    let privacySaveLoading = false;
 
     $: {
         displayNameLength = displayName.length;
@@ -225,8 +226,8 @@
 		label: data.localization.public,
 	}]
 
-    let originalPrivacy = "public";
-    let selectedPrivacy = "public";
+    let originalPrivacy = data.me.privacy;
+    let selectedPrivacy = data.me.privacy;
     function onPrivacyChange(event) {
         selectedPrivacy = event.detail;
     }
@@ -236,10 +237,18 @@
         const data = new FormData(event.target);
         data.append("privacy", selectedPrivacy)
 
+        privacySaveLoading = true;
+
         const result = await fetch(url, {
             method: "PATCH",
             body: data
         });
+
+        if (result.status === 200) {
+            window.location.reload();
+        } else {
+            privacySaveLoading = false;
+        }
     }
 </script>
 
@@ -348,8 +357,8 @@
                 <Radio options={privacyOptions} userSelected={selectedPrivacy} on:change={onPrivacyChange}/>
                 <div class="actions">
                     <button class="form-button" type="submit" disabled={originalPrivacy === selectedPrivacy}>
-                        <span class:loading={passwordSaveLoading}>{data.localization.save}</span>
-                        {#if passwordSaveLoading}
+                        <span class:loading={privacySaveLoading}>{data.localization.save}</span>
+                        {#if privacySaveLoading}
                             <Spinner size="16"/>
                         {/if}
                     </button>
