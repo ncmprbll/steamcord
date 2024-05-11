@@ -9,6 +9,16 @@ import (
 	"github.com/google/uuid"
 )
 
+const FRIEND_REQUEST_REJECTED_WAIT_TIME = time.Hour * 24
+
+var (
+	ErrCannotFriendSelf             = errors.New("cannot befriend yourself")
+	ErrAlreadyFriends               = errors.New("already friends")
+	ErrFriendInvitePending          = errors.New("an invite is already pending")
+	ErrAlreadyTriedToFriendRejected = errors.New("friend request has been rejected, try again later")
+	ErrNoFriendRequest              = errors.New("no friend request")
+)
+
 const (
 	MAX_COMMENT_LENGTH = 128
 )
@@ -19,6 +29,14 @@ type Comment struct {
 	Commnetator uuid.UUID `json:"commentator" db:"commentator"`
 	Text        string    `json:"text" db:"text"`
 	CreatedAt   time.Time `json:"created_at" db:"created_at"`
+}
+
+type Invite struct {
+	ID        int       `json:"id,omitempty" db:"id"`
+	Invitee   uuid.UUID `json:"invitee" db:"invitee"`
+	Inviter   uuid.UUID `json:"inviter" db:"inviter"`
+	Status    string    `json:"status" db:"status"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
 }
 
 func (c *Comment) Validate() error {

@@ -137,7 +137,7 @@ func (h *handlers) PrivacyUpdate() http.HandlerFunc {
 			w.WriteHeader(http.StatusNotModified)
 			return
 		}
-	
+
 		if err := h.profileRepository.PrivacyUpdate(r.Context(), fields); err != nil {
 			util.HandleError(w, err)
 			return
@@ -208,7 +208,6 @@ func (h *handlers) CreateComment() http.HandlerFunc {
 func (h *handlers) GetComments() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		userId := chi.URLParam(r, "user_id")
-
 		uuid, err := uuid.Parse(userId)
 		if err != nil {
 			util.HandleError(w, err)
@@ -243,7 +242,7 @@ func (h *handlers) GetComments() http.HandlerFunc {
 			}
 		}
 
-		comments, err := h.profileRepository.GetComments(r.Context(), uuid, pageLimitInteger, pageOffsetInteger)
+		comments, err := h.profileRepository.GetComments(r.Context(), &models.User{UUID: uuid}, pageLimitInteger, pageOffsetInteger)
 		if err != nil {
 			util.HandleError(w, err)
 			return
@@ -252,6 +251,57 @@ func (h *handlers) GetComments() http.HandlerFunc {
 		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(comments); err != nil {
 			util.HandleError(w, err)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}
+}
+
+func (h *handlers) FriendInvite() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		found := r.Context().Value("user").(*models.User)
+		userId := chi.URLParam(r, "user_id")
+		uuid, err := uuid.Parse(userId)
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		err = h.profileRepository.FriendInvite(r.Context(), &models.User{UUID: uuid}, found)
+		if err != nil {
+			if errors.Is(err, models.ErrCannotFriendSelf) ||
+			errors.Is(err, models.ErrAlreadyFriends) ||
+			errors.Is(err, models.ErrFriendInvitePending) ||
+			errors.Is(err, models.ErrAlreadyTriedToFriendRejected) {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+			} else {
+				util.HandleError(w, err)
+			}
+			return
+		}
+
+		w.WriteHeader(http.StatusCreated)
+	}
+}
+
+func (h *handlers) HandleFriendInvite(status string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		found := r.Context().Value("user").(*models.User)
+		userId := chi.URLParam(r, "user_id")
+		uuid, err := uuid.Parse(userId)
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		err = h.profileRepository.HandleFriendInvite(r.Context(), found, &models.User{UUID: uuid}, status)
+		if err != nil {
+			if errors.Is(err, models.ErrNoFriendRequest) {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+			} else {
+				util.HandleError(w, err)
+			}
 			return
 		}
 

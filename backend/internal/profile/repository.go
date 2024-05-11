@@ -3,8 +3,6 @@ package profile
 import (
 	"context"
 	"main/backend/internal/models"
-
-	"github.com/google/uuid"
 )
 
 type Repository interface {
@@ -13,5 +11,8 @@ type Repository interface {
 	PrivacyUpdate(context.Context, *models.UserPrivacyUpdate) error
 	DeleteAvatar(context.Context, *models.User) (string, error)
 	CreateComment(context.Context, *models.Comment) error
-	GetComments(context.Context, uuid.UUID, int, int) ([]*models.Comment, error)
+	GetComments(context.Context, *models.User, int, int) ([]*models.Comment, error)
+	IsFriend(context.Context, *models.User, *models.User) (bool, error)
+	FriendInvite(context.Context, *models.User, *models.User) error
+	HandleFriendInvite(context.Context, *models.User, *models.User, string) error
 }

@@ -3,6 +3,8 @@ DROP SEQUENCE IF EXISTS products_sequence CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS users_cart CASCADE;
 DROP TABLE IF EXISTS users_games CASCADE;
+DROP TABLE IF EXISTS users_friend_invites CASCADE;
+DROP TABLE IF EXISTS users_friends CASCADE;
 DROP TABLE IF EXISTS users_comments CASCADE;
 DROP TABLE IF EXISTS genres CASCADE;
 DROP TABLE IF EXISTS products CASCADE;
@@ -135,6 +137,22 @@ CREATE TABLE users_games
     bought_for NUMERIC(16, 2) NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     PRIMARY KEY (user_id, product_id)
+);
+
+CREATE TABLE users_friend_invites
+(
+    id SERIAL PRIMARY KEY,
+    invitee UUID REFERENCES users(id),
+    inviter UUID REFERENCES users(id),
+    status TEXT DEFAULT 'pending' CHECK ( status IN ('pending', 'rejected', 'accepted') ),
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE users_friends
+(
+    user_id1 UUID REFERENCES users(id),
+    user_id2 UUID REFERENCES users(id),
+    PRIMARY KEY (user_id1, user_id2)
 );
 
 CREATE TABLE users_comments
