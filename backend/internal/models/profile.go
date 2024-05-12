@@ -31,6 +31,13 @@ type Comment struct {
 	CreatedAt   time.Time `json:"created_at" db:"created_at"`
 }
 
+type DisplayComment struct {
+	Avatar      string    `json:"avatar" db:"avatar"`
+	DisplayName string    `json:"display_name" db:"display_name"`
+	Text        string    `json:"text" db:"text"`
+	CreatedAt   time.Time `json:"created_at" db:"created_at"`
+}
+
 type Invite struct {
 	ID        int       `json:"id,omitempty" db:"id"`
 	Invitee   uuid.UUID `json:"invitee" db:"invitee"`

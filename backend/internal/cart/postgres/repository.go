@@ -31,7 +31,7 @@ func (s *Repository) Cart(ctx context.Context, currencyCode string, user *models
 						jsonb_build_object('original', h.price, 'final', h.final, 'symbol', currencies.symbol) AS price,
 						products_images.tier_background_img
 					FROM products
-					JOIN LATERAL (SELECT *, (price - (price * products.discount / 100)::NUMERIC(16, 2)) AS final FROM products_prices WHERE currency_code = $1) h ON products.id = h.product_id
+						JOIN LATERAL (SELECT *, (price - (price * products.discount / 100)::NUMERIC(16, 2)) AS final FROM products_prices WHERE currency_code = $1) h ON products.id = h.product_id
 						JOIN currencies ON currencies.code = h.currency_code
 						JOIN products_images ON products.id = products_images.product_id
 					WHERE id IN (SELECT product_id FROM cart_ids)

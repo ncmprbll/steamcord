@@ -308,3 +308,28 @@ func (h *handlers) HandleFriendInvite(status string) http.HandlerFunc {
 		w.WriteHeader(http.StatusOK)
 	}
 }
+
+func (h *handlers) DeleteFriend() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		found := r.Context().Value("user").(*models.User)
+		userId := chi.URLParam(r, "user_id")
+		uuid, err := uuid.Parse(userId)
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		deleted, err := h.profileRepository.DeleteFriend(r.Context(), found, &models.User{UUID: uuid})
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		if !deleted {
+			w.WriteHeader(http.StatusNotModified)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}
+}

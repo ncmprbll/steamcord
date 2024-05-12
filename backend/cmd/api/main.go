@@ -76,7 +76,7 @@ func main() {
 	manager := mw.NewMiddlewareManager(authPostgres, sessionRedis)
 
 	// Handlers
-	authHandlers := authDelivery.NewAuthHandlers(authPostgres, sessionRedis)
+	authHandlers := authDelivery.NewAuthHandlers(authPostgres, sessionRedis, profilePostgres)
 	productsHandlers := productsDelivery.NewAuthHandlers(productsPostgres)
 	cartHandlers := cartDelivery.NewAuthHandlers(cartPostgres, authPostgres, sessionRedis)
 	languageHandlers := languageDelivery.NewAuthHandlers(languagePostgres)

@@ -107,13 +107,15 @@ func (s *Repository) CreateComment(ctx context.Context, comment *models.Comment)
 	return nil
 }
 
-func (s *Repository) GetComments(ctx context.Context, user *models.User, pageLimit, pageOffset int) ([]*models.Comment, error) {
+func (s *Repository) GetComments(ctx context.Context, user *models.User, pageLimit, pageOffset int) ([]*models.DisplayComment, error) {
 	const query = `
 				SELECT
-					commentator,
+					avatar,
+					display_name,
 					text,
-					created_at
+					users_comments.created_at
 				FROM users_comments
+					JOIN users ON users.id = users_comments.commentator
 				WHERE profile_id = $1
 				ORDER BY created_at DESC
 				LIMIT $2 OFFSET $3;
@@ -124,10 +126,10 @@ func (s *Repository) GetComments(ctx context.Context, user *models.User, pageLim
 	}
 	defer rows.Close()
 
-	result := []*models.Comment{}
+	result := []*models.DisplayComment{}
 
 	for rows.Next() {
-		row := &models.Comment{}
+		row := &models.DisplayComment{}
 		rows.StructScan(&row)
 		result = append(result, row)
 	}
@@ -267,3 +269,24 @@ func (s *Repository) HandleFriendInvite(ctx context.Context, invitee *models.Use
 	return nil
 }
 
+func (s *Repository) DeleteFriend(ctx context.Context, user1 *models.User, user2 *models.User) (bool, error) {
+	const query = `
+				DELETE FROM
+					users_friends
+				WHERE (user_id1 = $1 AND user_id2 = $2) OR (user_id1 = $2 AND user_id2 = $1);
+				`
+	result, err := s.database.ExecContext(ctx, query, user1.UUID, user2.UUID)
+	if err != nil {
+		return false, err
+	}
+	affected, err := result.RowsAffected()
+	if err != nil {
+		return false, err
+	}
+
+	if affected != 0 {
+		return true, nil
+	}
+
+	return false, nil
+}

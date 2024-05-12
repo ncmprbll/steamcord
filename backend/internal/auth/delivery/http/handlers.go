@@ -2,9 +2,9 @@ package http
 
 import (
 	"encoding/json"
-	"errors"
 	"main/backend/internal/auth"
 	"main/backend/internal/models"
+	"main/backend/internal/profile"
 	"main/backend/internal/session"
 	"main/backend/internal/util"
 	"net/http"
@@ -14,12 +14,13 @@ import (
 )
 
 type handlers struct {
-	authRepository auth.Repository
+	authRepository    auth.Repository
 	sessionRepository session.Repository
+	profileRepository profile.Repository
 }
 
-func NewAuthHandlers(aR auth.Repository, sR session.Repository) *handlers {
-	return &handlers{aR, sR}
+func NewAuthHandlers(aR auth.Repository, sR session.Repository, pR profile.Repository) *handlers {
+	return &handlers{aR, sR, pR}
 }
 
 func (h *handlers) Register() http.HandlerFunc {
@@ -94,20 +95,40 @@ func (h *handlers) Login() http.HandlerFunc {
 
 func (h *handlers) FindByUUID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		requester, ok := r.Context().Value("user").(*models.User)
 		userId := chi.URLParam(r, "user_id")
-
 		uuid, err := uuid.Parse(userId)
 		if err != nil {
 			util.HandleError(w, err)
 			return
 		}
 
-		found, err := h.authRepository.FindByUUID(r.Context(), &models.User{UUID: uuid})
+		user := &models.User{UUID: uuid}
+		found, err := h.authRepository.FindByUUID(r.Context(), user)
 		if err != nil {
 			util.HandleError(w, err)
 			return
 		}
 		found.RemoveSensitiveData()
+
+		if found.Privacy == "private" {
+			if !ok || requester.UUID != found.UUID {
+				found.ApplyPrivacy()
+			}
+		} else if found.Privacy == "friendsOnly" {
+			if ok && requester.UUID != found.UUID {
+				friends, err := h.profileRepository.IsFriend(r.Context(), user, requester)
+				if err != nil {
+					util.HandleError(w, err)
+					return
+				}
+				if !friends {
+					found.ApplyPrivacy()
+				}
+			} else if !ok {
+				found.ApplyPrivacy()
+			}
+		}
 
 		w.Header().Set("Content-Type", "application/json")
 		err = json.NewEncoder(w).Encode(found)
@@ -122,12 +143,8 @@ func (h *handlers) FindByUUID() http.HandlerFunc {
 
 func (h *handlers) Me() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		found, ok := r.Context().Value("user").(*models.User)
-
-		if !ok {
-			util.HandleError(w, errors.New("no user"))
-			return
-		}
+		found := r.Context().Value("user").(*models.User)
+		found.SanitizePassword()
 
 		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(found); err != nil {
@@ -165,4 +182,3 @@ func (h *handlers) Logout() http.HandlerFunc {
 		w.WriteHeader(http.StatusOK)
 	}
 }
-

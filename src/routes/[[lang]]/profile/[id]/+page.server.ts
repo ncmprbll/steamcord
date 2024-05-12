@@ -1,9 +1,14 @@
 import { type User } from '$lib/types/user.type';
 
-export async function load({ params, parent }) {
+export async function load({ params, parent, cookies }) {
+	const sessionId = cookies.get('session_id');
     const data = await parent();
     const result = await fetch("http://localhost:3000/auth/" + encodeURIComponent(params.id), {
 		method: "GET",
+		credentials: "include",
+        headers: {
+            Cookie: "session_id=" + sessionId
+        }
 	});
 
     let localization: Record<string, string> | undefined;

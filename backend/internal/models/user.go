@@ -22,20 +22,28 @@ const (
 )
 
 type User struct {
-	UUID         uuid.UUID `json:"id" db:"id"`
-	Login        string    `json:"login,omitempty" db:"login"`
-	Avatar       string    `json:"avatar" db:"avatar"`
-	DisplayName  string    `json:"display_name" db:"display_name"`
-	About        string    `json:"about" db:"about"`
-	Privacy      string    `json:"privacy" db:"privacy"`
-	CurrencyCode string    `json:"currency_code,omitempty" db:"currency_code"`
-	Balance      *float32  `json:"balance,omitempty" db:"balance"`
-	Email        string    `json:"email,omitempty" db:"email"`
-	Password     string    `json:"password,omitempty" db:"password"`
-	Role         string    `json:"role,omitempty" db:"role"`
-	CreatedAt    time.Time `json:"created_at,omitempty" db:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at,omitempty" db:"updated_at"`
-	LoginDate    time.Time `json:"login_date,omitempty" db:"login_date"`
+	UUID         uuid.UUID  `json:"id" db:"id"`
+	Login        string     `json:"login,omitempty" db:"login"`
+	Avatar       string     `json:"avatar" db:"avatar"`
+	DisplayName  string     `json:"display_name" db:"display_name"`
+	About        string     `json:"about,omitempty" db:"about"`
+	Privacy      string     `json:"privacy" db:"privacy"`
+	CurrencyCode string     `json:"currency_code,omitempty" db:"currency_code"`
+	Balance      *float32   `json:"balance,omitempty" db:"balance"`
+	Email        string     `json:"email,omitempty" db:"email"`
+	Password     string     `json:"password,omitempty" db:"password"`
+	Role         string     `json:"role,omitempty" db:"role"`
+	CreatedAt    *time.Time `json:"created_at,omitempty" db:"created_at"`
+	UpdatedAt    *time.Time `json:"updated_at,omitempty" db:"updated_at"`
+	LoginDate    *time.Time `json:"login_date,omitempty" db:"login_date"`
+
+	Hidden bool `json:"hidden,omitempty"`
+}
+
+type PublicUser struct {
+	UUID        uuid.UUID `json:"id" db:"id"`
+	Avatar      string    `json:"avatar" db:"avatar"`
+	DisplayName string    `json:"display_name" db:"display_name"`
 }
 
 type UserGeneralUpdate struct {
@@ -79,10 +87,11 @@ func (u *User) SanitizePassword() {
 func (u *User) RemoveSensitiveData() {
 	u.Login = ""
 	u.Email = ""
+	u.CurrencyCode = ""
+	u.Balance = nil
 	u.SanitizePassword()
 	u.Role = ""
-	// u.CreatedAt = time.Time{}
-	u.UpdatedAt = time.Time{}
+	u.UpdatedAt = nil
 }
 
 func (u *User) Validate() error {
@@ -113,6 +122,13 @@ func (u *User) Validate() error {
 	}
 
 	return nil
+}
+
+func (u *User) ApplyPrivacy() {
+	u.About = ""
+	u.CreatedAt = nil
+	u.LoginDate = nil
+	u.Hidden = true
 }
 
 func (u *UserGeneralUpdate) Sanitize() {

@@ -29,7 +29,6 @@ func (mw *MiddlewareManager) GetUserMiddleware(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r.WithContext(r.Context()))
 			return
 		}
-		found.SanitizePassword()
 
 		ctx := context.WithValue(r.Context(), "user", found)
 
