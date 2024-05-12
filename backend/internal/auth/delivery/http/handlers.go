@@ -109,7 +109,6 @@ func (h *handlers) FindByUUID() http.HandlerFunc {
 			util.HandleError(w, err)
 			return
 		}
-		found.RemoveSensitiveData()
 
 		if found.Privacy == "private" {
 			if !ok || requester.UUID != found.UUID {
@@ -129,6 +128,8 @@ func (h *handlers) FindByUUID() http.HandlerFunc {
 				found.ApplyPrivacy()
 			}
 		}
+
+		found.RemoveSensitiveData()
 
 		w.Header().Set("Content-Type", "application/json")
 		err = json.NewEncoder(w).Encode(found)

@@ -17,6 +17,7 @@ func NewRouter(h *handlers, mw *middleware.MiddlewareManager) http.Handler {
 		r.Post("/{user_id}/friend-invite", h.FriendInvite())
 		r.Post("/{user_id}/friend-reject", h.HandleFriendInvite("rejected"))
 		r.Post("/{user_id}/friend-accept", h.HandleFriendInvite("accepted"))
+		r.Get("/{user_id}/friend-status", h.FriendStatus())
 		r.Delete("/{user_id}/unfriend", h.DeleteFriend())
 		r.Post("/{user_id}/comments", h.CreateComment())
 		r.Patch("/", h.Update())

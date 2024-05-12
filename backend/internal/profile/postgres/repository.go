@@ -149,6 +149,30 @@ func (s *Repository) IsFriend(ctx context.Context, user1 *models.User, user2 *mo
 	return isFriend, nil
 }
 
+func (s *Repository) HasIncomingInvite(ctx context.Context, user1 *models.User, user2 *models.User) (bool, error) {
+	const queryIsFriend = `
+						SELECT EXISTS ( SELECT * FROM users_friend_invites WHERE invitee = $1 AND inviter = $2 AND status = 'pending' )
+						`
+	var hasIncomingInvite bool
+	if err := s.database.QueryRowxContext(ctx, queryIsFriend, user1.UUID, user2.UUID).Scan(&hasIncomingInvite); err != nil {
+		return false, err
+	}
+
+	return hasIncomingInvite, nil
+}
+
+func (s *Repository) HasOutgoingInvite(ctx context.Context, user1 *models.User, user2 *models.User) (bool, error) {
+	const queryIsFriend = `
+						SELECT EXISTS ( SELECT * FROM users_friend_invites WHERE invitee = $1 AND inviter = $2 AND status = 'pending' )
+						`
+	var hasOutgoingInvite bool
+	if err := s.database.QueryRowxContext(ctx, queryIsFriend, user2.UUID, user1.UUID).Scan(&hasOutgoingInvite); err != nil {
+		return false, err
+	}
+
+	return hasOutgoingInvite, nil
+}
+
 func (s *Repository) FriendInvite(ctx context.Context, invitee *models.User, inviter *models.User) error {
 	if invitee.UUID == inviter.UUID {
 		return models.ErrCannotFriendSelf

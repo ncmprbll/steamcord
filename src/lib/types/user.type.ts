@@ -20,6 +20,8 @@ export type User = {
 	login_date: string
 	cart: Cart
 	owned: Owned
+
+	hidden: boolean
 }
 
 export type UserGeneralUpdate = {

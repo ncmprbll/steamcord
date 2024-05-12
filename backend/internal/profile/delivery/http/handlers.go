@@ -3,6 +3,7 @@ package http
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"main/backend/internal/models"
 	"main/backend/internal/profile"
 	"main/backend/internal/session"
@@ -271,9 +272,9 @@ func (h *handlers) FriendInvite() http.HandlerFunc {
 		err = h.profileRepository.FriendInvite(r.Context(), &models.User{UUID: uuid}, found)
 		if err != nil {
 			if errors.Is(err, models.ErrCannotFriendSelf) ||
-			errors.Is(err, models.ErrAlreadyFriends) ||
-			errors.Is(err, models.ErrFriendInvitePending) ||
-			errors.Is(err, models.ErrAlreadyTriedToFriendRejected) {
+				errors.Is(err, models.ErrAlreadyFriends) ||
+				errors.Is(err, models.ErrFriendInvitePending) ||
+				errors.Is(err, models.ErrAlreadyTriedToFriendRejected) {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 			} else {
 				util.HandleError(w, err)
@@ -327,6 +328,47 @@ func (h *handlers) DeleteFriend() http.HandlerFunc {
 
 		if !deleted {
 			w.WriteHeader(http.StatusNotModified)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}
+}
+
+func (h *handlers) FriendStatus() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		found := r.Context().Value("user").(*models.User)
+		userId := chi.URLParam(r, "user_id")
+		uuid, err := uuid.Parse(userId)
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+		user := &models.User{UUID: uuid}
+
+		isFriend, err := h.profileRepository.IsFriend(r.Context(), user, found)
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		hasIncomingInvite, err := h.profileRepository.HasIncomingInvite(r.Context(), user, found)
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		hasOutgoingInvite, err := h.profileRepository.HasOutgoingInvite(r.Context(), user, found)
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		status := &models.FriendStatus{IsFriend: isFriend, HasIncomingInvite: hasIncomingInvite, HasOutgoingInvite: hasOutgoingInvite}
+		fmt.Println(status)
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(status); err != nil {
+			util.HandleError(w, err)
 			return
 		}
 

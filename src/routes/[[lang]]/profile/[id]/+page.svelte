@@ -2,14 +2,60 @@
     import DOMPurify from 'dompurify';
     import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
 
+    import { type FriendStatus } from '$lib/types/profile.type';
     import { formatDate } from "$lib/util/date";
 
     export let data;
 
     let name: string = data.user?.display_name;
     let about: string = data.user?.about || "";
+    let hidden: boolean = data.user?.hidden || false;
+    let status: FriendStatus = data.friendStatus;
     about = about.replace(/\r?\n/g, "<br>");
     // about = DOMPurify.sanitize(marked.parse(about, { breaks: true }), {ALLOWED_TAGS: ["br"]});
+
+    let addFriendText = data.localization.addFriend;
+    let addFriendBlocked = false;
+
+    async function removeFriend() {
+        const result = await fetch(`/api/profile/${data.user?.id}/unfriend`, {
+            method: "DELETE"
+        });
+
+        window.location.reload();
+    }
+
+    async function rejectFriend() {
+        const result = await fetch(`/api/profile/${data.user?.id}/friend-reject`, {
+            method: "POST"
+        });
+
+        window.location.reload();
+    }
+
+
+    async function acceptFriend() {
+        const result = await fetch(`/api/profile/${data.user?.id}/friend-accept`, {
+            method: "POST"
+        });
+
+        window.location.reload();
+    }
+
+    async function addFriend() {
+        const result = await fetch(`/api/profile/${data.user?.id}/friend-invite`, {
+            method: "POST"
+        });
+        const text = await result.text();
+
+        if (result.status === 201)
+            window.location.reload();
+
+        if (text === "friend request has been rejected, try again later\n") {
+            addFriendText = data.localization.inviteBlocked;
+            addFriendBlocked = true;
+        }
+    }
 </script>
 
 {#if data.user !== undefined}
@@ -26,53 +72,98 @@
                 <span class="profile-display-name">{data.user.display_name}</span>
             </div>
             <div class="profile-description">
-                {#if about === ""}
+                {#if hidden}
+                    <span class="about hidden">{data.localization.privateProfile}</span>
+                {:else if about === ""}
                     <span class="about empty">{data.localization.noInformation}</span>
                 {:else}
                     <span class="about">{@html about}</span>
                 {/if}
             </div>
         </div>
-        <div class="profile-right-pane">
-            <div class="right-pane-layout">
-                <div>
-                    <div class="milestone">
-                        <div class="milestone-text">{data.localization.gamesOwned}</div>
-                        <div class="milestone-value">0</div>
+        {#if !hidden}
+            <div class="profile-right-pane">
+                <div class="right-pane-layout">
+                    <div>
+                        <div class="milestone">
+                            <div class="milestone-text">{data.localization.gamesOwned}</div>
+                            <div class="milestone-value">0</div>
+                        </div>
+                        <div class="milestone">
+                            <div class="milestone-text">{data.localization.dateJoined}</div>
+                            <div class="milestone-value">{formatDate(data.user.created_at, data.localization)}</div>
+                        </div>
                     </div>
-                    <div class="milestone">
-                        <div class="milestone-text">{data.localization.dateJoined}</div>
-                        <div class="milestone-value">{formatDate(data.user.created_at, data.localization)}</div>
-                    </div>
+                    {#if data.me !== undefined && data.user.id === data.me.id}
+                        <a href="{window.location.href}/settings" class="profile-button">
+                            <span>{data.localization.settings}</span>
+                        </a>
+                    {/if}
                 </div>
-                {#if data.me !== undefined && data.user.id === data.me.id}
-                    <a href="{window.location.href}/settings" class="profile-button">
-                        <span>{data.localization.settings}</span>
-                    </a>
-                {/if}
             </div>
-        </div>
+        {/if}
     </div>
     <div class="profile-description mobile">
-        <span class="profile-description">{@html about}</span>
+        {#if hidden}
+            <span class="about hidden">{data.localization.privateProfile}</span>
+        {:else if about === ""}
+            <span class="about empty">{data.localization.noInformation}</span>
+        {:else}
+            <span class="about">{@html about}</span>
+        {/if}
     </div>
 </div>
 
 <div class="main-content">
     <div class="main">
-        <p class="breaker">{data.localization.comments}</p>
-        <div class="description">
-            123
+        {#if !hidden}
+            <p class="breaker">{data.localization.comments}</p>
+            <div class="description">
+                123
+            </div>
+        {/if}
+    </div>
+        <div class="aside">
+            {#if data.me !== undefined}
+                {#if data.user.id === data.me.id}
+                    <a href="{window.location.href}/settings">
+                        {data.localization.settings}
+                    </a>
+                {:else if status !== undefined}
+                    {#if status.isFriend === true}
+                        <button type="button" class="profile-management-button" on:click={removeFriend}>
+                            {data.localization.removeFriend}
+                        </button>
+                    {:else if status.hasIncomingInvite}
+                        <button type="button" class="profile-management-button" disabled>
+                            {data.localization.inviteSent}
+                        </button>
+                    {:else if status.hasOutgoingInvite}
+                        <button type="button" class="profile-management-button" on:click={rejectFriend}>
+                            {data.localization.rejectInvite}
+                        </button>
+                        <button type="button" class="profile-management-button" on:click={acceptFriend}>
+                            {data.localization.acceptInvite}
+                        </button>
+                    {:else}
+                        <button type="button" class="profile-management-button" disabled={addFriendBlocked} on:click={addFriend}>
+                            {addFriendText}
+                        </button>
+                    {/if}
+                {/if}
+            {/if}
+            {#if !hidden}
+                {#if data.me !== undefined}
+                    <div class="aside-breaker"/>
+                {/if}
+                <a href="{window.location.href}/games">
+                    {data.localization.games}
+                </a>
+                <a href="{window.location.href}/friends">
+                    {data.localization.friends}
+                </a>
+            {/if}
         </div>
-    </div>
-    <div class="aside">
-        <a href="{window.location.href}/games">
-            {data.localization.games}
-        </a>
-        <a href="{window.location.href}/friends">
-            {data.localization.friends}
-        </a>
-    </div>
 </div>
 {:else}
     <div class="error-box">
@@ -84,6 +175,24 @@
 <style lang="postcss">
     :root {
         --right-side-size: 324px;
+    }
+
+    .profile-management-button {
+        color: #b7bdbf;
+        transition: color 350ms;
+        text-decoration: none;
+        font-size: 16px;
+        line-height: normal;
+        text-align: left;
+    }
+
+    .profile-management-button:hover {
+        color: #ebf2f4;
+        cursor: pointer;
+    }
+
+    .profile-management-button:disabled {
+        color: #b7bdbf;
     }
 
     .error-box {
@@ -128,6 +237,10 @@
         letter-spacing: 3px;
     }
 
+    .aside-breaker {
+        border-bottom: 1px solid #3b3b3b;
+    }
+
     .aside {
         display: flex;
         flex-direction: column;
@@ -155,6 +268,10 @@
 
     .about.empty {
         color: #8b8b8b;
+    }
+
+    .about.hidden {
+        color: #cd3030;
     }
 
     :global(.about > p) {
@@ -284,6 +401,16 @@
         height: var(--avatar-big);
         flex: 0 0 var(--avatar-big);
         border-radius: 4px;
+    }
+
+    @media (max-width: 440px) {
+        .desktop-layout {
+            flex-direction: column;
+        }
+
+        .profile-right-pane {
+            padding: 0;
+        }
     }
 
     @media (max-width: 740px) {

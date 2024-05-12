@@ -1,9 +1,11 @@
 import { type User } from '$lib/types/user.type';
+import { type FriendStatus } from '$lib/types/profile.type';
 
 export async function load({ params, parent, cookies }) {
 	const sessionId = cookies.get('session_id');
     const data = await parent();
-    const result = await fetch("http://localhost:3000/auth/" + encodeURIComponent(params.id), {
+	const id = encodeURIComponent(params.id)
+    const result = await fetch("http://localhost:3000/auth/" + id, {
 		method: "GET",
 		credentials: "include",
         headers: {
@@ -30,8 +32,22 @@ export async function load({ params, parent, cookies }) {
 	merged = {...merged, ...localization}
 
     if (result.status === 200) {
+		const friendStatusResult = await fetch(`http://localhost:3000/profile/${id}/friend-status`, {
+			method: "GET",
+			credentials: "include",
+			headers: {
+				Cookie: "session_id=" + sessionId
+			}
+		});
+
+		let friendStatus: FriendStatus | undefined;
+		if (friendStatusResult.status === 200) {
+			friendStatus = await friendStatusResult.json()
+		}
+
         return {
             user: await result.json() as User,
+			friendStatus: friendStatus,
             localization: merged
         };
     };

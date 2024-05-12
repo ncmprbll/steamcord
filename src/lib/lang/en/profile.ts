@@ -7,7 +7,14 @@ const localization: Record<string, string> = {
     'comments': 'Comments',
     'games': 'Games',
     'friends': 'Friends',
-    'noInformation': 'No information given.'
+    'noInformation': 'No information given.',
+    'privateProfile': 'This profile is private.',
+    'addFriend': 'Add friend',
+    'removeFriend': 'Remove friend',
+    'rejectInvite': 'Reject friend invite',
+    'acceptInvite': 'Accept friend invite',
+    'inviteSent': 'Friend invite sent',
+    'inviteBlocked': 'Friend invite blocked'
 };
 
 export { localization };

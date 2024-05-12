@@ -46,6 +46,12 @@ type Invite struct {
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
 }
 
+type FriendStatus struct {
+	IsFriend          bool `json:"isFriend"`
+	HasIncomingInvite bool `json:"hasIncomingInvite"`
+	HasOutgoingInvite bool `json:"hasOutgoingInvite"`
+}
+
 func (c *Comment) Validate() error {
 	text := c.Text
 

@@ -13,6 +13,8 @@ type Repository interface {
 	CreateComment(context.Context, *models.Comment) error
 	GetComments(context.Context, *models.User, int, int) ([]*models.DisplayComment, error)
 	IsFriend(context.Context, *models.User, *models.User) (bool, error)
+	HasIncomingInvite(context.Context, *models.User, *models.User) (bool, error)
+	HasOutgoingInvite(context.Context, *models.User, *models.User) (bool, error)
 	FriendInvite(context.Context, *models.User, *models.User) error
 	HandleFriendInvite(context.Context, *models.User, *models.User, string) error
 	DeleteFriend(context.Context, *models.User, *models.User) (bool, error)

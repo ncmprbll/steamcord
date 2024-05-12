@@ -7,7 +7,14 @@ const localization: Record<string, string> = {
     'comments': 'Комментарии',
     'games': 'Игры',
     'friends': 'Друзья',
-    'noInformation': 'Информация отсутствует.'
+    'noInformation': 'Информация отсутствует.',
+    'privateProfile': 'Профиль скрыт.',
+    'addFriend': 'Добавить в друзья',
+    'removeFriend': 'Удалить из друзей',
+    'rejectInvite': 'Отклонить запрос дружбы',
+    'acceptInvite': 'Принять запрос дружбы',
+    'inviteSent': 'Запрос дружбы отправлен',
+    'inviteBlocked': 'Запрос дружбы заблокирован',
 };
 
 export { localization };

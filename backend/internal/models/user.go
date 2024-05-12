@@ -27,7 +27,7 @@ type User struct {
 	Avatar       string     `json:"avatar" db:"avatar"`
 	DisplayName  string     `json:"display_name" db:"display_name"`
 	About        string     `json:"about,omitempty" db:"about"`
-	Privacy      string     `json:"privacy" db:"privacy"`
+	Privacy      string     `json:"privacy,omitempty" db:"privacy"`
 	CurrencyCode string     `json:"currency_code,omitempty" db:"currency_code"`
 	Balance      *float32   `json:"balance,omitempty" db:"balance"`
 	Email        string     `json:"email,omitempty" db:"email"`
@@ -87,6 +87,7 @@ func (u *User) SanitizePassword() {
 func (u *User) RemoveSensitiveData() {
 	u.Login = ""
 	u.Email = ""
+	u.Privacy = ""
 	u.CurrencyCode = ""
 	u.Balance = nil
 	u.SanitizePassword()

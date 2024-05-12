@@ -23,7 +23,7 @@
     let fileInput;
 
     let displayName: string = data.me.display_name;
-    let about: string = data.me.about.replace(/\r?/g, "");;
+    let about: string = (data.me.about || "").replace(/\r?/g, "");;
     let newPassword: string = "";
     let confirmNewPassword: string = "";
     let displayNameLength: number = 0;
