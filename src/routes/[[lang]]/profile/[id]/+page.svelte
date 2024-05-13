@@ -7,12 +7,16 @@
 
     export let data;
 
+    const MAX_COMMENT_LENGTH = 128;
+
     let name: string = data.user?.display_name;
     let about: string = data.user?.about || "";
     let hidden: boolean = data.user?.hidden || false;
     let status: FriendStatus = data.friendStatus;
     about = about.replace(/\r?\n/g, "<br>");
     // about = DOMPurify.sanitize(marked.parse(about, { breaks: true }), {ALLOWED_TAGS: ["br"]});
+
+    let comment: string = "";
 
     let addFriendText = data.localization.addFriend;
     let addFriendBlocked = false;
@@ -55,6 +59,25 @@
             addFriendText = data.localization.inviteBlocked;
             addFriendBlocked = true;
         }
+    }
+
+    function autoGrow(e) {
+        let elem = e.target;
+        elem.style.height = "32px";
+        elem.style.height = (elem.scrollHeight) + "px";
+        comment = comment.replace(/[\r\n\v]+/g, '')
+    }
+
+    async function handleComment(event) {
+        const url = event.target.action;
+        const data = new FormData(event.target);
+
+        const result = await fetch(url, {
+            method: "POST",
+            body: data
+        });
+
+        window.location.reload();
     }
 </script>
 
@@ -119,7 +142,26 @@
         {#if !hidden}
             <p class="breaker">{data.localization.comments}</p>
             <div class="description">
-                123
+                {#if data.me !== undefined}
+                    <form action="/api/profile/{data.user?.id}/comments" method="POST" on:submit|preventDefault={handleComment}>
+                        <div class="comment-entry">
+                            <div class="avatar-text-section">
+                                <div class="comment-avatar">
+                                    <a href="{data.lang}/profile/{data.me.id}">
+                                        <img src={data.me.avatar || "/content/avatars/default.png"} alt="My Avatar">
+                                    </a>
+                                </div>
+                                <div class="comment-entry-box">
+                                    <textarea name="text" rows="1" class="comment-entry-textarea" placeholder={data.localization.commentPlaceholder} style="overflow: hidden; height: 32px" maxlength="{MAX_COMMENT_LENGTH}" bind:value={comment} on:input={autoGrow}></textarea>
+                                </div>
+                            </div>
+                            <div class="comment-submit-section">
+                                <span class="textarea-char-count">{comment.length}/{MAX_COMMENT_LENGTH}</span>
+                                <button type="submit" class="form-button">{data.localization.postComment} <button>
+                            </div>
+                        </div>
+                    </form>
+                {/if}
             </div>
         {/if}
     </div>
@@ -175,6 +217,32 @@
 <style lang="postcss">
     :root {
         --right-side-size: 324px;
+    }
+
+    .form-button {
+        background: linear-gradient(90deg, #06BFFF 0%, #2D73FF 100%);
+        border-radius: 2px;
+        border: none;
+        outline: none;
+        padding: 8px;
+        color: #fff;
+        font-size: 16px;
+        font-weight: 400;
+        font-family: inherit;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    .form-button:disabled {
+        background: rgba(61, 67, 77, .35);
+        color: #464d58;
+        box-shadow: none;
+        cursor: default;
+        pointer-events: none;
+    }
+
+    .form-button:hover {
+        background: linear-gradient(90deg, #06BFFF 30%, #2D73FF 100%);
     }
 
     .profile-management-button {
@@ -401,6 +469,56 @@
         height: var(--avatar-big);
         flex: 0 0 var(--avatar-big);
         border-radius: 4px;
+    }
+
+    .comment-avatar {
+        width: var(--avatar-small);
+        height: var(--avatar-small);
+        border-radius: 4px;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    .comment-entry {
+        padding: 8px;
+        background-color: #202020;
+        border-radius: 4px;
+    }
+
+    .comment-entry-box {
+        width: 100%;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 4px;
+        background-color: rgba(255, 255, 255, 0.1);
+        box-shadow: 1px 1px 1px rgba(255, 255, 255, .1);
+        padding: 4px 6px 4px 6px;
+    }
+
+    .comment-entry-textarea {
+        font-size: 14px;
+        resize: none;
+        outline: none;
+        background-color: transparent;
+        border: none;
+        width: 100%;
+        overflow: hidden;
+        color: #ebf2f4;
+    }
+
+    .comment-submit-section {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 8px;
+    }
+
+    .textarea-char-count {
+        line-height: 32px;
+    }
+
+    .avatar-text-section {
+        display: flex;
+        gap: 8px;
     }
 
     @media (max-width: 440px) {

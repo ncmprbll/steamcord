@@ -14,7 +14,9 @@ const localization: Record<string, string> = {
     'rejectInvite': 'Reject friend invite',
     'acceptInvite': 'Accept friend invite',
     'inviteSent': 'Friend invite sent',
-    'inviteBlocked': 'Friend invite blocked'
+    'inviteBlocked': 'Friend invite blocked',
+    'commentPlaceholder': 'Add a comment',
+    'postComment': 'Post comment'
 };
 
 export { localization };

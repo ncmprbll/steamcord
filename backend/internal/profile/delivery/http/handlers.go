@@ -3,7 +3,6 @@ package http
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"main/backend/internal/models"
 	"main/backend/internal/profile"
 	"main/backend/internal/session"
@@ -365,7 +364,6 @@ func (h *handlers) FriendStatus() http.HandlerFunc {
 		}
 
 		status := &models.FriendStatus{IsFriend: isFriend, HasIncomingInvite: hasIncomingInvite, HasOutgoingInvite: hasOutgoingInvite}
-		fmt.Println(status)
 		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(status); err != nil {
 			util.HandleError(w, err)
