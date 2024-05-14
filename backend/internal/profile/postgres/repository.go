@@ -100,27 +100,39 @@ func (s *Repository) CreateComment(ctx context.Context, comment *models.Comment)
 					users_comments (profile_id, commentator, text)
 				VALUES ($1, $2, $3);
 				`
-	_, err := s.database.ExecContext(ctx, query, comment.ProfileID, comment.Commnetator, comment.Text)
+	_, err := s.database.ExecContext(ctx, query, comment.ProfileID, comment.Commentator, comment.Text)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (s *Repository) GetComments(ctx context.Context, user *models.User, pageLimit, pageOffset int) ([]*models.DisplayComment, error) {
-	const query = `
-				SELECT
-					avatar,
-					display_name,
-					text,
-					users_comments.created_at
-				FROM users_comments
-					JOIN users ON users.id = users_comments.commentator
-				WHERE profile_id = $1
-				ORDER BY created_at DESC
-				LIMIT $2 OFFSET $3;
-				`
-	rows, err := s.database.QueryxContext(ctx, query, user.UUID, pageLimit, pageOffset)
+func (s *Repository) GetComments(ctx context.Context, user *models.User, pageLimit, pageOffset int) (*models.ProfileComments, error) {
+	const queryTotal = `
+						SELECT
+							COUNT(*)
+						FROM users_comments
+						WHERE profile_id = $1
+						`
+	var total int
+	if err := s.database.QueryRowxContext(ctx, queryTotal, user.UUID).Scan(&total); err != nil {
+		return nil, err
+	}
+
+	const queryComments = `
+						SELECT
+							commentator,
+							avatar,
+							display_name,
+							text,
+							users_comments.created_at
+						FROM users_comments
+							JOIN users ON users.id = users_comments.commentator
+						WHERE profile_id = $1
+						ORDER BY created_at DESC
+						LIMIT $2 OFFSET $3;
+						`
+	rows, err := s.database.QueryxContext(ctx, queryComments, user.UUID, pageLimit, pageOffset)
 	if err != nil {
 		return nil, err
 	}
@@ -130,11 +142,11 @@ func (s *Repository) GetComments(ctx context.Context, user *models.User, pageLim
 
 	for rows.Next() {
 		row := &models.DisplayComment{}
-		rows.StructScan(&row)
+		rows.StructScan(row)
 		result = append(result, row)
 	}
 
-	return result, nil
+	return &models.ProfileComments{Comments: result, Total: total}, nil
 }
 
 func (s *Repository) IsFriend(ctx context.Context, user1 *models.User, user2 *models.User) (bool, error) {

@@ -11,7 +11,7 @@ type Repository interface {
 	PrivacyUpdate(context.Context, *models.UserPrivacyUpdate) error
 	DeleteAvatar(context.Context, *models.User) (string, error)
 	CreateComment(context.Context, *models.Comment) error
-	GetComments(context.Context, *models.User, int, int) ([]*models.DisplayComment, error)
+	GetComments(context.Context, *models.User, int, int) (*models.ProfileComments, error)
 	IsFriend(context.Context, *models.User, *models.User) (bool, error)
 	HasIncomingInvite(context.Context, *models.User, *models.User) (bool, error)
 	HasOutgoingInvite(context.Context, *models.User, *models.User) (bool, error)

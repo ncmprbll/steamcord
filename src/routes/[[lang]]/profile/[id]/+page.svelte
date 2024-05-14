@@ -3,11 +3,13 @@
     import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
 
     import { type FriendStatus } from '$lib/types/profile.type';
-    import { formatDate } from "$lib/util/date";
+    import { formatDate, formatCommentDate } from "$lib/util/date";
 
     export let data;
 
     const MAX_COMMENT_LENGTH = 128;
+    const COMMENTS_PAGE_LIMIT = 10;
+    const PAGES_LEFT_RIGHT_OFFSET_VISIBILITY = 2;
 
     let name: string = data.user?.display_name;
     let about: string = data.user?.about || "";
@@ -17,6 +19,60 @@
     // about = DOMPurify.sanitize(marked.parse(about, { breaks: true }), {ALLOWED_TAGS: ["br"]});
 
     let comment: string = "";
+
+    let commentsSubmitButton;
+    let comments = data.comments?.comments;
+    let totalComments = data.comments?.total;
+    let pages = Math.ceil((totalComments || 0) / COMMENTS_PAGE_LIMIT);
+    let pagesVisibilityArray = new Array();
+    let pagesArray = new Array();
+    let pagesOffset = 0;
+    let currentPage = 1;
+ 
+    async function goToCommentsPage(page: number) {
+        pagesOffset = COMMENTS_PAGE_LIMIT * (page - 1);
+
+        let searchParams = new URLSearchParams();
+        searchParams.set("pageOffset", pagesOffset);
+        let url = `/api/profile/${data.user?.id}/comments?${searchParams.toString()}`;
+        const result = await fetch(url);
+        const json = await result.json();
+        comments = json.comments
+
+        currentPage = page;
+        pagesVisibilityArray = new Array(pages).fill(false);
+        pagesArray = new Array();
+
+        if (pages > 0) {
+            pagesVisibilityArray[0] = true;
+            pagesVisibilityArray[pagesVisibilityArray.length - 1] = true;
+            pagesVisibilityArray[currentPage - 1] = true;
+
+            for (let i = currentPage - 2; i >= 0 && i >= currentPage - 2 - PAGES_LEFT_RIGHT_OFFSET_VISIBILITY + 1; i--) {
+                pagesVisibilityArray[i] = true;
+            }
+
+            for (let i = currentPage; i < pagesVisibilityArray.length && i <= currentPage + PAGES_LEFT_RIGHT_OFFSET_VISIBILITY - 1; i++) {
+                pagesVisibilityArray[i] = true;
+            }
+        }
+
+        let j = 0;
+        let skip = false;
+        for (let i = 0; i < pagesVisibilityArray.length; i++) {
+            if (pagesVisibilityArray[i]) {
+                pagesArray[j] = i + 1;
+                j = j + 1;
+                skip = false;
+            } else if (!skip) {
+                pagesArray[j] = -1;
+                j = j + 1;
+                skip = true;
+            }
+        }
+    }
+
+    goToCommentsPage(1)
 
     let addFriendText = data.localization.addFriend;
     let addFriendBlocked = false;
@@ -36,7 +92,6 @@
 
         window.location.reload();
     }
-
 
     async function acceptFriend() {
         const result = await fetch(`/api/profile/${data.user?.id}/friend-accept`, {
@@ -141,7 +196,7 @@
     <div class="main">
         {#if !hidden}
             <p class="breaker">{data.localization.comments}</p>
-            <div class="description">
+            <div class="comments">
                 {#if data.me !== undefined}
                     <form action="/api/profile/{data.user?.id}/comments" method="POST" on:submit|preventDefault={handleComment}>
                         <div class="comment-entry">
@@ -152,15 +207,49 @@
                                     </a>
                                 </div>
                                 <div class="comment-entry-box">
-                                    <textarea name="text" rows="1" class="comment-entry-textarea" placeholder={data.localization.commentPlaceholder} style="overflow: hidden; height: 32px" maxlength="{MAX_COMMENT_LENGTH}" bind:value={comment} on:input={autoGrow}></textarea>
+                                    <textarea name="text" rows="1" class="comment-entry-textarea" placeholder={data.localization.commentPlaceholder} style="overflow: hidden; height: 32px" maxlength="{MAX_COMMENT_LENGTH}" bind:value={comment} on:keydown={(e) => {if (e.key === 'Enter') commentsSubmitButton.click()}} on:input={autoGrow}></textarea>
                                 </div>
                             </div>
                             <div class="comment-submit-section">
                                 <span class="textarea-char-count">{comment.length}/{MAX_COMMENT_LENGTH}</span>
-                                <button type="submit" class="form-button">{data.localization.postComment} <button>
+                                <button disabled={comment.length === 0} bind:this={commentsSubmitButton} type="submit" class="form-button">{data.localization.postComment} <button>
                             </div>
                         </div>
                     </form>
+                {/if}
+                {#if comments !== undefined}
+                    {#each comments as comment}
+                        <div class="comment-entry hoverable">
+                            <div class="avatar-text-section">
+                                <div class="comment-avatar">
+                                    <a data-sveltekit-reload href="{data.lang}/profile/{comment.commentator}">
+                                        <img src={comment.avatar || "/content/avatars/default.png"} alt="User Avatar">
+                                    </a>
+                                </div>
+                                <div class="comment-box">
+                                    <div class="author-box">
+                                        <a data-sveltekit-reload class="display-name-link" href="{data.lang}/profile/{comment.commentator}">{comment.display_name}</a>
+                                        <span class="comment-date">{formatCommentDate(comment.created_at, data.localization)}</span>
+                                    </div>
+                                    <div>{comment.text}</div>
+                                </div>
+                            </div>
+                        </div>
+                    {/each}
+                    {#if pages > 0}
+                        <div class="breaker" style="height: 0px; margin-bottom: 12px;"></div>
+                        <div class="comments-pages">
+                            <button class="page-button" type="button" disabled={currentPage === 1} on:click={() => goToCommentsPage(currentPage - 1)}>◀</button>
+                            {#each pagesArray as number}
+                                {#if number !== -1}
+                                    <button class="page-button" type="button" disabled={currentPage === number} on:click={() => goToCommentsPage(number)}>{number}</button>
+                                {:else}
+                                    <div>...</div>
+                                {/if}
+                            {/each}
+                            <button class="page-button" type="button" disabled={currentPage === pages} on:click={() => goToCommentsPage(currentPage + 1)}>▶</button>
+                        </div>
+                    {/if}
                 {/if}
             </div>
         {/if}
@@ -291,6 +380,7 @@
     }
 
     .main {
+        max-width: 720px;
         flex: 1;
     }
 
@@ -471,6 +561,13 @@
         border-radius: 4px;
     }
 
+    .comments {
+        background-color: #202020;
+        border-radius: 4px;
+        overflow: hidden;
+        padding: 8px;
+    }
+
     .comment-avatar {
         width: var(--avatar-small);
         height: var(--avatar-small);
@@ -480,9 +577,16 @@
     }
 
     .comment-entry {
-        padding: 8px;
-        background-color: #202020;
+        padding: 4px;
         border-radius: 4px;
+    }
+
+    .comment-entry.hoverable {
+        margin-bottom: 4px;
+    }
+
+    .comment-entry.hoverable:hover {
+        background-color: rgba(255, 255, 255, 0.05);
     }
 
     .comment-entry-box {
@@ -494,8 +598,15 @@
         padding: 4px 6px 4px 6px;
     }
 
+    .comment-box {
+        width: 100%;
+        font-size: 13px;
+        word-wrap: break-word;
+        min-width: 0;
+    }
+
     .comment-entry-textarea {
-        font-size: 14px;
+        font-size: 13px;
         resize: none;
         outline: none;
         background-color: transparent;
@@ -519,6 +630,44 @@
     .avatar-text-section {
         display: flex;
         gap: 8px;
+    }
+
+    .author-box {
+        font-size: 15px;
+    }
+
+    .comment-date {
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    .display-name-link {
+        color: #ebf2f4;
+    }
+
+    .display-name-link:hover {
+        text-decoration: underline;
+    }
+
+    .comments-pages {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .page-button {
+        font-size: 16px;
+        line-height: normal;
+        cursor: pointer;
+    }
+
+    .page-button:hover {
+        text-decoration: underline;
+    }
+
+    .page-button:disabled {
+        color: #6e6e6e;
+        cursor: default;
+        text-decoration: none;
     }
 
     @media (max-width: 440px) {

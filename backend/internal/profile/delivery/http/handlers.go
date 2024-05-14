@@ -195,7 +195,7 @@ func (h *handlers) CreateComment() http.HandlerFunc {
 		}
 
 		comment.ProfileID = uuid.String()
-		comment.Commnetator = found.UUID
+		comment.Commentator = found.UUID
 		if err := h.profileRepository.CreateComment(r.Context(), comment); err != nil {
 			util.HandleError(w, err)
 			return
@@ -215,7 +215,7 @@ func (h *handlers) GetComments() http.HandlerFunc {
 		}
 
 		pageLimit := r.URL.Query().Get("pageLimit")
-		pageLimitInteger := 10 // REDO to constants
+		pageLimitInteger := models.COMMENTS_PAGE_LIMIT
 		if pageLimit != "" {
 			var err error
 			pageLimitInteger, err = strconv.Atoi(pageLimit)
@@ -223,13 +223,13 @@ func (h *handlers) GetComments() http.HandlerFunc {
 				util.HandleError(w, err)
 				return
 			}
-			if pageLimitInteger > 10 {
-				pageLimitInteger = 10
+			if pageLimitInteger > models.COMMENTS_PAGE_LIMIT {
+				pageLimitInteger = models.COMMENTS_PAGE_LIMIT
 			}
 		}
 
 		pageOffset := r.URL.Query().Get("pageOffset")
-		pageOffsetInteger := 0 // REDO to constants
+		pageOffsetInteger := 0
 		if pageOffset != "" {
 			var err error
 			pageOffsetInteger, err = strconv.Atoi(pageOffset)
