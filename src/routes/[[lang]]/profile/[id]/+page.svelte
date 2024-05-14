@@ -2,6 +2,7 @@
     import DOMPurify from 'dompurify';
     import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
 
+    import trash from '$lib/assets/util/trash.png';
     import { type FriendStatus } from '$lib/types/profile.type';
     import { formatDate, formatCommentDate } from "$lib/util/date";
 
@@ -72,7 +73,16 @@
         }
     }
 
-    goToCommentsPage(1)
+    goToCommentsPage(1);
+
+    async function deleteComment(id) {
+        const result = await fetch(`/api/profile/${data.user?.id}/comments/${id}`, {
+            method: "DELETE"
+        });
+
+        if (result.status === 204)
+            window.location.reload();
+    }
 
     let addFriendText = data.localization.addFriend;
     let addFriendBlocked = false;
@@ -173,7 +183,7 @@
                         </div>
                     </div>
                     {#if data.me !== undefined && data.user.id === data.me.id}
-                        <a href="{window.location.href}/settings" class="profile-button">
+                        <a data-sveltekit-reload href="{window.location.href}/settings" class="profile-button">
                             <span>{data.localization.settings}</span>
                         </a>
                     {/if}
@@ -198,11 +208,11 @@
             <p class="breaker">{data.localization.comments}</p>
             <div class="comments">
                 {#if data.me !== undefined}
-                    <form action="/api/profile/{data.user?.id}/comments" method="POST" on:submit|preventDefault={handleComment}>
+                    <form action="/api/profile/{data.user.id}/comments" method="POST" on:submit|preventDefault={handleComment}>
                         <div class="comment-entry">
                             <div class="avatar-text-section">
                                 <div class="comment-avatar">
-                                    <a href="{data.lang}/profile/{data.me.id}">
+                                    <a data-sveltekit-reload href="{data.lang}/profile/{data.me.id}">
                                         <img src={data.me.avatar || "/content/avatars/default.png"} alt="My Avatar">
                                     </a>
                                 </div>
@@ -233,6 +243,11 @@
                                     </div>
                                     <div>{comment.text}</div>
                                 </div>
+                                {#if data.me !== undefined && (data.user.id === data.me.id || comment.commenter === data.me.id)}
+                                    <button class="delete-comment-button" type="button" on:click={() => deleteComment(comment.id)}>
+                                        <img class="delete-comment-icon" src={trash} alt="Trash">
+                                    </button>
+                                {/if}
                             </div>
                         </div>
                     {/each}
@@ -257,7 +272,7 @@
         <div class="aside">
             {#if data.me !== undefined}
                 {#if data.user.id === data.me.id}
-                    <a href="{window.location.href}/settings">
+                    <a data-sveltekit-reload href="{window.location.href}/settings">
                         {data.localization.settings}
                     </a>
                 {:else if status !== undefined}
@@ -287,10 +302,10 @@
                 {#if data.me !== undefined}
                     <div class="aside-breaker"/>
                 {/if}
-                <a href="{window.location.href}/games">
+                <a data-sveltekit-reload href="{window.location.href}/games">
                     {data.localization.games}
                 </a>
-                <a href="{window.location.href}/friends">
+                <a data-sveltekit-reload href="{window.location.href}/friends">
                     {data.localization.friends}
                 </a>
             {/if}
@@ -668,6 +683,22 @@
         color: #6e6e6e;
         cursor: default;
         text-decoration: none;
+    }
+
+    .delete-comment-button {
+        width: fit-content;
+        height: fit-content;
+        cursor: pointer;
+    }
+
+    .delete-comment-icon {
+        display: none;
+        width: fit-content;
+        object-fit: none;
+    }
+
+    .comment-entry.hoverable:hover .delete-comment-icon {
+        display: block;
     }
 
     @media (max-width: 440px) {

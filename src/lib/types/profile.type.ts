@@ -1,4 +1,5 @@
 export type DisplayComment = {
+    id: number
     commentator: string
 	avatar: string
 	display_name: string

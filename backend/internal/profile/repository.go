@@ -12,6 +12,7 @@ type Repository interface {
 	DeleteAvatar(context.Context, *models.User) (string, error)
 	CreateComment(context.Context, *models.Comment) error
 	GetComments(context.Context, *models.User, int, int) (*models.ProfileComments, error)
+	DeleteComment(context.Context, *models.User, *models.User, *models.Comment) (bool, error)
 	IsFriend(context.Context, *models.User, *models.User) (bool, error)
 	HasIncomingInvite(context.Context, *models.User, *models.User) (bool, error)
 	HasOutgoingInvite(context.Context, *models.User, *models.User) (bool, error)

@@ -121,6 +121,7 @@ func (s *Repository) GetComments(ctx context.Context, user *models.User, pageLim
 
 	const queryComments = `
 						SELECT
+							users_comments.id,
 							commentator,
 							avatar,
 							display_name,
@@ -147,6 +148,25 @@ func (s *Repository) GetComments(ctx context.Context, user *models.User, pageLim
 	}
 
 	return &models.ProfileComments{Comments: result, Total: total}, nil
+}
+
+func (s *Repository) DeleteComment(ctx context.Context, profileUser, requester *models.User, comment *models.Comment) (bool, error) {
+	const query = `
+				DELETE FROM
+					users_comments
+				WHERE id = $1 AND (profile_id = $2 OR commentator = $2);
+				`
+	result, err := s.database.ExecContext(ctx, query, comment.ID, requester.UUID)
+	if err != nil {
+		return false, err
+	}
+
+	affected, err := result.RowsAffected()
+	if err != nil {
+		return false, err
+	}
+
+	return affected != 0, nil
 }
 
 func (s *Repository) IsFriend(ctx context.Context, user1 *models.User, user2 *models.User) (bool, error) {
@@ -320,9 +340,5 @@ func (s *Repository) DeleteFriend(ctx context.Context, user1 *models.User, user2
 		return false, err
 	}
 
-	if affected != 0 {
-		return true, nil
-	}
-
-	return false, nil
+	return affected != 0, nil
 }

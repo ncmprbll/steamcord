@@ -11,7 +11,7 @@ import (
 
 const (
 	FRIEND_REQUEST_REJECTED_WAIT_TIME = time.Hour * 24
-	COMMENTS_PAGE_LIMIT = 10
+	COMMENTS_PAGE_LIMIT               = 10
 )
 
 var (
@@ -35,6 +35,7 @@ type Comment struct {
 }
 
 type DisplayComment struct {
+	ID          int       `json:"id,omitempty" db:"id"`
 	Commentator uuid.UUID `json:"commentator" db:"commentator"`
 	Avatar      string    `json:"avatar" db:"avatar"`
 	DisplayName string    `json:"display_name" db:"display_name"`
@@ -44,7 +45,7 @@ type DisplayComment struct {
 
 type ProfileComments struct {
 	Comments []*DisplayComment `json:"comments"`
-	Total int `json:"total"`
+	Total    int               `json:"total"`
 }
 
 type Invite struct {

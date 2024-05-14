@@ -373,3 +373,34 @@ func (h *handlers) FriendStatus() http.HandlerFunc {
 		w.WriteHeader(http.StatusOK)
 	}
 }
+
+func (h *handlers) DeleteComment() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		found := r.Context().Value("user").(*models.User)
+		userId := chi.URLParam(r, "user_id")
+		uuid, err := uuid.Parse(userId)
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+		commentId := chi.URLParam(r, "comment_id")
+		commentIdInteger, err := strconv.Atoi(commentId)
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		deleted, err := h.profileRepository.DeleteComment(r.Context(), &models.User{UUID: uuid}, found, &models.Comment{ID: commentIdInteger})
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		if !deleted {
+			http.Error(w, "no comment has been deleted, permissions issue?", http.StatusConflict)
+			return
+		}
+
+		w.WriteHeader(http.StatusNoContent)
+	}
+}

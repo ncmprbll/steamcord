@@ -20,6 +20,7 @@ func NewRouter(h *handlers, mw *middleware.MiddlewareManager) http.Handler {
 		r.Get("/{user_id}/friend-status", h.FriendStatus())
 		r.Delete("/{user_id}/unfriend", h.DeleteFriend())
 		r.Post("/{user_id}/comments", h.CreateComment())
+		r.Delete("/{user_id}/comments/{comment_id}", h.DeleteComment())
 		r.Patch("/", h.Update())
 		r.Patch("/password", h.PasswordUpdate())
 		r.Patch("/privacy", h.PrivacyUpdate())
