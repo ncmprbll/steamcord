@@ -193,7 +193,7 @@ func (h *handlers) Search() http.HandlerFunc {
 		}
 
 		pageLimit := r.URL.Query().Get("pageLimit")
-		pageLimitInteger := 15 // REDO to constants
+		pageLimitInteger := models.PRODUCTS_PAGE_LIMIT
 		if pageLimit != "" {
 			var err error
 			pageLimitInteger, err = strconv.Atoi(pageLimit)
@@ -207,7 +207,7 @@ func (h *handlers) Search() http.HandlerFunc {
 		}
 
 		pageOffset := r.URL.Query().Get("pageOffset")
-		pageOffsetInteger := 0 // REDO to constants
+		pageOffsetInteger := 0
 		if pageOffset != "" {
 			var err error
 			pageOffsetInteger, err = strconv.Atoi(pageOffset)

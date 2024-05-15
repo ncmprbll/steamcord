@@ -6,7 +6,7 @@
     import Discover from '$lib/components/Discover/Discover.svelte';
 </script>
 
-<Carousel locale={data.localization} highlights={data.highlights} />
-<Tier locale={data.localization} games={data.tier1} />
-<Tier locale={data.localization} games={data.tier2} name="Horror" />
-<Discover />
+<Carousel highlights={data.highlights} />
+<Tier games={data.tier1} />
+<Tier games={data.tier2} name="Horror" />
+<!-- <Discover /> -->

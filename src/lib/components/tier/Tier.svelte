@@ -4,7 +4,6 @@
 
     export let name: string = "";
     export let games = [];
-    export let locale: Record<string, string>;
 
     let row1 = [];
     let row2 = [];

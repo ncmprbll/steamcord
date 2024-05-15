@@ -65,7 +65,7 @@
         {#if screenshots.length !== 0}
             {#each screenshots as src, index}
                 <div class="screenshot-holder" class:previous={previous == index} class:active={selected == index}>
-                    <img {src} alt="Game screenshot" on:click={function() {
+                    <button type="button" on:click={function() {
                         previous = selected;
                         selected += 1;
 
@@ -73,16 +73,20 @@
                             selected = 0;
                         }
                     }}>
+                        <img {src} alt="Game screenshot">
+                    </button>
                 </div>
             {/each}
             <div id="slider" class="screenshots-slider">
                 {#each screenshots as src, index}
-                    <img {src} class:active={selected == index} alt="Game screenshot" on:click={() => {
+                    <button class="screenshot-button" type="button" class:active={selected == index} on:click={() => {
                         if (selected !== index) {
                             previous = selected;
                             selected = index;
                         }
                     }}>
+                        <img {src} alt="Game screenshot">
+                    </button>
                 {/each}
             </div>
         {:else}
@@ -549,7 +553,7 @@
         z-index: 999;
     }
 
-    .screenshot-holder > img {
+    .screenshot-holder > button {
         display: block;
         cursor: pointer;
     }
@@ -568,6 +572,7 @@
     .media-content {
         position: relative;
         flex: 1;
+        min-width: 0;
     }
 
     .screenshots-slider {
@@ -577,15 +582,17 @@
         padding-bottom: 8px;
     }
 
-    .screenshots-slider > img {
+    .screenshot-button {
         box-sizing: border-box;
-        height: 65px;
+        height: 67px;
         width: 116px;
         border: solid 2px transparent;
         cursor: pointer;
+        min-width: 116px;
+        border-radius: 4px;
     }
 
-    .screenshots-slider > img.active {
+    .screenshot-button.active {
         border: solid 2px rgba(255, 255, 255, 0.70);
         cursor: default;
     }

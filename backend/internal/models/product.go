@@ -7,6 +7,10 @@ import (
 	"time"
 )
 
+const (
+	PRODUCTS_PAGE_LIMIT = 15
+)
+
 type JSONOwnedProducts []int
 
 type Price struct {

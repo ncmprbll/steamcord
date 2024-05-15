@@ -384,7 +384,7 @@
         position: -webkit-sticky;
         position: sticky;
         top: 0;
-        z-index: 999;
+        z-index: 9999;
         max-height: var(--store-nav-height);
         padding: 8px 2%;
     }

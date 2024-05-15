@@ -4,7 +4,6 @@
     import CarouselStoreItem from '$lib/components/carousel/CarouselStoreItem.svelte';
 
     export let highlights = [];
-    export let locale: Record<string, string>;
 
     const CAROUSEL_SPEED = 400;
     const CAROUSEL_TIMER = 50; // Seconds
@@ -140,13 +139,13 @@
         <div class="carousel-wrapper">
             <div bind:this={items} class="items" on:transitionstart={transitionstart} on:transitionend={transitionend} style="transition: transform {speed}ms cubic-bezier(0.165, 0.84, 0.44, 1) 0s; transform: translate3d({offset}px, 0px, 0px);">
                 {#each left as game, index}
-                    <CarouselStoreItem bind:this={carouselItemsLeft[index]} locale={locale} bind:active={activeLeft[index]} game={game} bind:paragraph/>
+                    <CarouselStoreItem bind:this={carouselItemsLeft[index]} bind:active={activeLeft[index]} game={game} bind:paragraph/>
                 {/each}
                 {#each highlights as game, index}
-                    <CarouselStoreItem bind:this={carouselItems[index]} locale={locale} bind:active={activeObjects[index]} game={game} bind:element={objects[index]} bind:clientWidth={itemWidth} bind:paragraph bind:margin/>
+                    <CarouselStoreItem bind:this={carouselItems[index]} bind:active={activeObjects[index]} game={game} bind:element={objects[index]} bind:clientWidth={itemWidth} bind:paragraph bind:margin/>
                 {/each}
                 {#each right as game, index}
-                    <CarouselStoreItem bind:this={carouselItemsRight[index]} locale={locale} bind:active={activeRight[index]} game={game} bind:paragraph/>
+                    <CarouselStoreItem bind:this={carouselItemsRight[index]} bind:active={activeRight[index]} game={game} bind:paragraph/>
                 {/each}
             </div>
         </div>

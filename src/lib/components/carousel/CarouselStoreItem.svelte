@@ -14,7 +14,6 @@
     export let element: HTMLElement;
     export let paragraph: HTMLElement;
     export let active: number;
-    export let locale: Record<string, string>;
 
     let width = 0;
     export const margin = 8;
