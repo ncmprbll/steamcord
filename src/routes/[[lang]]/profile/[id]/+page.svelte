@@ -269,6 +269,7 @@
             </div>
         {/if}
     </div>
+    {#if !hidden || data.me !== undefined}
         <div class="aside">
             {#if data.me !== undefined}
                 {#if data.user.id === data.me.id}
@@ -310,6 +311,7 @@
                 </a>
             {/if}
         </div>
+    {/if}
 </div>
 {:else}
     <div class="error-box">

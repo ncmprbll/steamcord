@@ -1,5 +1,9 @@
 <script lang="ts">
+    import { onMount } from 'svelte';
+    import { pushState } from '$app/navigation';
+
     import SearchProduct from '$lib/components/SearchProduct.svelte';
+    import Spinner from '$lib/components/Spinner.svelte';
 
     import windows from '$lib/assets/os/windows.png';
     import mac from '$lib/assets/os/mac.png';
@@ -8,13 +12,19 @@
 
     export let data;
 
+    const DONE_TYPING_INTERVAL = 500;
     const PRODUCTS_PAGE_LIMIT = 15;
     const BOTTOM_OFFSET_PX = 400;
-    let items;
-    let offset = PRODUCTS_PAGE_LIMIT;
-    let waitForProductsToLoad = false;
 
-    let products = data.products;
+    let searchValue: string = "";
+    const params = new URLSearchParams(window.location.search);
+    searchValue = params.get("term") || "";
+    let genres: string[] = params.get("genres") || [];
+
+    let searchTimer;
+    let items;
+    let offset = 0;
+    let waitForProductsToLoad = false;
 
     window.onscroll = async function(ev) {
         if (!waitForProductsToLoad && (window.innerHeight + window.pageYOffset) >= document.body.offsetHeight - BOTTOM_OFFSET_PX) {
@@ -22,6 +32,7 @@
 
             let searchParams = new URLSearchParams();
             searchParams.set("pageOffset", offset);
+            offset += PRODUCTS_PAGE_LIMIT;
             let url = `/api/products?${searchParams.toString()}`;
             const result = await fetch(url);
             const json = await result.json();
@@ -35,6 +46,68 @@
             }
         }
     };
+
+    function searchKeyUp(e) {
+        clearTimeout(searchTimer);
+        if (e.key !== "Enter") {
+            searchTimer = setTimeout(search, DONE_TYPING_INTERVAL);
+        }
+    }
+
+    function searchKeyDown(e) {
+        clearTimeout(searchTimer);
+        if (e.key === "Enter") {
+            search(e)
+        }
+    }
+
+    async function search(e) {
+        if (e !== undefined && e.key !== "Enter") {
+            return;
+        }
+
+        const url = new URL(window.location.href);
+        url.searchParams.set("term", searchValue);
+        try {
+            pushState(url.toString());
+        } catch (e) {}
+        url.searchParams.delete("pageOffset");
+        url.searchParams.delete("pageLimit");
+        const result = await fetch(`/api/products?${url.searchParams.toString()}`);
+        const products = await result.json();
+
+        offset = PRODUCTS_PAGE_LIMIT;
+        waitForProductsToLoad = false;
+
+        items.replaceChildren();
+
+        for (let i = 0; i < products.length; i++) {
+            new SearchProduct({target: items, props: {product: products[i]}});
+        }
+    }
+
+    function onGenreSelection(e) {
+        const url = new URL(window.location.href);
+        let genres = url.searchParams.get("genres") || "";
+        genres = genres.split(",").filter(i => i !== "");
+        if (e.target.checked) {
+            genres.push(e.target.name);
+        } else {
+            genres = genres.filter(i => i !== e.target.name);
+        }
+        console.log(genres)
+        genres = genres.join(",");
+        url.searchParams.set("genres", genres);
+
+        try {
+            pushState(url.toString());
+        } catch (e) {}
+        search();
+    }
+
+	onMount(async () => {
+        await search();
+	});
 </script>
 
 <p class="breaker">All products</p>
@@ -43,19 +116,28 @@
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 21 20" preserveAspectRatio="xMidYMid meet"><g transform="scale(1 -1) rotate(-45 -11.93502884 -2)" stroke="currentColor" stroke-width="1.65" fill="none" fill-rule="evenodd"><circle cx="7.70710678" cy="7.70710678" r="7"></circle><path d="M15.2071068 8.62132034h5.6923881" stroke-linecap="square"></path></g></svg>
     </span>
     <div class="search-input-wrapper">
-        <input placeholder={data.localization.search} value="">
+        <input placeholder={data.localization.search} bind:value={searchValue} on:keydown={searchKeyDown} on:keyup={searchKeyUp}>
     </div>
 </div>
 <div class="container">
     <div class="right-side">
-        <div class="checkout-box">
-
+        <div class="right-side-box">
+            <p class="breaker">Genres</p>
+            <div>
+                <input type="checkbox" id="horror" name="Horror" checked={genres.includes("Horror")} on:change={onGenreSelection} />
+                <label for="horror">Horror</label>
+            </div>
+            
+            <div>
+                <input type="checkbox" id="survival" name="Survival" checked={genres.includes("Survival")} on:change={onGenreSelection} />
+                <label for="survival">Survival</label>
+            </div>
         </div>
     </div>
     <div bind:this={items} class="items">
-        {#each products as product}
+        <!-- {#each products as product}
             <SearchProduct {product} />
-        {/each}
+        {/each} -->
     </div>
 </div>
 
@@ -134,7 +216,7 @@
         height: 32px;
     }
 
-    .checkout-box {
+    .right-side-box {
         display: flex;
         flex-direction: column;
         border-radius: 4px;

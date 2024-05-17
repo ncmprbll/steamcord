@@ -2,13 +2,13 @@ import { fail } from '@sveltejs/kit';
 
 export const load = async ({ cookies, params, parent, url }) => {
     const data = await parent();
-    const result = await fetch(`http://localhost:3000/products?${url.searchParams.toString()}`, {
-        method: 'GET',
-        credentials: 'include',
-        headers: {
-            Cookie: 'session_id=' + cookies.get('session_id')
-        }
-    });
+    // const result = await fetch(`http://localhost:3000/products?${url.searchParams.toString()}`, {
+    //     method: 'GET',
+    //     credentials: 'include',
+    //     headers: {
+    //         Cookie: 'session_id=' + cookies.get('session_id')
+    //     }
+    // });
 
     let localization: Record<string, string> | undefined;
 	try {
@@ -21,12 +21,12 @@ export const load = async ({ cookies, params, parent, url }) => {
 
 	let merged = {...data.localization, ...localization}
 
-    if (result.status !== 200) {
-        fail(228)
-    }
+    // if (result.status !== 200) {
+    //     fail(228)
+    // }
 
     return {
         localization: merged,
-        products: await result.json()
+        // products: await result.json()
     };
 };
