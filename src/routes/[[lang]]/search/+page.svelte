@@ -19,9 +19,24 @@
     let searchValue: string = "";
     const params = new URLSearchParams(window.location.search);
     searchValue = params.get("term") || "";
-    let genres: string[] = params.get("genres") || [];
+    let genres: string[] = (params.get("genres") || "").split(",");
+    let specials = params.get("specials") === "1";
+    let priceRange: string[] = (params.get("priceRange") || "").split(",");
+    let minPrice: number = 0;
+    let maxPrice: number = 550000;
+
+    if (priceRange.length === 2) {
+        let min = parseFloat(priceRange[0]);
+        let max = parseFloat(priceRange[1]);
+
+        if (!isNaN(min) && !isNaN(max)) {
+            minPrice = min;
+            maxPrice = max;
+        }
+    }
 
     let searchTimer;
+    let priceRangeTimer;
     let items;
     let offset = 0;
     let waitForProductsToLoad = false;
@@ -30,12 +45,13 @@
         if (!waitForProductsToLoad && (window.innerHeight + window.pageYOffset) >= document.body.offsetHeight - BOTTOM_OFFSET_PX) {
             waitForProductsToLoad = true;
 
-            let searchParams = new URLSearchParams();
+            const searchParams = new URLSearchParams(new URL(window.location.href).searchParams);
             searchParams.set("pageOffset", offset);
             offset += PRODUCTS_PAGE_LIMIT;
             let url = `/api/products?${searchParams.toString()}`;
             const result = await fetch(url);
             const json = await result.json();
+            console.log(url);
 
             for (let i = 0; i < json.length; i++) {
                 new SearchProduct({target: items, props: {product: json[i]}});
@@ -73,6 +89,7 @@
         } catch (e) {}
         url.searchParams.delete("pageOffset");
         url.searchParams.delete("pageLimit");
+        url.searchParams.set("priceRange", [minPrice || 0, maxPrice || 550000].join(","));
         const result = await fetch(`/api/products?${url.searchParams.toString()}`);
         const products = await result.json();
 
@@ -95,9 +112,49 @@
         } else {
             genres = genres.filter(i => i !== e.target.name);
         }
-        console.log(genres)
         genres = genres.join(",");
         url.searchParams.set("genres", genres);
+
+        try {
+            pushState(url.toString());
+        } catch (e) {}
+        search();
+    }
+
+    
+    function onSpecialsSelection(e) {
+        const url = new URL(window.location.href);
+        if (e.target.checked) {
+            specials = true;
+            url.searchParams.set("specials", 1);
+        } else {
+            specials = false;
+            url.searchParams.delete("specials");
+        }
+
+        try {
+            pushState(url.toString());
+        } catch (e) {}
+        search();
+    }
+
+    function priceRangeKeyUp(e) {
+        clearTimeout(priceRangeTimer);
+        if (e.key !== "Enter") {
+            priceRangeTimer = setTimeout(priceRangeSearch, DONE_TYPING_INTERVAL);
+        }
+    }
+
+    function priceRangeKeyDown(e) {
+        clearTimeout(priceRangeTimer);
+        if (e.key === "Enter") {
+            search(e)
+        }
+    }
+
+    async function priceRangeSearch(e) {
+        const url = new URL(window.location.href);
+        url.searchParams.set("priceRange", [minPrice || 0, maxPrice || 550000].join(","));
 
         try {
             pushState(url.toString());
@@ -110,7 +167,7 @@
 	});
 </script>
 
-<p class="breaker">All products</p>
+<p class="breaker">{data.localization.allProducts}</p>
 <div class="menu-search-bar">
     <span class="search-icon">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 21 20" preserveAspectRatio="xMidYMid meet"><g transform="scale(1 -1) rotate(-45 -11.93502884 -2)" stroke="currentColor" stroke-width="1.65" fill="none" fill-rule="evenodd"><circle cx="7.70710678" cy="7.70710678" r="7"></circle><path d="M15.2071068 8.62132034h5.6923881" stroke-linecap="square"></path></g></svg>
@@ -122,26 +179,85 @@
 <div class="container">
     <div class="right-side">
         <div class="right-side-box">
-            <p class="breaker">Genres</p>
-            <div>
-                <input type="checkbox" id="horror" name="Horror" checked={genres.includes("Horror")} on:change={onGenreSelection} />
-                <label for="horror">Horror</label>
+            <div class="filters-section">
+                <p class="breaker filters">{data.localization.prices}</p>
+                <div class="price-range">
+                    <div class="price-range-input">
+                        <input placeholder={data.localization.priceRangeFrom} type="number" bind:value={minPrice} on:keydown={priceRangeKeyDown} on:keyup={priceRangeKeyUp}>
+                    </div>
+                    <div style="user-select: none; line-height: 40px;">—</div>
+                    <div class="price-range-input">
+                        <input placeholder={data.localization.priceRangeTo} type="number" bind:value={maxPrice} on:keydown={priceRangeKeyDown} on:keyup={priceRangeKeyUp}>
+                    </div>
+                </div>
+                <div>
+                    <input type="checkbox" id="specials" name="Survival" checked={specials} on:change={onSpecialsSelection} />
+                    <label for="specials">{data.localization.specialOffers}</label>
+                </div>
             </div>
-            
-            <div>
-                <input type="checkbox" id="survival" name="Survival" checked={genres.includes("Survival")} on:change={onGenreSelection} />
-                <label for="survival">Survival</label>
+            <div class="filters-section">
+                <p class="breaker filters">{data.localization.genres}</p>
+                <div>
+                    <input type="checkbox" id="horror" name="Horror" checked={genres.includes("Horror")} on:change={onGenreSelection} />
+                    <label for="horror">Horror</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="survival" name="Survival" checked={genres.includes("Survival")} on:change={onGenreSelection} />
+                    <label for="survival">Survival</label>
+                </div>
             </div>
         </div>
     </div>
-    <div bind:this={items} class="items">
-        <!-- {#each products as product}
-            <SearchProduct {product} />
-        {/each} -->
-    </div>
+    <div bind:this={items} class="items" />
 </div>
 
 <style lang="postcss">
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
+
+    .price-range {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 4px;
+    }
+
+    .price-range-input {
+        -webkit-align-items: center;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        align-self: center;
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display: flex;
+        background: rgb(64, 64, 64);
+        border-radius: 4px;
+        width: 100%;
+        height: 40px;
+    }
+
+    .price-range-input > input {
+        margin: 0 4px;
+        border-color: rgba(0, 0, 0, 0);
+        color: #ebf2f4;
+        outline: none;
+        text-overflow: ellipsis;
+        width: 100%;
+    }
+
+    .filters-section {
+        margin-bottom: 16px;
+    }
+
     .search-icon {
         display: block;
         line-height: 0;
@@ -163,6 +279,10 @@
         font-size: 18px;
         font-weight: 600;
         letter-spacing: 3px;
+    }
+
+    .breaker.filters {
+        margin-bottom: 4px;
     }
 
     .menu-search-bar {
@@ -225,6 +345,10 @@
         min-width: 280px;
         position: sticky;
         top: 96px; /* 80 (navbar height) + 16 (margin) */
+    }
+
+    .right-side-box .filters-section:last-child {
+        margin-bottom: 0;
     } 
 
     .container {
