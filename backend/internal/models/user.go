@@ -33,6 +33,7 @@ type User struct {
 	Email        string     `json:"email,omitempty" db:"email"`
 	Password     string     `json:"password,omitempty" db:"password"`
 	Role         string     `json:"role,omitempty" db:"role"`
+	Banned       bool       `json:"banned,omitempty" db:"banned"`
 	CreatedAt    *time.Time `json:"created_at,omitempty" db:"created_at"`
 	UpdatedAt    *time.Time `json:"updated_at,omitempty" db:"updated_at"`
 	LoginDate    *time.Time `json:"login_date,omitempty" db:"login_date"`
@@ -92,6 +93,7 @@ func (u *User) RemoveSensitiveData() {
 	u.Balance = nil
 	u.SanitizePassword()
 	u.Role = ""
+	u.Banned = false
 	u.UpdatedAt = nil
 }
 

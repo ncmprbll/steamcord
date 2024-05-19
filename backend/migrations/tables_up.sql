@@ -6,6 +6,8 @@ DROP TABLE IF EXISTS users_games CASCADE;
 DROP TABLE IF EXISTS users_friend_invites CASCADE;
 DROP TABLE IF EXISTS users_friends CASCADE;
 DROP TABLE IF EXISTS users_comments CASCADE;
+DROP TABLE IF EXISTS users_roles CASCADE;
+DROP TABLE IF EXISTS users_role_permissions CASCADE;
 DROP TABLE IF EXISTS genres CASCADE;
 DROP TABLE IF EXISTS products CASCADE;
 DROP TABLE IF EXISTS products_prices CASCADE;
@@ -101,7 +103,24 @@ CREATE TABLE products_genres
 
 CREATE TABLE products_featured
 (
-    product_id BIGINT PRIMARY KEY REFERENCES products(id)
+    product_id BIGINT PRIMARY KEY REFERENCES products(id),
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE users_roles
+(
+    name VARCHAR(16) PRIMARY KEY,
+    can_delete BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE users_role_permissions
+(
+    role VARCHAR(16) REFERENCES users_roles(name),
+    permission TEXT,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE users
@@ -116,7 +135,8 @@ CREATE TABLE users
     balance NUMERIC(16, 2) DEFAULT 0.00 NOT NULL CHECK ( balance >= 0 ),
     email VARCHAR(64) NOT NULL CHECK ( email <> '' ),
     password VARCHAR(250) NOT NULL CHECK ( octet_length(password) <> 0 ),
-    role VARCHAR(10) NOT NULL DEFAULT 'user',
+    role VARCHAR(16) DEFAULT 'user' REFERENCES users_roles(name),
+    banned BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     login_date TIMESTAMP(0) WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -163,6 +183,11 @@ CREATE TABLE users_comments
     text VARCHAR(128),
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
+
+INSERT INTO users_roles (name, can_delete) VALUES ('user', FALSE);
+INSERT INTO users_roles (name, can_delete) VALUES ('admin', FALSE);
+
+INSERT INTO users_role_permissions (role, permission) VALUES ('admin', 'ui.management');
 
 INSERT INTO locales (code, name) VALUES ('ru', 'Русский');
 INSERT INTO locales (code, name) VALUES ('en', 'English');
@@ -490,6 +515,10 @@ INSERT INTO products_platforms (product_id, platform) VALUES (2640, 'windows');
 
 INSERT INTO products_genres (product_id, genre_id) VALUES (2340, 1), (2440, 1), (2540, 1), (2540, 2), (2640, 1), (1640, 1), (1840, 2);
 
-INSERT INTO products_featured (product_id) VALUES (440), (540), (640), (740), (840);
+INSERT INTO products_featured (product_id) VALUES (440);
+INSERT INTO products_featured (product_id) VALUES (540);
+INSERT INTO products_featured (product_id) VALUES (640);
+INSERT INTO products_featured (product_id) VALUES (740);
+INSERT INTO products_featured (product_id) VALUES (840);
 
 SELECT SETVAL('products_sequence', 2640);

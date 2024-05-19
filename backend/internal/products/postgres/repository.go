@@ -99,13 +99,14 @@ func (s *Repository) GetFeatured(ctx context.Context, currencyCode string) ([]*m
 						products.discount,
 						jsonb_build_object('original', h.price, 'final', h.final, 'symbol', currencies.symbol) AS price,
 						products_images.featured_background_img,
-						products_images.featured_logo_img
+						products_images.featured_logo_img,
+						products_featured.created_at
 					FROM products
 						JOIN products_featured ON products.id = products_featured.product_id
 						JOIN LATERAL (SELECT *, (price - (price * products.discount / 100)::NUMERIC(16, 2)) AS final FROM products_prices WHERE currency_code = $1) h ON products.id = h.product_id
 						JOIN currencies ON currencies.code = h.currency_code
 						JOIN products_images ON products.id = products_images.product_id
-					GROUP BY id, featured_background_img, featured_logo_img, price, currencies.symbol, final
+					GROUP BY id, featured_background_img, featured_logo_img, price, currencies.symbol, final, products_featured.created_at
 				), cart_items_platforms AS (
 					SELECT
 						id,
@@ -114,14 +115,22 @@ func (s *Repository) GetFeatured(ctx context.Context, currencyCode string) ([]*m
 						price,
 						featured_background_img,
 						featured_logo_img,
+						created_at,
 						jsonb_agg(products_platforms.platform) AS platforms
 					FROM cart_items_price_image_featured
 						JOIN products_platforms ON id = products_platforms.product_id
-					GROUP BY id, name, discount, price, featured_background_img, featured_logo_img
+					GROUP BY id, name, discount, price, featured_background_img, featured_logo_img, created_at
 				)
 				SELECT
-					*
-				FROM cart_items_platforms;
+					id,
+					name,
+					discount,
+					price,
+					featured_background_img,
+					featured_logo_img,
+					platforms
+				FROM cart_items_platforms
+				ORDER BY created_at;
 				`
 	rows, err := s.database.QueryxContext(ctx, query, currencyCode)
 	if err != nil {
