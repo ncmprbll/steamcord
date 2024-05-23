@@ -6,7 +6,5 @@ import (
 )
 
 type Repository interface {
-	Register(context.Context, *models.User) error
-	FindByLogin(context.Context, *models.User) (*models.User, error)
-	FindByUUID(context.Context, *models.User) (*models.User, error)
+	GetPermissions(context.Context, *models.User) (*models.Permissions, error)
 }

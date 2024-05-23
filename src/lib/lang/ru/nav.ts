@@ -19,6 +19,8 @@ const localization: Record<string, string> = {
     'search': 'Поиск',
     'profile': 'Профиль',
     'signOut': 'Выйти',
+    "allProducts": "Все игры",
+    "management": "Управление"
 };
 
 export { localization };

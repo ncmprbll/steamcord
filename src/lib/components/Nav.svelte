@@ -45,6 +45,14 @@
         }
     }
 
+    let storeContextMenu = [
+        {
+            text: $page.data.localization.allProducts,
+            type: "anchor",
+            href: `${$page.data?.lang}/search`
+        }
+    ]
+
     let profileContextMenu = [
         {
             text: $page.data.localization.profile,
@@ -100,10 +108,18 @@
         </div>
 		<div class="menu-items">
             <div class="menu-left">
-                <AnchorContext href={$page.data.lang || "/"}>
+                <AnchorContext
+                    href={$page.data.lang || "/"}
+                    items={storeContextMenu}
+                >
                     {$page.data.localization.store}
                 </AnchorContext>
-                <a data-sveltekit-reload href="/">{$page.data.localization.community}</a>
+                {#if $page.data?.permissions !== undefined && $page.data.permissions.includes("ui.management")}
+                    <AnchorContext href={$page.data.lang || "/"}>
+                        {$page.data.localization.management}
+                    </AnchorContext>
+                {/if}
+                <!-- <a data-sveltekit-reload href="/">{$page.data.localization.community}</a> -->
             </div>
             <div class="menu-right">
                 <AnchorContext

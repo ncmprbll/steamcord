@@ -19,6 +19,8 @@ const localization: Record<string, string> = {
     'search': 'Search',
     'profile': 'Profile',
     'signOut': 'Sign out',
+    "allProducts": "All products",
+    "management": "Management"
 };
 
 export { localization };

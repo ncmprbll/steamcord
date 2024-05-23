@@ -13,6 +13,7 @@ export async function load({ params, cookies }) {
     let error: string | undefined;
     let me: User | undefined;
     let locales: Record<string, string>[] | undefined;
+    let permissions: string[] | undefined;
     let lang: string = "";
 
     if (params.lang !== undefined) {
@@ -49,6 +50,17 @@ export async function load({ params, cookies }) {
         me!.cart = [];
         me!.owned = [];
 
+        result = await fetch('http://localhost:3000/permissions/', {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                Cookie: 'session_id=' + sessionId
+            }
+        });
+        if (result.status === 200) {
+            permissions = await result.json();
+        }
+
         result = await fetch('http://localhost:3000/cart/ids', {
             method: 'GET',
             credentials: 'include',
@@ -56,7 +68,6 @@ export async function load({ params, cookies }) {
                 Cookie: 'session_id=' + sessionId
             }
         });
-
         if (result.status === 200) {
             me!.cart = await result.json();
         }
@@ -68,7 +79,6 @@ export async function load({ params, cookies }) {
                 Cookie: 'session_id=' + sessionId
             }
         });
-
         if (result.status === 200) {
             me!.owned = await result.json();
         }
@@ -82,6 +92,7 @@ export async function load({ params, cookies }) {
         error: error,
 		localization: localization,
         locales: locales,
+        permissions: permissions,
         lang: lang
 	};
 }

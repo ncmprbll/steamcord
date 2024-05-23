@@ -120,7 +120,8 @@ CREATE TABLE users_role_permissions
     role VARCHAR(16) REFERENCES users_roles(name),
     permission TEXT,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (role, permission)
 );
 
 CREATE TABLE users

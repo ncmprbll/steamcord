@@ -3,7 +3,6 @@ package middleware
 import (
 	"context"
 	"main/backend/internal/models"
-	"main/backend/internal/util"
 	"net/http"
 )
 
@@ -39,23 +38,21 @@ func (mw *MiddlewareManager) GetUserMiddleware(next http.Handler) http.Handler {
 func (mw *MiddlewareManager) AuthSessionMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		sessionIdCookie, err := r.Cookie("session_id")
-
 		if err != nil {
-			util.HandleError(w, err)
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
 
 		sessionId := sessionIdCookie.Value
 		session, err := mw.sessionRepository.GetSessionByID(r.Context(), sessionId)
-
 		if err != nil {
-			util.HandleError(w, err)
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
 
 		found, err := mw.authRepository.FindByUUID(r.Context(), &models.User{UUID: session.UserID})
 		if err != nil {
-			util.HandleError(w, err)
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
 

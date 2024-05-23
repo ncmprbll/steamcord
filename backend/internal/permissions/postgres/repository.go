@@ -15,26 +15,12 @@ func New(database *sqlx.DB) *Repository {
 	return &Repository{database: database}
 }
 
-func (s *Repository) GetPermissions(ctx context.Context, user *models.User) error {
-	_, err := s.database.ExecContext(ctx, "INSERT INTO users (login, email, password) VALUES ($1, $2, $3);", user.Login, user.Email, user.Password)
+func (s *Repository) GetPermissions(ctx context.Context, user *models.User) (*models.Permissions, error) {
+	permissions := &models.Permissions{}
+	err := s.database.QueryRowxContext(ctx, "SELECT JSONB_AGG(permission) permissions FROM users_role_permissions WHERE role = $1;", user.Role).Scan(permissions)
 	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (s *Repository) FindByLogin(ctx context.Context, user *models.User) (*models.User, error) {
-	found := &models.User{}
-	if err := s.database.QueryRowxContext(ctx, "SELECT * FROM users WHERE login = $1;", user.Login).StructScan(found); err != nil {
 		return nil, err
 	}
-	return found, nil
-}
 
-func (s *Repository) FindByUUID(ctx context.Context, user *models.User) (*models.User, error) {
-	found := &models.User{}
-	if err := s.database.QueryRowxContext(ctx, "SELECT * FROM users WHERE id = $1;", user.UUID).StructScan(found); err != nil {
-		return nil, err
-	}
-	return found, nil
+	return permissions, nil
 }

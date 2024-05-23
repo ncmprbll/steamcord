@@ -365,12 +365,12 @@
         min-width: 0;
     }
 
-    .info {
+    /* .info {
         flex-grow: 1;
         display: flex;
         justify-content: space-between;
         overflow: hidden;
-    }
+    } */
 
     @media (max-width: 850px) {
         .container {
