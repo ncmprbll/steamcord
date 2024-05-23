@@ -189,6 +189,8 @@ INSERT INTO users_roles (name, can_delete) VALUES ('user', FALSE);
 INSERT INTO users_roles (name, can_delete) VALUES ('admin', FALSE);
 
 INSERT INTO users_role_permissions (role, permission) VALUES ('admin', 'ui.management');
+INSERT INTO users_role_permissions (role, permission) VALUES ('admin', 'management.users');
+INSERT INTO users_role_permissions (role, permission) VALUES ('admin', 'management.roles');
 
 INSERT INTO locales (code, name) VALUES ('ru', 'Русский');
 INSERT INTO locales (code, name) VALUES ('en', 'English');

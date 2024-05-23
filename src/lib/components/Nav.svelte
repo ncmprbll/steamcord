@@ -2,6 +2,7 @@
     import { page } from '$app/stores';
 
     import { formatBalance } from '$lib/types/user.type';
+    import { PERMISSION_UI_MANAGEMENT } from '$lib/types/user.type.ts';
     import AnchorContext from '$lib/components/AnchorContext.svelte';
 
     export let loginVisible: boolean;
@@ -114,8 +115,8 @@
                 >
                     {$page.data.localization.store}
                 </AnchorContext>
-                {#if $page.data?.permissions !== undefined && $page.data.permissions.includes("ui.management")}
-                    <AnchorContext href={$page.data.lang || "/"}>
+                {#if $page.data?.permissions !== undefined && $page.data.permissions.includes(PERMISSION_UI_MANAGEMENT)}
+                    <AnchorContext href={`${$page.data.lang}/management`}>
                         {$page.data.localization.management}
                     </AnchorContext>
                 {/if}

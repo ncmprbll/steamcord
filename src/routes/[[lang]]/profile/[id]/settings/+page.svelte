@@ -1,6 +1,7 @@
 <script lang="ts">
     import DOMPurify from 'dompurify';
     import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
+    import { pushState } from '$app/navigation';
     import { scale } from 'svelte/transition';
     import { quintOut } from 'svelte/easing';
 
@@ -10,7 +11,6 @@
     export let data;
 
     let searchParams = new URLSearchParams(window.location.search);
-    searchParams.get("category");
 
     const MAX_DISPLAY_NAME_LENGTH = 20;
 	const MAX_ABOUT_LENGTH = 256;
@@ -212,7 +212,7 @@
         selected = id;
         const url = new URL(window.location.href);
         url.searchParams.set('category', id);
-        window.history.pushState(null, '', url.toString());
+        pushState(url.toString());
     }
 
     const privacyOptions = [{
@@ -301,7 +301,7 @@
                         {/if}
                     </button>
                 </div>
-              </form>
+            </form>
             <p class="breaker">{data.localization.categoryGeneral}</p>
             <form method="PATCH" action="/api/profile" class="form" on:submit|preventDefault={handleUpdate}>
                 <div class="box-input">

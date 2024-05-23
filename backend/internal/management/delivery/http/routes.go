@@ -12,7 +12,7 @@ func NewRouter(h *handlers, mw *middleware.MiddlewareManager) http.Handler {
 
 	r.Group(func(r chi.Router) {
 		r.Use(mw.AuthSessionMiddleware)
-		r.Get("/", h.GetPermissions())
+		r.Get("/permissions", h.GetPermissions())
 	})
 
 	return r

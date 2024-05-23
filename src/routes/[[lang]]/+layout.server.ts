@@ -50,7 +50,7 @@ export async function load({ params, cookies }) {
         me!.cart = [];
         me!.owned = [];
 
-        result = await fetch('http://localhost:3000/permissions/', {
+        result = await fetch('http://localhost:3000/management/permissions', {
             method: 'GET',
             credentials: 'include',
             headers: {

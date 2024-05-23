@@ -3,6 +3,10 @@ import { type Writable } from 'svelte/store';
 type Cart = number[] | Writable<Cart>
 type Owned = Cart
 
+export const PERMISSION_UI_MANAGEMENT = "ui.management";
+export const PERMISSION_USERS_MANAGEMENT = "management.users";
+export const PERMISSION_ROLES_MANAGEMENT = "management.roles";
+
 export type User = {
 	id: string
 	login: string
