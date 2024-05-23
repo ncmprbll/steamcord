@@ -76,7 +76,7 @@ func main() {
 	managementPostgres := managementRepository.New(database)
 
 	// Middleware Manager
-	manager := mw.NewMiddlewareManager(authPostgres, sessionRedis)
+	manager := mw.NewMiddlewareManager(authPostgres, sessionRedis, managementPostgres)
 
 	// Handlers
 	authHandlers := authDelivery.NewAuthHandlers(authPostgres, sessionRedis, profilePostgres)

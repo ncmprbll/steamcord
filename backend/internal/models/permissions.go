@@ -6,6 +6,12 @@ import (
 	"time"
 )
 
+const (
+	PERMISSION_UI_MANAGEMENT = "ui.management"
+	PERMISSION_USERS_MANAGEMENT = "management.users"
+	PERMISSION_ROLES_MANAGEMENT = "management.roles"
+)
+
 type Permission struct {
 	Role       string     `json:"role" db:"role"`
 	Permission string     `json:"permission" db:"permission"`

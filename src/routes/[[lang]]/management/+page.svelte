@@ -78,11 +78,18 @@
         {#if selected === "users"}
             <div class="dialog-body">{@html DOMPurify.sanitize(marked.parse(data.localization.usersDesc), {ALLOWED_TAGS: ["p", "br"]})}</div>
             <p class="breaker">{data.localization.categoryUsers}</p>
-            123
-        {:else if selected === "security"}
+            <div class="menu-search-bar">
+                <span class="search-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 21 20" preserveAspectRatio="xMidYMid meet"><g transform="scale(1 -1) rotate(-45 -11.93502884 -2)" stroke="currentColor" stroke-width="1.65" fill="none" fill-rule="evenodd"><circle cx="7.70710678" cy="7.70710678" r="7"></circle><path d="M15.2071068 8.62132034h5.6923881" stroke-linecap="square"></path></g></svg>
+                </span>
+                <div class="search-input-wrapper">
+                    <input placeholder={data.localization.search}>
+                </div>
+            </div>
+        {:else if selected === "roles"}
             <div class="dialog-body">{@html DOMPurify.sanitize(marked.parse("123"), {ALLOWED_TAGS: ["p", "br"]})}</div>
             <p class="breaker">{data.localization.categorySecurity}</p>
-        {:else if selected === "privacy"}
+        {:else if selected === "permissions"}
             <div class="dialog-body">{@html DOMPurify.sanitize(marked.parse("123"), {ALLOWED_TAGS: ["p", "br"]})}</div>
             <p class="breaker">{data.localization.profilePrivacy}</p>
         {/if}
@@ -90,6 +97,60 @@
 </div>
 
 <style lang="postcss">
+
+    .search-icon {
+        display: block;
+        line-height: 0;
+        -webkit-flex-shrink: 0;
+        -ms-flex-negative: 0;
+        flex-shrink: 0;
+        height: 12.75px;
+        width: 12.75px;
+        margin: 8px;
+        color: rgba(245, 245, 245, 0.6);
+    }
+
+    .menu-search-bar {
+        -webkit-align-items: center;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        align-self: center;
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display: flex;
+        background: rgb(32, 32, 36);
+        border-radius: 24px;
+        width: 100%;
+        height: 40px;
+        margin-bottom: 18px;
+    }
+
+    .search-input-wrapper > input {
+        margin-right: 20px;
+        border-color: rgba(0, 0, 0, 0);
+        color: #ebf2f4;
+        outline: none;
+        text-overflow: ellipsis;
+        width: 100%;
+    }
+
+    .search-input-wrapper {
+        -webkit-align-items: center;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display: flex;
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+    }
+
+
     .loading {
         display: none;
     }

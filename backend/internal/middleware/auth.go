@@ -17,7 +17,6 @@ func (mw *MiddlewareManager) GetUserMiddleware(next http.Handler) http.Handler {
 
 		sessionId := sessionIdCookie.Value
 		session, err := mw.sessionRepository.GetSessionByID(r.Context(), sessionId)
-
 		if err != nil {
 			next.ServeHTTP(w, r.WithContext(r.Context()))
 			return
