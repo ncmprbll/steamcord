@@ -1,6 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 
-import { PERMISSION_UI_MANAGEMENT } from '$lib/types/user.type.ts';
+import { type ManagementUsers, PERMISSION_UI_MANAGEMENT, PERMISSION_USERS_MANAGEMENT } from '$lib/types/user.type.ts';
 
 export const load = async ({ cookies, params, parent, url }) => {
     const data = await parent();
@@ -22,8 +22,32 @@ export const load = async ({ cookies, params, parent, url }) => {
 		localization = imported.localization;
 	}
 	let merged = {...data.localization, ...localization};
+    try {
+		const imported = await import(`../../../lib/lang/${params.lang || "en"}/date.ts`);
+		localization = imported.localization;
+	} catch {
+		const imported = await import("../../../lib/lang/en/date.ts");
+		localization = imported.localization;
+	}
+	merged = {...merged, ...localization}
+
+    let users: ManagementUsers | undefined;
+    if (data.permissions.includes(PERMISSION_USERS_MANAGEMENT)) {
+        let result = await fetch(`http://localhost:3000/management/users?${url.searchParams.toString()}`, {
+            method: "GET",
+            credentials: "include",
+            headers: {
+                Cookie: "session_id=" + cookies.get('session_id')
+            }
+        });
+
+        if (result.status === 200) {
+            users = await result.json()
+        }
+    }
 
     return {
+        users: users,
         localization: merged
     };
 };

@@ -11,7 +11,7 @@ export function formatDate(date: string, localization: Record<string, string> | 
 	return `${d} ${localization[m]} ${y}`
 }
 
-export function formatCommentDate(date: string, localization: Record<string, string> | undefined): string {
+export function formatDateWithTime(date: string, localization: Record<string, string> | undefined): string {
     const dt = new Date(date);
     const d = dt.getHours();
     const m = ("0" + dt.getMinutes()).slice(-2)

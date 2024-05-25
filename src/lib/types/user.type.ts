@@ -35,6 +35,12 @@ export type UserGeneralUpdate = {
 	about: string | undefined
 }
 
+export type ManagementUsers = {
+	users: User[]
+	total: number
+}
+
+
 const currencies: Record<string, string> = {
 	"RUB": "₽",
 	"USD": "$"

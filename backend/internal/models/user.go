@@ -33,7 +33,7 @@ type User struct {
 	Email        string     `json:"email,omitempty" db:"email"`
 	Password     string     `json:"password,omitempty" db:"password"`
 	Role         string     `json:"role,omitempty" db:"role"`
-	Banned       bool       `json:"banned,omitempty" db:"banned"`
+	Banned       *bool       `json:"banned,omitempty" db:"banned"`
 	CreatedAt    *time.Time `json:"created_at,omitempty" db:"created_at"`
 	UpdatedAt    *time.Time `json:"updated_at,omitempty" db:"updated_at"`
 	LoginDate    *time.Time `json:"login_date,omitempty" db:"login_date"`
@@ -65,6 +65,11 @@ type UserPrivacyUpdate struct {
 	Privacy string    `json:"privacy"`
 }
 
+type ManagementUsers struct {
+	Users []*User `json:"users"`
+	Total int     `json:"total"`
+}
+
 func (u *User) HashPassword() error {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -93,7 +98,7 @@ func (u *User) RemoveSensitiveData() {
 	u.Balance = nil
 	u.SanitizePassword()
 	u.Role = ""
-	u.Banned = false
+	u.Banned = nil
 	u.UpdatedAt = nil
 }
 

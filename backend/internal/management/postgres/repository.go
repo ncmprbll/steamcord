@@ -25,7 +25,17 @@ func (s *Repository) GetPermissions(ctx context.Context, user *models.User) (*mo
 	return permissions, nil
 }
 
-func (s *Repository) GetUsers(ctx context.Context) ([]*models.User, error) {
+func (s *Repository) GetUsers(ctx context.Context) (*models.ManagementUsers, error) {
+	const queryTotal = `
+						SELECT
+							COUNT(*)
+						FROM users;
+						`
+	var total int
+	if err := s.database.QueryRowxContext(ctx, queryTotal).Scan(&total); err != nil {
+		return nil, err
+	}
+
 	const query = `
 				SELECT
 					*
@@ -45,6 +55,6 @@ func (s *Repository) GetUsers(ctx context.Context) ([]*models.User, error) {
 		result = append(result, row)
 	}
 
-	return result, nil
+	return &models.ManagementUsers{Users: result, Total: total}, nil
 }
 

@@ -12,7 +12,6 @@ export type ProfileComments = {
 	total: number
 }
 
-
 export type FriendStatus = {
     isFriend: boolean
     hasIncomingInvite: boolean

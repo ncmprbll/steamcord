@@ -4,7 +4,7 @@
 
     import trash from '$lib/assets/util/trash.png';
     import { type FriendStatus } from '$lib/types/profile.type';
-    import { formatDate, formatCommentDate } from "$lib/util/date";
+    import { formatDate, formatDateWithTime } from "$lib/util/date";
 
     export let data;
 
@@ -239,7 +239,7 @@
                                 <div class="comment-box">
                                     <div class="author-box">
                                         <a data-sveltekit-reload class="display-name-link" href="{data.lang}/profile/{comment.commentator}">{comment.display_name}</a>
-                                        <span class="comment-date">{formatCommentDate(comment.created_at, data.localization)}</span>
+                                        <span class="comment-date">{formatDateWithTime(comment.created_at, data.localization)}</span>
                                     </div>
                                     <div>{comment.text}</div>
                                 </div>

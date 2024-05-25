@@ -3,9 +3,16 @@
     import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
     import { pushState } from '$app/navigation';
 
+    import ManagementUser from '$lib/components/ManagementUser.svelte';
     import { PERMISSION_USERS_MANAGEMENT, PERMISSION_ROLES_MANAGEMENT } from '$lib/types/user.type.ts';
 
     export let data;
+
+    let users;
+
+    if (data.permissions.includes(PERMISSION_USERS_MANAGEMENT)) {
+        users = data.users.users;
+    }
 
     let searchParams = new URLSearchParams(window.location.search);
     let categories = [
@@ -86,6 +93,11 @@
                     <input placeholder={data.localization.search}>
                 </div>
             </div>
+            {#if users !== undefined && users.length > 0}
+                {#each users as user}
+                    <ManagementUser {user} />
+                {/each}
+            {/if} 
         {:else if selected === "roles"}
             <div class="dialog-body">{@html DOMPurify.sanitize(marked.parse("123"), {ALLOWED_TAGS: ["p", "br"]})}</div>
             <p class="breaker">{data.localization.categorySecurity}</p>
@@ -97,7 +109,6 @@
 </div>
 
 <style lang="postcss">
-
     .search-icon {
         display: block;
         line-height: 0;
