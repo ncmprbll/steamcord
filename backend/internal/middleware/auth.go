@@ -28,9 +28,7 @@ func (mw *MiddlewareManager) GetUserMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), "user", found)
-
-		next.ServeHTTP(w, r.WithContext(ctx))
+		next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), "user", found)))
 	})
 }
 
@@ -55,8 +53,6 @@ func (mw *MiddlewareManager) AuthSessionMiddleware(next http.Handler) http.Handl
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), "user", found)
-
-		next.ServeHTTP(w, r.WithContext(ctx))
+		next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), "user", found)))
 	})
 }

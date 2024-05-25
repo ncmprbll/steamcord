@@ -24,3 +24,27 @@ func (s *Repository) GetPermissions(ctx context.Context, user *models.User) (*mo
 
 	return permissions, nil
 }
+
+func (s *Repository) GetUsers(ctx context.Context) ([]*models.User, error) {
+	const query = `
+				SELECT
+					*
+				FROM users;
+				`
+	rows, err := s.database.QueryxContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := []*models.User{}
+
+	for rows.Next() {
+		row := &models.User{}
+		rows.StructScan(row)
+		result = append(result, row)
+	}
+
+	return result, nil
+}
+
