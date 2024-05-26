@@ -38,3 +38,11 @@ func (s *Repository) FindByUUID(ctx context.Context, user *models.User) (*models
 	}
 	return found, nil
 }
+
+func (s *Repository) UpdateLoginDate(ctx context.Context, user *models.User) error {
+	_, err := s.database.ExecContext(ctx, "UPDATE users SET login_date = NOW() WHERE id = $1;", user.UUID)
+	if err != nil {
+		return err
+	}
+	return nil
+}

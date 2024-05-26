@@ -6,9 +6,10 @@
     export let user;
 
     let extended: boolean = false;
-    let hide: string[] = ["avatar", "password"];
+    let hide: string[] = ["password"];
     let time: string[] = ["created_at", "updated_at", "login_date"]
     let editable: Record<string, string> = {
+        "avatar": "select",
         "display_name": "input",
         "privacy": "select",
         "currency_code": "select",
@@ -17,14 +18,27 @@
         "banned": "select"
     }
     let selects: Record<string, string[]> = {
+        "avatar": ["keep", "remove"],
         "privacy": ["public", "friendsOnly", "private"],
-        "currency_code": ["RUB", "USD"],
-        "role": ["123", "456"],
-        "banned": ["false", "true"]
+        "currency_code": $page.data.users.currencies,
+        "role": $page.data.users.roles,
+        "banned": [false, true]
     }
 
     function extend() {
         extended = !extended
+    }
+
+    async function handleUserSave(e) {
+		const url = event.target.action;
+		const data = new FormData(event.target);
+
+        const result = await fetch(url, {
+            method: "PATCH",
+            body: data
+        });
+
+        window.location.reload();
     }
 </script>
 
@@ -37,8 +51,11 @@
         </div>
         {#if !extended}
             <a data-sveltekit-reload class="display-name-link" href="{$page.data.lang}/profile/{user.id}">{user.display_name}</a>
+            <div style="align-self: end; margin-left:auto; display: flex; gap: 16px;">
+                <button class="show-more" on:click={extend}>{$page.data.localization.showMore}</button>
+            </div>
         {:else}
-            <form method="POST" action="/api/auth/login" on:submit|preventDefault={() => {}}>
+            <form method="PATCH" action={`/api/management/users/${user.id}`} style="width: 100%;" on:submit|preventDefault={handleUserSave}>
                 {#each Object.entries(user) as [key, value]}
                     <div class="user-data">
                         <div class="user-data-key">{key}</div>
@@ -75,14 +92,12 @@
                         {/if}
                     </div>
                 {/each}
+                <div style="align-self: end; margin-left:auto; display: flex; gap: 16px;">
+                    <button class="show-more" on:click={extend}>{$page.data.localization.showLess}</button>
+                    <button type="submit">{$page.data.localization.save}</button>
+                </div>
             </form>
         {/if}
-        <div style="align-self: end; margin-left:auto; display: flex; gap: 16px;">
-            <button class="show-more" on:click={extend}>{extended ? $page.data.localization.showLess : $page.data.localization.showMore}</button>
-            {#if extended}
-                <button on:click={extend}>{$page.data.localization.save}</button>
-            {/if}
-        </div>
     </div>
 {/if}
 
@@ -178,7 +193,7 @@
     .user-wrapper.extended {
         flex-direction: column;
         align-items: baseline;
-        gap: 8px;
+        gap: 4px;
     }
 
     .user-wrapper:hover {

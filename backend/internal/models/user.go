@@ -33,7 +33,7 @@ type User struct {
 	Email        string     `json:"email,omitempty" db:"email"`
 	Password     string     `json:"password,omitempty" db:"password"`
 	Role         string     `json:"role,omitempty" db:"role"`
-	Banned       *bool       `json:"banned,omitempty" db:"banned"`
+	Banned       *bool      `json:"banned,omitempty" db:"banned"`
 	CreatedAt    *time.Time `json:"created_at,omitempty" db:"created_at"`
 	UpdatedAt    *time.Time `json:"updated_at,omitempty" db:"updated_at"`
 	LoginDate    *time.Time `json:"login_date,omitempty" db:"login_date"`
@@ -66,8 +66,10 @@ type UserPrivacyUpdate struct {
 }
 
 type ManagementUsers struct {
-	Users []*User `json:"users"`
-	Total int     `json:"total"`
+	Users      []*User  `json:"users"`
+	Total      int      `json:"total"`
+	Roles      []string `json:"roles"`
+	Currencies []string `json:"currencies"`
 }
 
 func (u *User) HashPassword() error {

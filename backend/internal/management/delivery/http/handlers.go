@@ -4,16 +4,21 @@ import (
 	"encoding/json"
 	"main/backend/internal/management"
 	"main/backend/internal/models"
+	"main/backend/internal/session"
 	"main/backend/internal/util"
 	"net/http"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 )
 
 type handlers struct {
 	managementRepository management.Repository
+	sessionRepository    session.Repository
 }
 
-func NewManagementHandlers(mR management.Repository) *handlers {
-	return &handlers{mR}
+func NewManagementHandlers(mR management.Repository, sR session.Repository) *handlers {
+	return &handlers{mR, sR}
 }
 
 func (h *handlers) GetPermissions() http.HandlerFunc {
@@ -48,6 +53,44 @@ func (h *handlers) GetUsers() http.HandlerFunc {
 		if err := json.NewEncoder(w).Encode(users); err != nil {
 			util.HandleError(w, err)
 			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}
+}
+
+func (h *handlers) UpdateUser() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		user := &models.User{}
+		userId := chi.URLParam(r, "user_id")
+		uuid, err := uuid.Parse(userId)
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+		if err := json.NewDecoder(r.Body).Decode(user); err != nil {
+			util.HandleError(w, err)
+			return
+		}
+		user.UUID = uuid
+
+		if user.Password != "" {
+			if err := user.HashPassword(); err != nil {
+				util.HandleError(w, err)
+				return
+			}
+		}
+
+		if err := h.managementRepository.UpdateUser(r.Context(), user); err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		if user.Banned != nil && *user.Banned || user.Password != "" {
+			if err := h.sessionRepository.InvalidateSessions(r.Context(), &models.Session{UserID: user.UUID}); err != nil {
+				util.HandleError(w, err)
+				return
+			}
 		}
 
 		w.WriteHeader(http.StatusOK)

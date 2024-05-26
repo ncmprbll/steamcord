@@ -84,7 +84,7 @@ func main() {
 	cartHandlers := cartDelivery.NewAuthHandlers(cartPostgres, authPostgres, sessionRedis)
 	languageHandlers := languageDelivery.NewAuthHandlers(languagePostgres)
 	profileHandlers := profileDelivery.NewAuthHandlers(sessionRedis, profilePostgres)
-	managementHandlers := managementDelivery.NewManagementHandlers(managementPostgres)
+	managementHandlers := managementDelivery.NewManagementHandlers(managementPostgres, sessionRedis)
 
 	// Routers
 	authRouter := authDelivery.NewRouter(authHandlers, manager)

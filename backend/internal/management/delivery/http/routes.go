@@ -20,6 +20,7 @@ func NewRouter(h *handlers, mw *middleware.MiddlewareManager) http.Handler {
 	r.Group(func(r chi.Router) {
 		r.Use(mw.HasPermissionsMiddleware(&models.Permissions{"management.users"}))
 		r.Get("/users", h.GetUsers())
+		r.Patch("/users/{user_id}", h.UpdateUser())
 	})
 
 	return r

@@ -21,6 +21,17 @@ DROP TABLE IF EXISTS locales CASCADE;
 DROP TABLE IF EXISTS translations_tokens CASCADE;
 DROP TABLE IF EXISTS translations CASCADE;
 
+CREATE OR REPLACE FUNCTION update_users_updated_at()
+    RETURNS TRIGGER
+    LANGUAGE PLPGSQL
+    AS
+$$
+BEGIN
+    UPDATE users SET updated_at = NOW() WHERE id = NEW.id;
+	RETURN NEW;
+END;
+$$;
+
 CREATE TABLE currencies
 (
     code CHAR(3) PRIMARY KEY CHECK ( LENGTH(code) = 3 ),
@@ -142,6 +153,13 @@ CREATE TABLE users
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     login_date TIMESTAMP(0) WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TRIGGER users_update
+    AFTER UPDATE
+    ON users
+    FOR EACH ROW
+    WHEN (pg_trigger_depth() < 1)
+    EXECUTE PROCEDURE update_users_updated_at();
 
 CREATE TABLE users_cart
 (

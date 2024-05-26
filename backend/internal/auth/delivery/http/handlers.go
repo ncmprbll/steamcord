@@ -53,7 +53,6 @@ func (h *handlers) Register() http.HandlerFunc {
 func (h *handlers) Login() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user := &models.User{}
-
 		if err := json.NewDecoder(r.Body).Decode(user); err != nil {
 			util.HandleError(w, err)
 			return
@@ -71,8 +70,17 @@ func (h *handlers) Login() http.HandlerFunc {
 		}
 		found.SanitizePassword()
 
-		sessionId, err := h.sessionRepository.CreateSession(r.Context(), &models.Session{UserID: found.UUID}, 30005)
+		if *found.Banned {
+			http.Error(w, "banned", http.StatusConflict)
+			return
+		}
 
+		if err := h.authRepository.UpdateLoginDate(r.Context(), found); err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		sessionId, err := h.sessionRepository.CreateSession(r.Context(), &models.Session{UserID: found.UUID}, 30005)
 		if err != nil {
 			util.HandleError(w, err)
 			return
@@ -87,7 +95,6 @@ func (h *handlers) Login() http.HandlerFunc {
 			Secure:   true,
 			SameSite: http.SameSiteLaxMode,
 		}
-
 		http.SetCookie(w, cookie)
 		w.WriteHeader(http.StatusOK)
 	}

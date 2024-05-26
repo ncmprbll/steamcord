@@ -11,6 +11,7 @@
     let loading: boolean = false;
     let signin: boolean = true;
     let code: number = 0;
+    let errorString: string = "";
     export let visible: boolean;
 
     let login: string = '';
@@ -22,6 +23,7 @@
 
     function clearcode() {
         code = 0;
+        errorString = "";
     }
 
     async function handleLogin(event) {
@@ -37,6 +39,8 @@
         });
 
         code = result.status;
+        errorString = await result.text();
+        errorString = errorString.replaceAll("\n", "");
 
         if (result.status === 200) {
             window.location.reload();
@@ -89,14 +93,14 @@
                 <form method="POST" action="/api/auth/login" class="form" on:submit|preventDefault={handleLogin}>
                     <div class="box-input">
                         <label for="login">{$page.data.localization.login}</label>
-                        <input class:error={code === 404} bind:value={login} id="signin-login" name="login" type="text" required minlength="6" maxlength="20" pattern="[a-zA-Z0-9]+" title="Letters a to Z, numbers 0 to 9" on:input={clearcode} on:focus={clearcode}>
-                        {#if code === 404}
-                            <span class="input-message">{$page.data.localization.badCredentials}</span>
+                        <input class:error={errorString !== ""} bind:value={login} id="signin-login" name="login" type="text" required minlength="6" maxlength="20" pattern="[a-zA-Z0-9]+" title="Letters a to Z, numbers 0 to 9" on:input={clearcode} on:focus={clearcode}>
+                        {#if errorString !== ""}
+                            <span class="input-message">{$page.data.localization[errorString]}</span>
                         {/if}
                     </div>
                     <div class="box-input">
                         <label for="password">{$page.data.localization.password}</label>
-                        <input class:error={code === 404} id="signin-password" name="password" type="password" required minlength="8" maxlength="48" on:input={clearcode} on:focus={clearcode}>
+                        <input class:error={errorString !== ""} id="signin-password" name="password" type="password" required minlength="8" maxlength="48" on:input={clearcode} on:focus={clearcode}>
                     </div>
                     <button class="form-button" type="submit">
                         {#if loading}
