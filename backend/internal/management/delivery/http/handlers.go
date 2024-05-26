@@ -7,6 +7,7 @@ import (
 	"main/backend/internal/session"
 	"main/backend/internal/util"
 	"net/http"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
@@ -92,6 +93,45 @@ func (h *handlers) UpdateUser() http.HandlerFunc {
 				util.HandleError(w, err)
 				return
 			}
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}
+}
+
+func (h *handlers) GetRoles() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		roles, err := h.managementRepository.GetRoles(r.Context())
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(roles); err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}
+}
+
+func (h *handlers) CreateRole() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		role := &models.Role{}
+		if err := json.NewDecoder(r.Body).Decode(role); err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		if err := h.managementRepository.CreateRole(r.Context(), role); err != nil {
+			if strings.Contains(err.Error(), "23505") {
+				http.Error(w, "role exists", http.StatusConflict)
+			} else {
+				util.HandleError(w, err)
+			}
+			return
 		}
 
 		w.WriteHeader(http.StatusOK)

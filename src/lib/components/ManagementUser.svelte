@@ -29,7 +29,7 @@
         extended = !extended
     }
 
-    async function handleUserSave(e) {
+    async function handleUserSave(event) {
 		const url = event.target.action;
 		const data = new FormData(event.target);
 

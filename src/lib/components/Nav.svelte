@@ -2,7 +2,7 @@
     import { page } from '$app/stores';
 
     import { formatBalance } from '$lib/types/user.type';
-    import { PERMISSION_UI_MANAGEMENT } from '$lib/types/user.type.ts';
+    import { PERMISSION_UI_MANAGEMENT } from '$lib/types/management.type.ts';
     import AnchorContext from '$lib/components/AnchorContext.svelte';
 
     export let loginVisible: boolean;

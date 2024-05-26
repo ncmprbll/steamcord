@@ -145,3 +145,38 @@ func (s *Repository) UpdateUser(ctx context.Context, user *models.User) error {
 
 	return nil
 }
+
+func (s *Repository) GetRoles(ctx context.Context) (*models.Roles, error) {
+	const query = `
+				SELECT
+					*
+				FROM users_roles
+				ORDER BY created_at;
+				`
+	rows, err := s.database.QueryxContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	roles := &models.Roles{}
+	for rows.Next() {
+		role := &models.Role{}
+		rows.StructScan(role)
+		*roles = append(*roles, role)
+	}
+
+	return roles, nil
+}
+
+func (s *Repository) CreateRole(ctx context.Context, role *models.Role) error {
+	const query = `
+				INSERT INTO
+					users_roles (name)
+				VALUES ($1);
+				`
+	if _, err := s.database.ExecContext(ctx, query, role.Name); err != nil {
+		return err
+	}
+	return nil
+}

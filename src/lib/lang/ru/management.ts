@@ -4,9 +4,13 @@ const localization: Record<string, string> = {
     "categoryRoles": "Роли",
     "categoryRolePermissions": "Права ролей",
     "usersDesc": "Управление пользователями.",
+    "rolesDesc": "Управление ролями.",
     "showMore": "Раскрыть",
     "showLess": "Скрыть",
-    "save": "Сохранить"
+    "save": "Сохранить",
+    "addRole": "Добавить роль",
+
+    "role exists": "Роль существует."
 };
 
 export { localization };

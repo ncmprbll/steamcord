@@ -1,6 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 
-import { type ManagementUsers, PERMISSION_UI_MANAGEMENT, PERMISSION_USERS_MANAGEMENT } from '$lib/types/user.type.ts';
+import { type ManagementUsers, PERMISSION_UI_MANAGEMENT, PERMISSION_USERS_MANAGEMENT, PERMISSION_ROLES_MANAGEMENT } from '$lib/types/management.type.ts';
 
 export const load = async ({ cookies, params, parent, url }) => {
     const data = await parent();
@@ -31,13 +31,15 @@ export const load = async ({ cookies, params, parent, url }) => {
 	}
 	merged = {...merged, ...localization}
 
+    const sessionId = cookies.get('session_id');
+
     let users: ManagementUsers | undefined;
     if (data.permissions.includes(PERMISSION_USERS_MANAGEMENT)) {
         let result = await fetch(`http://localhost:3000/management/users?${url.searchParams.toString()}`, {
             method: "GET",
             credentials: "include",
             headers: {
-                Cookie: "session_id=" + cookies.get('session_id')
+                Cookie: "session_id=" + sessionId
             }
         });
 
@@ -46,8 +48,24 @@ export const load = async ({ cookies, params, parent, url }) => {
         }
     }
 
+    let roles: string[] | undefined;
+    if (data.permissions.includes(PERMISSION_ROLES_MANAGEMENT)) {
+        let result = await fetch("http://localhost:3000/management/roles", {
+            method: "GET",
+            credentials: "include",
+            headers: {
+                Cookie: "session_id=" + sessionId
+            }
+        });
+
+        if (result.status === 200) {
+            roles = await result.json()
+        }
+    }
+
     return {
         users: users,
+        roles: roles,
         localization: merged
     };
 };

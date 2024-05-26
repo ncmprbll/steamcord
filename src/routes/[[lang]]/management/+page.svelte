@@ -2,9 +2,11 @@
     import DOMPurify from 'dompurify';
     import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
     import { pushState } from '$app/navigation';
+    import { scale } from 'svelte/transition';
+    import { quintOut } from 'svelte/easing';
 
     import ManagementUser from '$lib/components/ManagementUser.svelte';
-    import { PERMISSION_USERS_MANAGEMENT, PERMISSION_ROLES_MANAGEMENT } from '$lib/types/user.type.ts';
+    import { PERMISSION_USERS_MANAGEMENT, PERMISSION_ROLES_MANAGEMENT } from '$lib/types/management.type.ts';
 
     export let data;
 
@@ -96,23 +98,30 @@
         try {
             pushState(url.toString());
         } catch (e) {}
-        // url.searchParams.delete("pageOffset");
-        // url.searchParams.delete("pageLimit");
-        // url.searchParams.set("priceRange", [minPrice || 0, maxPrice || 550000].join(","));
         const result = await fetch(`/api/management/users?${url.searchParams.toString()}`);
         const data = await result.json();
 
         if (result.status === 200) {
             users = data.users;
         }
-        // offset = PRODUCTS_PAGE_LIMIT;
-        // waitForProductsToLoad = false;
+    }
 
-        // items.replaceChildren();
+    let rolesErrorString: string = "";
 
-        // for (let i = 0; i < products.length; i++) {
-        //     new SearchProduct({target: items, props: {product: products[i]}});
-        // }
+    async function handleRoleAdd(event) {
+		const url = event.target.action;
+		const data = new FormData(event.target);
+
+        const result = await fetch(url, {
+            method: event.target.method,
+            body: data
+        });
+
+        if (result.status === 200) {
+            window.location.reload();
+        } else {
+            rolesErrorString = (await result.text()).replaceAll("\n", "");
+        }
     }
 </script>
 
@@ -147,16 +156,41 @@
                 {/each}
             {/if} 
         {:else if selected === "roles"}
-            <div class="dialog-body">{@html DOMPurify.sanitize(marked.parse("123"), {ALLOWED_TAGS: ["p", "br"]})}</div>
-            <p class="breaker">{data.localization.categorySecurity}</p>
+            <div class="dialog-body">{@html DOMPurify.sanitize(marked.parse(data.localization.rolesDesc), {ALLOWED_TAGS: ["p", "br"]})}</div>
+            <p class="breaker">{data.localization.categoryRoles}</p>
+            {#if rolesErrorString !== ""}
+                <div transition:scale={{ duration: 500, opacity: 0, start: 0, easing: quintOut }} class="dialog-body error">{@html DOMPurify.sanitize(marked.parse(data.localization[rolesErrorString]), {ALLOWED_TAGS: ["p", "br"]})}</div>
+            {/if}
+            <form method="POST" action="/api/management/roles/" class="flex-form" on:submit|preventDefault={handleRoleAdd}>
+                <input name="name" type="text" required maxlength="20">
+                <button class="form-button" type="submit">{data.localization.addRole}</button>
+            </form>
         {:else if selected === "permissions"}
             <div class="dialog-body">{@html DOMPurify.sanitize(marked.parse("123"), {ALLOWED_TAGS: ["p", "br"]})}</div>
-            <p class="breaker">{data.localization.profilePrivacy}</p>
+            <p class="breaker">{data.localization.categoryRolePermissions}</p>
         {/if}
     </div>
 </div>
 
 <style lang="postcss">
+    .flex-form {
+        display: flex;
+        gap: 8px;
+    }
+
+    input {
+        border-radius: 2px;
+        color: #fff;
+        padding: 10px;
+        background-color: #32353c;
+        outline: none;
+        font-size: 15px;
+        border: 1px solid #32353c;
+        transition: border 300ms ease-out;
+        box-sizing: border-box;
+        width: 100%;
+    }
+
     .search-icon {
         display: block;
         line-height: 0;
@@ -209,53 +243,6 @@
         overflow: hidden;
     }
 
-
-    .loading {
-        display: none;
-    }
-
-    .preview-images-holder {
-        display: flex;
-        align-items: end;
-        gap: 24px;
-        margin-bottom: 16px;
-    }
-
-    .preview-dimensions {
-        padding-top: 4px;
-        font-size: 12px;
-        letter-spacing: 0.5px;
-        line-height: 1.3333;
-        font-weight: 500;
-        user-select: none;
-    }
-
-    .preview-image {
-        border-radius: 4px;
-    }
-
-    .preview-image.avatar-big {
-        width: var(--avatar-big);
-        height: var(--avatar-big);
-    }
-
-    .preview-image.avatar-medium {
-        width: var(--avatar-medium);
-        height: var(--avatar-medium);
-    }
-
-    .preview-image.avatar-small {
-        width: var(--avatar-small);
-        height: var(--avatar-small);
-    }
-
-    .actions {
-        display: flex;
-        flex-direction: row-reverse;
-        margin-bottom: 16px;
-        gap: 12px;
-    }
-
     .form-button {
         background: linear-gradient(90deg, #06BFFF 0%, #2D73FF 100%);
         border-radius: 2px;
@@ -268,7 +255,7 @@
         font-family: inherit;
         text-align: center;
         cursor: pointer;
-        width: 256px;
+        white-space: nowrap;
     }
 
     .form-button:disabled {
@@ -279,36 +266,8 @@
         pointer-events: none;
     }
 
-    .form-button.upload {
-        transition-property: opacity,background,color,box-shadow;
-        transition-duration: .2s;
-        transition-timing-function: ease-out;
-        background: #3d4450;
-    }
-
-    .form-button.upload:hover {
-        background: #464d58;
-    }
-
     .form-button:hover {
         background: linear-gradient(90deg, #06BFFF 30%, #2D73FF 100%);
-    }
-
-    .box-input {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        margin-bottom: 20px;
-    }
-
-    .box-input > label {
-        font-size: 12px;
-        letter-spacing: 0.5px;
-        line-height: 1.3333;
-        font-weight: 500;
-        text-transform: uppercase;
-        user-select: none;
-        transition: color 400ms;
     }
 
     input {
@@ -322,24 +281,6 @@
         transition: border 300ms ease-out;
         box-sizing: border-box;
         width: 100%;
-    }
-
-    textarea {
-        resize: none;
-        overflow: auto;
-        outline: none;
-        border-radius: 2px;
-        color: #fff;
-        padding: 10px;
-        background-color: rgb(32, 32, 32);
-        outline: none;
-        font-size: 15px;
-        border: 1px solid #32353c;
-        transition: border 300ms ease-out;
-        box-sizing: border-box;
-        width: 100%;
-        height: 160px;
-        line-height: normal
     }
 
     .dialog-body {
@@ -444,13 +385,6 @@
 
         .categories-breaker {
             display: none;
-        }
-    }
-
-    @media (max-width: 342px) {
-        .preview-images-holder {
-            justify-content: space-between;
-            gap: 0px;
         }
     }
 </style>
