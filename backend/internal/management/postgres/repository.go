@@ -25,14 +25,18 @@ func (s *Repository) GetPermissions(ctx context.Context, user *models.User) (*mo
 	return permissions, nil
 }
 
-func (s *Repository) GetUsers(ctx context.Context) (*models.ManagementUsers, error) {
+func (s *Repository) GetUsers(ctx context.Context, term string) (*models.ManagementUsers, error) {
 	const queryTotal = `
 						SELECT
 							COUNT(*)
-						FROM users;
+						FROM users
+						WHERE
+							id::TEXT LIKE '%' || LOWER($1) || '%' OR
+							login LIKE '%' || LOWER($1) || '%' OR
+							display_name LIKE '%' || LOWER($1) || '%';
 						`
 	var total int
-	if err := s.database.QueryRowxContext(ctx, queryTotal).Scan(&total); err != nil {
+	if err := s.database.QueryRowxContext(ctx, queryTotal, term).Scan(&total); err != nil {
 		return nil, err
 	}
 
@@ -40,9 +44,13 @@ func (s *Repository) GetUsers(ctx context.Context) (*models.ManagementUsers, err
 				SELECT
 					*
 				FROM users
+				WHERE
+					id::TEXT LIKE '%' || LOWER($1) || '%' OR
+					login LIKE '%' || LOWER($1) || '%' OR
+					display_name LIKE '%' || LOWER($1) || '%'
 				ORDER BY created_at;
 				`
-	rows, err := s.database.QueryxContext(ctx, query)
+	rows, err := s.database.QueryxContext(ctx, query, term)
 	if err != nil {
 		return nil, err
 	}

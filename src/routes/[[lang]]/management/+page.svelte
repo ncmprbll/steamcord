@@ -8,7 +8,10 @@
 
     export let data;
 
+    const DONE_TYPING_INTERVAL = 500;
+
     let users;
+    let searchValue: string = "";
 
     if (data.permissions.includes(PERMISSION_USERS_MANAGEMENT)) {
         users = data.users.users;
@@ -66,6 +69,51 @@
         url.searchParams.set('category', id);
         pushState(url.toString());
     }
+
+    let searchTimer;
+
+    function searchKeyUp(e) {
+        clearTimeout(searchTimer);
+        if (e.key !== "Enter") {
+            searchTimer = setTimeout(search, DONE_TYPING_INTERVAL);
+        }
+    }
+
+    function searchKeyDown(e) {
+        clearTimeout(searchTimer);
+        if (e.key === "Enter") {
+            search(e)
+        }
+    }
+
+    async function search(e) {
+        if (e !== undefined && e.key !== "Enter") {
+            return;
+        }
+
+        const url = new URL(window.location.href);
+        url.searchParams.set("term", searchValue);
+        try {
+            pushState(url.toString());
+        } catch (e) {}
+        // url.searchParams.delete("pageOffset");
+        // url.searchParams.delete("pageLimit");
+        // url.searchParams.set("priceRange", [minPrice || 0, maxPrice || 550000].join(","));
+        const result = await fetch(`/api/management/users?${url.searchParams.toString()}`);
+        const data = await result.json();
+
+        if (result.status === 200) {
+            users = data.users;
+        }
+        // offset = PRODUCTS_PAGE_LIMIT;
+        // waitForProductsToLoad = false;
+
+        // items.replaceChildren();
+
+        // for (let i = 0; i < products.length; i++) {
+        //     new SearchProduct({target: items, props: {product: products[i]}});
+        // }
+    }
 </script>
 
 <p class="breaker">{data.localization.management}</p>
@@ -90,7 +138,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 21 20" preserveAspectRatio="xMidYMid meet"><g transform="scale(1 -1) rotate(-45 -11.93502884 -2)" stroke="currentColor" stroke-width="1.65" fill="none" fill-rule="evenodd"><circle cx="7.70710678" cy="7.70710678" r="7"></circle><path d="M15.2071068 8.62132034h5.6923881" stroke-linecap="square"></path></g></svg>
                 </span>
                 <div class="search-input-wrapper">
-                    <input placeholder={data.localization.search}>
+                    <input placeholder={data.localization.search} bind:value={searchValue} on:keydown={searchKeyDown} on:keyup={searchKeyUp}>
                 </div>
             </div>
             {#if users !== undefined && users.length > 0}

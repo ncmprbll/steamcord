@@ -6,7 +6,7 @@
     export let user;
 
     let extended: boolean = false;
-    let hide: string[] = ["password"];
+    let hide: string[] = ["about", "password"];
     let time: string[] = ["created_at", "updated_at", "login_date"]
     let editable: Record<string, string> = {
         "avatar": "select",
@@ -112,11 +112,13 @@
         background-color: rgb(64, 64, 64);
         border-radius: 4px;
         padding-left: 4px;
+        min-width: 0;
     }
 
     .user-data-value-select {
         background-color: rgb(64, 64, 64);
         border-radius: 4px;
+        min-width: 0;
     }
 
     .user-data-value-select > option {

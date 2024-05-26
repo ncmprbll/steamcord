@@ -19,6 +19,7 @@ const localization: Record<string, string> = {
     'banned': 'Аккаунт заблокирован',
     'search': 'Поиск',
     'profile': 'Профиль',
+    'settings': 'Настройки',
     'signOut': 'Выйти',
     "allProducts": "Все игры",
     "management": "Управление"

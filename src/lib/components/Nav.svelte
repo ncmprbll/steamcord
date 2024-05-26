@@ -61,6 +61,11 @@
             href: `${$page.data?.lang}/profile/${$page.data?.me?.id}`
         },
         {
+            text: $page.data.localization.settings,
+            type: "anchor",
+            href: `${$page.data?.lang}/profile/${$page.data?.me?.id}/settings`
+        },
+        {
             text: $page.data.localization.signOut,
             type: "button",
             callback: async () => {

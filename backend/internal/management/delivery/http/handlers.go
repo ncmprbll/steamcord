@@ -43,7 +43,8 @@ func (h *handlers) GetPermissions() http.HandlerFunc {
 
 func (h *handlers) GetUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		users, err := h.managementRepository.GetUsers(r.Context())
+		term := r.URL.Query().Get("term")
+		users, err := h.managementRepository.GetUsers(r.Context(), term)
 		if err != nil {
 			util.HandleError(w, err)
 			return
