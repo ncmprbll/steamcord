@@ -16,9 +16,13 @@ func New(database *sqlx.DB) *Repository {
 }
 
 func (s *Repository) GetPermissions(ctx context.Context, user *models.User) (*models.Permissions, error) {
+	var id int
+	if err := s.database.QueryRowxContext(ctx, "SELECT id FROM users_roles WHERE name = $1;", user.Role).Scan(&id); err != nil {
+		return nil, err
+	}
+
 	permissions := &models.Permissions{}
-	err := s.database.QueryRowxContext(ctx, "SELECT JSONB_AGG(permission) permissions FROM users_role_permissions WHERE role = $1;", user.Role).Scan(permissions)
-	if err != nil {
+	if err := s.database.QueryRowxContext(ctx, "SELECT JSONB_AGG(permission) permissions FROM users_role_permissions WHERE role_id = $1;", id).Scan(permissions); err != nil {
 		return nil, err
 	}
 
@@ -209,17 +213,17 @@ func (s *Repository) DeleteRole(ctx context.Context, role *models.Role) (int64, 
 		return 0, nil
 	}
 
-	const queryUpdate = `
-				UPDATE
-					users
-				SET
-					role = 'user'
-				WHERE
-					role = $1;
-				`
-	if _, err := tx.ExecContext(ctx, queryUpdate, name); err != nil {
-		return 0, err
-	}
+	// const queryUpdate = `
+	// 			UPDATE
+	// 				users
+	// 			SET
+	// 				role = 'user'
+	// 			WHERE
+	// 				role = $1;
+	// 			`
+	// if _, err := tx.ExecContext(ctx, queryUpdate, name); err != nil {
+	// 	return 0, err
+	// }
 
 	const queryDelete = `
 				DELETE FROM
@@ -269,7 +273,7 @@ func (s *Repository) GetRolePermissions(ctx context.Context) (*models.RolePermis
 					name,
 					permission
 				FROM users_roles
-					LEFT JOIN users_role_permissions ON role = name;
+					LEFT JOIN users_role_permissions ON role_id = id;
 				`
 	rows, err = s.database.QueryxContext(ctx, queryRolePermissions)
 	if err != nil {
@@ -288,4 +292,87 @@ func (s *Repository) GetRolePermissions(ctx context.Context) (*models.RolePermis
 	}
 
 	return &models.RolePermissions{Permissions: permissions, Roles: roles}, nil
+}
+
+func (s *Repository) AddPermission(ctx context.Context, role *models.Role, permissions *models.Permissions) error {
+	tx, err := s.database.BeginTxx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	const queryAdd = `
+				INSERT INTO
+					users_role_permissions (role_id, permission)
+				VALUES ($1, $2);
+				`
+	for _, p := range *permissions {
+		if _, err := tx.ExecContext(ctx, queryAdd, role.ID, p); err != nil {
+			return err
+		}
+	}
+
+	const queryUpdate = `
+				UPDATE
+					users_roles
+				SET
+					updated_at = NOW()
+				WHERE
+					id = $1;
+				`
+	if _, err := tx.ExecContext(ctx, queryUpdate, role.ID); err != nil {
+		return err
+	}
+
+	if err = tx.Commit(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *Repository) DeletePermission(ctx context.Context, role *models.Role, permissions *models.Permissions) (int64, error) {
+	tx, err := s.database.BeginTxx(ctx, nil)
+	if err != nil {
+		return 0, err
+	}
+	defer tx.Rollback()
+
+	acc := int64(0)
+	const queryAdd = `
+				DELETE FROM
+					users_role_permissions
+				WHERE role_id = $1 AND permission = $2;
+				`
+	for _, p := range *permissions {
+		result, err := tx.ExecContext(ctx, queryAdd, role.ID, p)
+		if err != nil {
+			return 0, err
+		}
+
+		affected, err := result.RowsAffected()
+		if err != nil {
+			return 0, err
+		}
+
+		acc += affected
+	}
+
+	const queryUpdate = `
+				UPDATE
+					users_roles
+				SET
+					updated_at = NOW()
+				WHERE
+					id = $1;
+				`
+	if _, err := tx.ExecContext(ctx, queryUpdate, role.ID); err != nil {
+		return 0, err
+	}
+
+	if err = tx.Commit(); err != nil {
+		return 0, err
+	}
+
+	return acc, nil
 }

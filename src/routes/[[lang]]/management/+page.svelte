@@ -20,6 +20,9 @@
 
     if (data.permissions.includes(PERMISSION_USERS_MANAGEMENT)) {
         users = data.users.users;
+    }
+
+    if (data.permissions.includes(PERMISSION_ROLES_MANAGEMENT)) {
         roles = data.roles;
         rolePermissions = data.rolePermissions;
     }
@@ -137,7 +140,39 @@
         window.location.reload();
     }
 
-    let selectedRolePermission: string = "user";
+    let selectedRolePermission: string = searchParams.get("role") || "user";
+
+    if (rolePermissions !== undefined && rolePermissions.roles[selectedRolePermission] === undefined) {
+        selectedRolePermission = "user";
+    }
+
+    async function handlePermissionUpdate(name, permission, del) {
+        let id: number = 0;
+
+        for (let i = 0; i < roles.length; i++) {
+            if (roles[i].name === name) {
+                id = roles[i].id;
+                break;
+            }
+        }
+
+        if (id === 0) {
+            return;
+        }
+
+        const result = await fetch(`/api/management/roles/${id}/permissions`, {
+            method: del ? "DELETE" : "POST",
+            body: JSON.stringify([permission])
+        });
+
+        window.location.reload();
+    }
+
+	function onRoleChange() {
+        const url = new URL(window.location.href);
+        url.searchParams.set('role', selectedRolePermission);
+        pushState(url.toString());
+	}
 </script>
 
 <p class="breaker">{data.localization.management}</p>
@@ -190,7 +225,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {#if users !== undefined && users.length > 0}
+                    {#if roles !== undefined && roles.length > 0}
                         {#each roles as role}
                             <tr>
                                 <th scope="row">{role.name}</th>
@@ -215,7 +250,7 @@
             {/if}
             <p class="breaker">{data.localization.categoryRolePermissions}</p>
             {#if roles !== undefined && roles.length > 0}
-                <select bind:value={selectedRolePermission} name="name">
+                <select bind:value={selectedRolePermission} name="name" on:change={onRoleChange}>
                     {#each roles as role}
                         <option value={role.name}>{role.name}</option>
                     {/each}
@@ -228,7 +263,13 @@
                             <tr>
                                 <td>{permission}</td>
                                 <td>
-                                    <button class="form-button" class:allow={!rolePermissions.roles[selectedRolePermission].includes(permission)} class:revoke={rolePermissions.roles[selectedRolePermission].includes(permission)} on:click={() => handleRoleDelete(1)}>{rolePermissions.roles[selectedRolePermission].includes(permission) ? data.localization.revoke : data.localization.allow}</button>
+                                    <button class="form-button"
+                                        class:allow={!rolePermissions.roles[selectedRolePermission].includes(permission)}
+                                        class:revoke={rolePermissions.roles[selectedRolePermission].includes(permission)}
+                                        on:click={() => {handlePermissionUpdate(selectedRolePermission, permission, rolePermissions.roles[selectedRolePermission].includes(permission))}}
+                                    >
+                                        {rolePermissions.roles[selectedRolePermission].includes(permission) ? data.localization.revoke : data.localization.allow}
+                                    </button>
                                 </td>
                             </tr>
                         {/each}

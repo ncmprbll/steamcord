@@ -136,11 +136,11 @@ CREATE TABLE users_roles
 
 CREATE TABLE users_role_permissions
 (
-    role VARCHAR(16) REFERENCES users_roles(name),
+    role_id SERIAL REFERENCES users_roles(id) ON DELETE CASCADE,
     permission TEXT REFERENCES permissions(name),
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (role, permission)
+    PRIMARY KEY (role_id, permission)
 );
 
 CREATE TABLE users
@@ -155,7 +155,7 @@ CREATE TABLE users
     balance NUMERIC(16, 2) DEFAULT 0.00 NOT NULL CHECK ( balance >= 0 ),
     email VARCHAR(64) NOT NULL CHECK ( email <> '' ),
     password VARCHAR(250) NOT NULL CHECK ( octet_length(password) <> 0 ),
-    role VARCHAR(16) DEFAULT 'user' REFERENCES users_roles(name),
+    role VARCHAR(16) DEFAULT 'user' REFERENCES users_roles(name) ON DELETE SET DEFAULT,
     banned BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -225,9 +225,9 @@ INSERT INTO permissions (name) VALUES ('ui.management');
 INSERT INTO permissions (name) VALUES ('management.users');
 INSERT INTO permissions (name) VALUES ('management.roles');
 
-INSERT INTO users_role_permissions (role, permission) VALUES ('admin', 'ui.management');
-INSERT INTO users_role_permissions (role, permission) VALUES ('admin', 'management.users');
-INSERT INTO users_role_permissions (role, permission) VALUES ('admin', 'management.roles');
+INSERT INTO users_role_permissions (role_id, permission) VALUES (2, 'ui.management');
+INSERT INTO users_role_permissions (role_id, permission) VALUES (2, 'management.users');
+INSERT INTO users_role_permissions (role_id, permission) VALUES (2, 'management.roles');
 
 INSERT INTO locales (code, name) VALUES ('ru', 'Русский');
 INSERT INTO locales (code, name) VALUES ('en', 'English');

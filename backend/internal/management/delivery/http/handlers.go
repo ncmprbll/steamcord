@@ -188,3 +188,64 @@ func (h *handlers) GetRolePermissions() http.HandlerFunc {
 		w.WriteHeader(http.StatusOK)
 	}
 }
+
+func (h *handlers) AddPermission() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		roleId := chi.URLParam(r, "role_id")
+		id, err := strconv.Atoi(roleId)
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		permissions := &models.Permissions{}
+		if err := json.NewDecoder(r.Body).Decode(permissions); err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		if err := h.managementRepository.AddPermission(r.Context(), &models.Role{ID: id}, permissions); err != nil {
+			if strings.Contains(err.Error(), "23503") {
+				http.Error(w, "bad permission", http.StatusBadRequest)
+			} else {
+				util.HandleError(w, err)
+			}
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}
+}
+
+func (h *handlers) DeletePermission() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		roleId := chi.URLParam(r, "role_id")
+		id, err := strconv.Atoi(roleId)
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		permissions := &models.Permissions{}
+		if err := json.NewDecoder(r.Body).Decode(permissions); err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		affected, err := h.managementRepository.DeletePermission(r.Context(), &models.Role{ID: id}, permissions)
+		if err != nil {
+			if strings.Contains(err.Error(), "23503") {
+				http.Error(w, "bad permission", http.StatusBadRequest)
+			} else {
+				util.HandleError(w, err)
+			}
+			return
+		}
+
+		if affected == 0 {
+			http.Error(w, "no permissions found", http.StatusNotFound)
+		} else {
+			w.WriteHeader(http.StatusOK)
+		}
+	}
+}

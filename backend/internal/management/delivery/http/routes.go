@@ -29,6 +29,8 @@ func NewRouter(h *handlers, mw *middleware.MiddlewareManager) http.Handler {
 		r.Get("/roles/permissions", h.GetRolePermissions())
 		r.Post("/roles", h.CreateRole())
 		r.Delete("/roles/{role_id}", h.DeleteRole())
+		r.Post("/roles/{role_id}/permissions", h.AddPermission())
+		r.Delete("/roles/{role_id}/permissions", h.DeletePermission())
 	})
 
 	return r
