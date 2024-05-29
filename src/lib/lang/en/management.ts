@@ -9,7 +9,12 @@ const localization: Record<string, string> = {
     "showLess": "Show less",
     "save": "Save",
     "addRole": "Add role",
+    "deleteRole": "Delete",
+    "roleName": "Name",
+    "roleCreatedAt": "Created at",
+    "roleUpdatedAt": "Updated at",
 
+    "bad name": "Bad name.",
     "role exists": "Role exists."
 };
 

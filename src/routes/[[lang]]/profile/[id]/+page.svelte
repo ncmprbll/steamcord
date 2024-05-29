@@ -245,7 +245,7 @@
                                 </div>
                                 {#if data.me !== undefined && (data.user.id === data.me.id || comment.commenter === data.me.id)}
                                     <button class="delete-comment-button" type="button" on:click={() => deleteComment(comment.id)}>
-                                        <img class="delete-comment-icon" src={trash} alt="Trash">
+                                        <img class="delete-comment-icon" src={trash} alt="Delete Comment">
                                     </button>
                                 {/if}
                             </div>

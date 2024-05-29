@@ -10,3 +10,10 @@ export type ManagementUsers = {
 	roles: string[]
 	currenncies: string[]
 }
+
+export type Role = {
+	name: string
+	can_delete: boolean
+	created_at: string
+	updated_at: string
+}

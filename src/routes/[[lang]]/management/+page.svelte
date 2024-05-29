@@ -5,6 +5,7 @@
     import { scale } from 'svelte/transition';
     import { quintOut } from 'svelte/easing';
 
+    import { formatDateWithTime } from "$lib/util/date";
     import ManagementUser from '$lib/components/ManagementUser.svelte';
     import { PERMISSION_USERS_MANAGEMENT, PERMISSION_ROLES_MANAGEMENT } from '$lib/types/management.type.ts';
 
@@ -13,10 +14,15 @@
     const DONE_TYPING_INTERVAL = 500;
 
     let users;
+    let roles;
     let searchValue: string = "";
 
     if (data.permissions.includes(PERMISSION_USERS_MANAGEMENT)) {
         users = data.users.users;
+    }
+
+    if (data.permissions.includes(PERMISSION_ROLES_MANAGEMENT)) {
+        roles = data.roles;
     }
 
     let searchParams = new URLSearchParams(window.location.search);
@@ -123,6 +129,18 @@
             rolesErrorString = (await result.text()).replaceAll("\n", "");
         }
     }
+
+    async function handleRoleDelete(name) {
+		const data = new FormData();
+        data.append("name", name)
+
+        const result = await fetch("/api/management/roles", {
+            method: "DELETE",
+            body: data
+        });
+
+        window.location.reload();
+    }
 </script>
 
 <p class="breaker">{data.localization.management}</p>
@@ -165,6 +183,30 @@
                 <input name="name" type="text" required maxlength="20">
                 <button class="form-button" type="submit">{data.localization.addRole}</button>
             </form>
+            <table>
+                <thead>
+                    <tr>
+                        <th scope="col">{data.localization.roleName}</th>
+                        <th scope="col">{data.localization.roleCreatedAt}</th>
+                        <th scope="col">{data.localization.roleUpdatedAt}</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {#if users !== undefined && users.length > 0}
+                        {#each roles as role}
+                            <tr>
+                                <th scope="row">{role.name}</th>
+                                <td>{formatDateWithTime(role.created_at, data.localization)}</td>
+                                <td>{formatDateWithTime(role.updated_at, data.localization)}</td>
+                                <td>
+                                    <button class="form-button" disabled={!role.can_delete} on:click={() => handleRoleDelete(role.name)}>{data.localization.deleteRole}</button>
+                                </td>
+                            </tr>
+                        {/each}
+                    {/if}
+                </tbody>
+            </table>
         {:else if selected === "permissions"}
             <div class="dialog-body">{@html DOMPurify.sanitize(marked.parse("123"), {ALLOWED_TAGS: ["p", "br"]})}</div>
             <p class="breaker">{data.localization.categoryRolePermissions}</p>
@@ -173,6 +215,36 @@
 </div>
 
 <style lang="postcss">
+    table {
+        width: 100%;
+        margin-top: 18px;
+        border-collapse: collapse;
+        border: 2px solid rgb(140 140 140);
+        font-size: 14px;
+        letter-spacing: 1px;
+    }
+
+    thead {
+        background-color: rgb(48, 48, 48);
+    }
+
+    th, td {
+        border: 1px solid rgb(160 160 160);
+        padding: 8px 10px;
+    }
+
+    td {
+        text-align: center;
+    }
+
+    th:last-of-type, td:last-of-type {
+        padding: 0;
+    }
+
+    tbody > tr:nth-of-type(even) {
+        background-color: rgb(32, 32, 32);
+    }
+
     .flex-form {
         display: flex;
         gap: 8px;
@@ -256,6 +328,13 @@
         text-align: center;
         cursor: pointer;
         white-space: nowrap;
+    }
+
+    td > .form-button {
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+        padding: 12px 0;
     }
 
     .form-button:disabled {

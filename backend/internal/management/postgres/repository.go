@@ -180,3 +180,25 @@ func (s *Repository) CreateRole(ctx context.Context, role *models.Role) error {
 	}
 	return nil
 }
+
+func (s *Repository) DeleteRole(ctx context.Context, role *models.Role) (int64, error) {
+	const query = `
+				DELETE FROM
+					users_roles
+				WHERE
+					name = $1 AND
+					can_delete = TRUE;
+				`
+	result, err := s.database.ExecContext(ctx, query, role.Name)
+	if err != nil {
+		return 0, err
+	}
+
+	affected, err := result.RowsAffected()
+	if err != nil {
+		return 0, err
+	}
+
+	return affected, nil
+}
+

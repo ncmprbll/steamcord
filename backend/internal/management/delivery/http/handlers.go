@@ -125,6 +125,15 @@ func (h *handlers) CreateRole() http.HandlerFunc {
 			return
 		}
 
+		if err := role.Validate(); err != nil {
+			if strings.Contains(err.Error(), "illegal") {
+				http.Error(w, "bad name", http.StatusConflict)
+			} else {
+				util.HandleError(w, err)
+			}
+			return
+		}
+
 		if err := h.managementRepository.CreateRole(r.Context(), role); err != nil {
 			if strings.Contains(err.Error(), "23505") {
 				http.Error(w, "role exists", http.StatusConflict)
@@ -135,5 +144,27 @@ func (h *handlers) CreateRole() http.HandlerFunc {
 		}
 
 		w.WriteHeader(http.StatusOK)
+	}
+}
+
+func (h *handlers) DeleteRole() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		role := &models.Role{}
+		if err := json.NewDecoder(r.Body).Decode(role); err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		affected, err := h.managementRepository.DeleteRole(r.Context(), role)
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		if affected == 0 {
+			http.Error(w, "bad role name or none were found", http.StatusNotFound)
+		} else {
+			w.WriteHeader(http.StatusOK)
+		}
 	}
 }

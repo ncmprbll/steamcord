@@ -3,6 +3,7 @@ package models
 import (
 	"encoding/json"
 	"errors"
+	"regexp"
 	"time"
 )
 
@@ -29,6 +30,16 @@ type Role struct {
 }
 
 type Roles []*Role
+
+func (u *Role) Validate() error {
+	name := u.Name
+
+	if !regexp.MustCompile(`^[a-zA-Z0-9]*$`).MatchString(name) {
+		return errors.New("validation error: illegal name characters")
+	}
+
+	return nil
+}
 
 func (p *Permissions) Scan(src any) error {
 	bytes, ok := src.([]byte)

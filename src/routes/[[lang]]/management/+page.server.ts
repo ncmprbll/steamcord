@@ -1,6 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 
-import { type ManagementUsers, PERMISSION_UI_MANAGEMENT, PERMISSION_USERS_MANAGEMENT, PERMISSION_ROLES_MANAGEMENT } from '$lib/types/management.type.ts';
+import { type ManagementUsers, type Role, PERMISSION_UI_MANAGEMENT, PERMISSION_USERS_MANAGEMENT, PERMISSION_ROLES_MANAGEMENT } from '$lib/types/management.type.ts';
 
 export const load = async ({ cookies, params, parent, url }) => {
     const data = await parent();
@@ -48,7 +48,7 @@ export const load = async ({ cookies, params, parent, url }) => {
         }
     }
 
-    let roles: string[] | undefined;
+    let roles: Role[] | undefined;
     if (data.permissions.includes(PERMISSION_ROLES_MANAGEMENT)) {
         let result = await fetch("http://localhost:3000/management/roles", {
             method: "GET",

@@ -11,4 +11,5 @@ type Repository interface {
 	UpdateUser(context.Context, *models.User) error
 	GetRoles(context.Context) (*models.Roles, error)
 	CreateRole(context.Context, *models.Role) error
+	DeleteRole(context.Context, *models.Role) (int64, error)
 }
