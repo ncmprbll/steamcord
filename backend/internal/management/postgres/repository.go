@@ -182,14 +182,32 @@ func (s *Repository) CreateRole(ctx context.Context, role *models.Role) error {
 }
 
 func (s *Repository) DeleteRole(ctx context.Context, role *models.Role) (int64, error) {
-	const query = `
+	tx, err := s.database.BeginTxx(ctx, nil)
+	if err != nil {
+		return 0, err
+	}
+	defer tx.Rollback()
+
+	const queryUpdate = `
+				UPDATE
+					users
+				SET
+					role = 'user'
+				WHERE
+					role = $1;
+				`
+	if _, err := tx.ExecContext(ctx, queryUpdate, role.Name); err != nil {
+		return 0, err
+	}
+
+	const queryDelete = `
 				DELETE FROM
 					users_roles
 				WHERE
 					name = $1 AND
 					can_delete = TRUE;
 				`
-	result, err := s.database.ExecContext(ctx, query, role.Name)
+	result, err := tx.ExecContext(ctx, queryDelete, role.Name)
 	if err != nil {
 		return 0, err
 	}
@@ -199,6 +217,9 @@ func (s *Repository) DeleteRole(ctx context.Context, role *models.Role) (int64, 
 		return 0, err
 	}
 
+	if err = tx.Commit(); err != nil {
+		return 0, err
+	}
+
 	return affected, nil
 }
-
