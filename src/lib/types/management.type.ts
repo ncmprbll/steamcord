@@ -12,8 +12,14 @@ export type ManagementUsers = {
 }
 
 export type Role = {
+	id: string
 	name: string
 	can_delete: boolean
 	created_at: string
 	updated_at: string
+}
+
+export type RolePermissions = {
+	permissions: Record<string, string>
+	roles: Record<string, string[]>
 }

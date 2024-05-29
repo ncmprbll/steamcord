@@ -64,7 +64,7 @@
                                 {#if editable[key] === "input"}
                                     <input name={key} class="user-data-value-input" type="text">
                                 {:else if editable[key] === "select"}
-                                    <select ame={key} class="user-data-value-select">
+                                    <select name={key} class="user-data-value-select">
                                         {#each selects[key] as option}
                                             <option value={option} selected={value == option}>{option}</option>
                                         {/each}

@@ -23,10 +23,21 @@ type Permission struct {
 type Permissions []string
 
 type Role struct {
+	ID        int        `json:"id" db:"id"`
 	Name      string     `json:"name" db:"name"`
 	CanDelete bool       `json:"can_delete" db:"can_delete"`
 	CreatedAt *time.Time `json:"created_at,omitempty" db:"created_at"`
 	UpdatedAt *time.Time `json:"updated_at,omitempty" db:"updated_at"`
+}
+
+type ManagementRole struct {
+	Name       string `json:"name" db:"name"`
+	Permission string `json:"permission" db:"permission"`
+}
+
+type RolePermissions struct {
+	Permissions []string `json:"permissions"`
+	Roles map[string][]string `json:"roles"`
 }
 
 type Roles []*Role

@@ -15,14 +15,13 @@
 
     let users;
     let roles;
+    let rolePermissions;
     let searchValue: string = "";
 
     if (data.permissions.includes(PERMISSION_USERS_MANAGEMENT)) {
         users = data.users.users;
-    }
-
-    if (data.permissions.includes(PERMISSION_ROLES_MANAGEMENT)) {
         roles = data.roles;
+        rolePermissions = data.rolePermissions;
     }
 
     let searchParams = new URLSearchParams(window.location.search);
@@ -130,17 +129,15 @@
         }
     }
 
-    async function handleRoleDelete(name) {
-		const data = new FormData();
-        data.append("name", name)
-
-        const result = await fetch("/api/management/roles", {
-            method: "DELETE",
-            body: data
+    async function handleRoleDelete(id) {
+        const result = await fetch(`/api/management/roles/${id}`, {
+            method: "DELETE"
         });
 
         window.location.reload();
     }
+
+    let selectedRolePermission: string = "user";
 </script>
 
 <p class="breaker">{data.localization.management}</p>
@@ -200,7 +197,7 @@
                                 <td>{formatDateWithTime(role.created_at, data.localization)}</td>
                                 <td>{formatDateWithTime(role.updated_at, data.localization)}</td>
                                 <td>
-                                    <button class="form-button" disabled={!role.can_delete} on:click={() => handleRoleDelete(role.name)}>{data.localization.deleteRole}</button>
+                                    <button class="form-button" disabled={!role.can_delete} on:click={() => handleRoleDelete(role.id)}>{data.localization.deleteRole}</button>
                                 </td>
                             </tr>
                         {/each}
@@ -208,13 +205,70 @@
                 </tbody>
             </table>
         {:else if selected === "permissions"}
-            <div class="dialog-body">{@html DOMPurify.sanitize(marked.parse("123"), {ALLOWED_TAGS: ["p", "br"]})}</div>
+            <div class="dialog-body">{@html DOMPurify.sanitize(marked.parse(data.localization.rolePermissionsDesc), {ALLOWED_TAGS: ["p", "br"]})}</div>
+            {#if rolePermissions !== undefined}
+                <div class="permissions-description">
+                    {#each rolePermissions.permissions as permission}
+                        {@html DOMPurify.sanitize(marked.parse(data.localization[permission].replace(/\r?\n/g, "<br>")), {ALLOWED_TAGS: ["p", "br", "em"]})}
+                    {/each}
+                </div>
+            {/if}
             <p class="breaker">{data.localization.categoryRolePermissions}</p>
+            {#if roles !== undefined && roles.length > 0}
+                <select bind:value={selectedRolePermission} name="name">
+                    {#each roles as role}
+                        <option value={role.name}>{role.name}</option>
+                    {/each}
+                </select>
+            {/if}
+            <table>
+                <tbody>
+                    {#if rolePermissions !== undefined}
+                        {#each rolePermissions.permissions as permission}
+                            <tr>
+                                <td>{permission}</td>
+                                <td>
+                                    <button class="form-button" class:allow={!rolePermissions.roles[selectedRolePermission].includes(permission)} class:revoke={rolePermissions.roles[selectedRolePermission].includes(permission)} on:click={() => handleRoleDelete(1)}>{rolePermissions.roles[selectedRolePermission].includes(permission) ? data.localization.revoke : data.localization.allow}</button>
+                                </td>
+                            </tr>
+                        {/each}
+                    {/if}
+                    <!-- {#if rolePermissions !== undefined}
+                        {#each Object.entries(rolePermissions.roles) as [role, permissions]}
+                            <tr>
+                                <th scope="row">{role.name}</th>
+                                <td>{formatDateWithTime(role.created_at, data.localization)}</td>
+                                <td>{formatDateWithTime(role.updated_at, data.localization)}</td>
+                                <td>
+                                    <button class="form-button" disabled={!role.can_delete} on:click={() => handleRoleDelete(role.id)}>{data.localization.deleteRole}</button>
+                                </td>
+                            </tr>
+                        {/each}
+                    {/if} -->
+                </tbody>
+            </table>
         {/if}
     </div>
 </div>
 
 <style lang="postcss">
+    :global(.permissions-description > p) {
+        margin: 0;
+    }
+
+    :global(.permissions-description > p:last-child) {
+        margin-bottom: 16px;
+    }
+
+    select {
+        width: 100%;
+        padding: 4px;
+        font-size: 16px;
+        background-color: rgb(64, 64, 64);
+        border-radius: 4px;
+        min-width: 0;
+    }
+
     table {
         width: 100%;
         margin-top: 18px;
@@ -349,6 +403,22 @@
         background: linear-gradient(90deg, #06BFFF 30%, #2D73FF 100%);
     }
 
+    .form-button.revoke {
+        background: rgb(137, 9, 9);
+    }
+
+    .form-button.revoke:hover {
+        background: rgb(153, 25, 25);
+    }
+
+    .form-button.allow {
+        background: rgb(25, 133, 23);
+    }
+
+    .form-button.allow:hover {
+        background: rgb(41, 149, 39);
+    }
+
     input {
         border-radius: 2px;
         color: #fff;
@@ -363,7 +433,7 @@
     }
 
     .dialog-body {
-        margin-bottom: 20px;
+        margin-bottom: 16px;
     }
 
     :global(.dialog-body > p) {

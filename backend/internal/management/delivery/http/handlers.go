@@ -7,6 +7,7 @@ import (
 	"main/backend/internal/session"
 	"main/backend/internal/util"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/go-chi/chi/v5"
@@ -149,22 +150,41 @@ func (h *handlers) CreateRole() http.HandlerFunc {
 
 func (h *handlers) DeleteRole() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		role := &models.Role{}
-		if err := json.NewDecoder(r.Body).Decode(role); err != nil {
+		roleId := chi.URLParam(r, "role_id")
+		id, err := strconv.Atoi(roleId)
+		if err != nil {
 			util.HandleError(w, err)
 			return
 		}
 
-		affected, err := h.managementRepository.DeleteRole(r.Context(), role)
+		affected, err := h.managementRepository.DeleteRole(r.Context(), &models.Role{ID: id})
 		if err != nil {
 			util.HandleError(w, err)
 			return
 		}
 
 		if affected == 0 {
-			http.Error(w, "bad role name or none were found", http.StatusNotFound)
+			http.Error(w, "bad role", http.StatusNotFound)
 		} else {
 			w.WriteHeader(http.StatusOK)
 		}
+	}
+}
+
+func (h *handlers) GetRolePermissions() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		data, err := h.managementRepository.GetRolePermissions(r.Context())
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(data); err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
 	}
 }

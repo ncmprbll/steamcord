@@ -51,7 +51,6 @@
             let url = `/api/products?${searchParams.toString()}`;
             const result = await fetch(url);
             const json = await result.json();
-            console.log(url);
 
             for (let i = 0; i < json.length; i++) {
                 new SearchProduct({target: items, props: {product: json[i]}});

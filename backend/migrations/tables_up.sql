@@ -1,5 +1,6 @@
 DROP SEQUENCE IF EXISTS products_sequence CASCADE;
 
+DROP TABLE IF EXISTS permissions CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS users_cart CASCADE;
 DROP TABLE IF EXISTS users_games CASCADE;
@@ -53,6 +54,12 @@ CREATE TABLE locales
 CREATE TABLE translations_tokens
 (
     token TEXT PRIMARY KEY
+);
+
+CREATE TABLE permissions
+(
+    name TEXT PRIMARY KEY,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE translations
@@ -120,7 +127,8 @@ CREATE TABLE products_featured
 
 CREATE TABLE users_roles
 (
-    name VARCHAR(16) PRIMARY KEY CHECK ( name <> '' ),
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(16) UNIQUE NOT NULL CHECK ( name <> '' ),
     can_delete BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
@@ -129,7 +137,7 @@ CREATE TABLE users_roles
 CREATE TABLE users_role_permissions
 (
     role VARCHAR(16) REFERENCES users_roles(name),
-    permission TEXT,
+    permission TEXT REFERENCES permissions(name),
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (role, permission)
@@ -203,8 +211,19 @@ CREATE TABLE users_comments
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
+INSERT INTO translations_tokens (token) VALUES ('#440_about');
+INSERT INTO translations_tokens (token) VALUES ('#440_description');
+INSERT INTO translations_tokens (token) VALUES ('#540_about');
+INSERT INTO translations_tokens (token) VALUES ('#540_description');
+INSERT INTO translations_tokens (token) VALUES ('#2540_about');
+INSERT INTO translations_tokens (token) VALUES ('#2540_description');
+
 INSERT INTO users_roles (name, can_delete) VALUES ('user', FALSE);
 INSERT INTO users_roles (name, can_delete) VALUES ('admin', FALSE);
+
+INSERT INTO permissions (name) VALUES ('ui.management');
+INSERT INTO permissions (name) VALUES ('management.users');
+INSERT INTO permissions (name) VALUES ('management.roles');
 
 INSERT INTO users_role_permissions (role, permission) VALUES ('admin', 'ui.management');
 INSERT INTO users_role_permissions (role, permission) VALUES ('admin', 'management.users');
@@ -217,13 +236,6 @@ INSERT INTO currencies (code, symbol) VALUES ('RUB', '₽');
 INSERT INTO currencies (code, symbol) VALUES ('USD', '$');
 
 INSERT INTO genres (genre) VALUES ('Horror'), ('Survival');
-
-INSERT INTO translations_tokens (token) VALUES ('#440_about');
-INSERT INTO translations_tokens (token) VALUES ('#440_description');
-INSERT INTO translations_tokens (token) VALUES ('#540_about');
-INSERT INTO translations_tokens (token) VALUES ('#540_description');
-INSERT INTO translations_tokens (token) VALUES ('#2540_about');
-INSERT INTO translations_tokens (token) VALUES ('#2540_description');
 
 INSERT INTO translations (token, locale, text) VALUES ('#440_about', 'en', '
 Cyberpunk 2077 is an open-world, action-adventure RPG set in the megalopolis of Night City, where you play as a cyberpunk mercenary wrapped up in a do-or-die fight for survival. Improved and featuring all-new free additional content, customize your character and playstyle as you take on jobs, build a reputation, and unlock upgrades. The relationships you forge and the choices you make will shape the story and the world around you. Legends are made here. What will yours be?

@@ -12,4 +12,5 @@ type Repository interface {
 	GetRoles(context.Context) (*models.Roles, error)
 	CreateRole(context.Context, *models.Role) error
 	DeleteRole(context.Context, *models.Role) (int64, error)
+	GetRolePermissions(context.Context) (*models.RolePermissions, error)
 }

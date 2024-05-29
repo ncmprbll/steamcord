@@ -26,8 +26,9 @@ func NewRouter(h *handlers, mw *middleware.MiddlewareManager) http.Handler {
 	r.Group(func(r chi.Router) {
 		r.Use(mw.HasPermissionsMiddleware(&models.Permissions{models.PERMISSION_ROLES_MANAGEMENT}))
 		r.Get("/roles", h.GetRoles())
+		r.Get("/roles/permissions", h.GetRolePermissions())
 		r.Post("/roles", h.CreateRole())
-		r.Delete("/roles", h.DeleteRole())
+		r.Delete("/roles/{role_id}", h.DeleteRole())
 	})
 
 	return r

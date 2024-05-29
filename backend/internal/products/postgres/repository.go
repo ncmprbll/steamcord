@@ -195,7 +195,7 @@ func (s *Repository) FindByID(ctx context.Context, product *models.Product, curr
 						JOIN products_platforms ON id = products_platforms.product_id
 					GROUP BY id, name, discount, price, tier_background_img, screenshots, about_token, description_token
 				), translated AS (
-						SELECT
+					SELECT
 						id,
 						name,
 						discount,

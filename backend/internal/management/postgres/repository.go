@@ -188,6 +188,27 @@ func (s *Repository) DeleteRole(ctx context.Context, role *models.Role) (int64, 
 	}
 	defer tx.Rollback()
 
+	const querySelect = `
+					SELECT
+						name,
+						can_delete
+					FROM
+						users_roles
+					WHERE
+						id = $1;
+					`
+	var (
+		name      string
+		canDelete bool
+	)
+	if err := tx.QueryRowxContext(ctx, querySelect, role.ID).Scan(&name, &canDelete); err != nil {
+		return 0, err
+	}
+
+	if !canDelete {
+		return 0, nil
+	}
+
 	const queryUpdate = `
 				UPDATE
 					users
@@ -196,7 +217,7 @@ func (s *Repository) DeleteRole(ctx context.Context, role *models.Role) (int64, 
 				WHERE
 					role = $1;
 				`
-	if _, err := tx.ExecContext(ctx, queryUpdate, role.Name); err != nil {
+	if _, err := tx.ExecContext(ctx, queryUpdate, name); err != nil {
 		return 0, err
 	}
 
@@ -204,10 +225,9 @@ func (s *Repository) DeleteRole(ctx context.Context, role *models.Role) (int64, 
 				DELETE FROM
 					users_roles
 				WHERE
-					name = $1 AND
-					can_delete = TRUE;
+					id = $1
 				`
-	result, err := tx.ExecContext(ctx, queryDelete, role.Name)
+	result, err := tx.ExecContext(ctx, queryDelete, role.ID)
 	if err != nil {
 		return 0, err
 	}
@@ -222,4 +242,50 @@ func (s *Repository) DeleteRole(ctx context.Context, role *models.Role) (int64, 
 	}
 
 	return affected, nil
+}
+
+func (s *Repository) GetRolePermissions(ctx context.Context) (*models.RolePermissions, error) {
+	const queryAllPermissions = `
+				SELECT
+					name
+				FROM permissions
+				ORDER BY created_at;
+				`
+	rows, err := s.database.QueryxContext(ctx, queryAllPermissions)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	permissions := []string{}
+	for rows.Next() {
+		var permission string
+		rows.Scan(&permission)
+		permissions = append(permissions, permission)
+	}
+
+	const queryRolePermissions = `
+				SELECT
+					name,
+					permission
+				FROM users_roles
+					LEFT JOIN users_role_permissions ON role = name;
+				`
+	rows, err = s.database.QueryxContext(ctx, queryRolePermissions)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	roles := map[string][]string{}
+	for rows.Next() {
+		role := &models.ManagementRole{}
+		rows.StructScan(role)
+		if _, ok := roles[role.Name]; !ok {
+			roles[role.Name] = make([]string, 0)
+		}
+		roles[role.Name] = append(roles[role.Name], role.Permission)
+	}
+
+	return &models.RolePermissions{Permissions: permissions, Roles: roles}, nil
 }
