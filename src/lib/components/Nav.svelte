@@ -3,6 +3,7 @@
 
     import { formatBalance } from '$lib/types/user.type';
     import { PERMISSION_UI_MANAGEMENT } from '$lib/types/management.type.ts';
+    import { PERMISSION_UI_PUBLISHING } from '$lib/types/product.type.ts';
     import AnchorContext from '$lib/components/AnchorContext.svelte';
 
     export let loginVisible: boolean;
@@ -125,6 +126,11 @@
                         {$page.data.localization.management}
                     </AnchorContext>
                 {/if}
+                {#if $page.data?.permissions !== undefined && $page.data.permissions.includes(PERMISSION_UI_PUBLISHING)}
+                <AnchorContext href={`${$page.data.lang}/publishing`}>
+                    {$page.data.localization.publishing}
+                </AnchorContext>
+            {/if}
                 <!-- <a data-sveltekit-reload href="/">{$page.data.localization.community}</a> -->
             </div>
             <div class="menu-right">

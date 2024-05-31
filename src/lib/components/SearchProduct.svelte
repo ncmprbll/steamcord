@@ -4,7 +4,7 @@
     import windows from '$lib/assets/os/windows.png';
     import mac from '$lib/assets/os/mac.png';
     import linux from '$lib/assets/os/linux.png';
-    import { formatPrice } from '$lib/types/game.type';
+    import { formatPrice } from '$lib/types/product.type';
 
     export let product;
 </script>

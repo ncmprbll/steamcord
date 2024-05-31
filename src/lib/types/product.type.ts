@@ -1,3 +1,5 @@
+export const PERMISSION_UI_PUBLISHING = "ui.publishing";
+
 type NullString = {
 	String: string;
 	Valid: boolean;

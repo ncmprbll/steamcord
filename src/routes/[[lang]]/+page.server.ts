@@ -1,4 +1,4 @@
-import type { FeaturedGame, TierGame } from "$lib/types/game.type";
+import type { FeaturedGame, TierGame } from "$lib/types/product.type";
 
 export const load = async ({ cookies, params, parent }) => {
     const data = await parent();

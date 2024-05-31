@@ -15,6 +15,7 @@ const localization: Record<string, string> = {
     "roleCreatedAt": "Дата создания",
     "roleUpdatedAt": "Дата обновления",
     "ui.management": "*ui.management* – отображение кнопки 'Управление' в навигационном меню",
+    "ui.publishing": "*ui.publishing* – отображение кнопки 'Издание' в навигационном меню",
     "management.users": "*management.users* – управление пользователями и их данными",
     "management.roles": "*management.roles* – создание ролей, удаление ролей и управление их полномочиями",
     "revoke": "Запретить",

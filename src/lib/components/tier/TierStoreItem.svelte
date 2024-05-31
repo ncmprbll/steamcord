@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { formatPrice, type TierGame } from '$lib/types/game.type';
+    import { formatPrice, type TierGame } from '$lib/types/product.type';
 
     export let game: TierGame;
     export let itemsInTier: number = 0;

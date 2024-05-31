@@ -35,9 +35,9 @@ func (s *Repository) GetUsers(ctx context.Context, term string) (*models.Managem
 							COUNT(*)
 						FROM users
 						WHERE
-							id::TEXT LIKE '%' || LOWER($1) || '%' OR
-							login LIKE '%' || LOWER($1) || '%' OR
-							display_name LIKE '%' || LOWER($1) || '%';
+							LOWER(id::TEXT) LIKE '%' || LOWER($1) || '%' OR
+							LOWER(login) LIKE '%' || LOWER($1) || '%' OR
+							LOWER(display_name) LIKE '%' || LOWER($1) || '%';
 						`
 	var total int
 	if err := s.database.QueryRowxContext(ctx, queryTotal, term).Scan(&total); err != nil {
@@ -49,9 +49,9 @@ func (s *Repository) GetUsers(ctx context.Context, term string) (*models.Managem
 					*
 				FROM users
 				WHERE
-					id::TEXT LIKE '%' || LOWER($1) || '%' OR
-					login LIKE '%' || LOWER($1) || '%' OR
-					display_name LIKE '%' || LOWER($1) || '%'
+					LOWER(id::TEXT) LIKE '%' || LOWER($1) || '%' OR
+					LOWER(login) LIKE '%' || LOWER($1) || '%' OR
+					LOWER(display_name) LIKE '%' || LOWER($1) || '%'
 				ORDER BY created_at;
 				`
 	rows, err := s.database.QueryxContext(ctx, query, term)

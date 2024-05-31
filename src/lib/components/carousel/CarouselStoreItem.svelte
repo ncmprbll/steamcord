@@ -7,7 +7,7 @@
     import linux from '$lib/assets/os/linux.png';
     import Spinner from '$lib/components/Spinner.svelte';
 
-    import { formatPrice, type FeaturedGame } from '$lib/types/game.type';
+    import { formatPrice, type FeaturedGame } from '$lib/types/product.type';
 
     export let game: FeaturedGame;
     export let clientWidth: number;

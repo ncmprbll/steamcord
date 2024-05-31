@@ -22,7 +22,8 @@ const localization: Record<string, string> = {
     'settings': 'Настройки',
     'signOut': 'Выйти',
     "allProducts": "Все игры",
-    "management": "Управление"
+    "management": "Управление",
+    "publishing": "Издание"
 };
 
 export { localization };

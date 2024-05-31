@@ -222,10 +222,12 @@ INSERT INTO users_roles (name, can_delete) VALUES ('user', FALSE);
 INSERT INTO users_roles (name, can_delete) VALUES ('admin', FALSE);
 
 INSERT INTO permissions (name) VALUES ('ui.management');
+INSERT INTO permissions (name) VALUES ('ui.publishing');
 INSERT INTO permissions (name) VALUES ('management.users');
 INSERT INTO permissions (name) VALUES ('management.roles');
 
 INSERT INTO users_role_permissions (role_id, permission) VALUES (2, 'ui.management');
+INSERT INTO users_role_permissions (role_id, permission) VALUES (2, 'ui.publishing');
 INSERT INTO users_role_permissions (role_id, permission) VALUES (2, 'management.users');
 INSERT INTO users_role_permissions (role_id, permission) VALUES (2, 'management.roles');
 

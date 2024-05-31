@@ -22,7 +22,8 @@ const localization: Record<string, string> = {
     'settings': 'Settings',
     'signOut': 'Sign out',
     "allProducts": "All products",
-    "management": "Management"
+    "management": "Management",
+    "publishing": "Publishing"
 };
 
 export { localization };

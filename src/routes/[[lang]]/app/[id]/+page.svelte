@@ -7,7 +7,7 @@
     import linux from '$lib/assets/os/linux.png';
     import { goto } from "$app/navigation";
     import { page } from "$app/stores"; 
-    import { formatPrice } from '$lib/types/game.type';
+    import { formatPrice } from '$lib/types/product.type';
     import Spinner from '$lib/components/Spinner.svelte';
 
     export let data;

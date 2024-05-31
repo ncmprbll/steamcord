@@ -1,6 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 
-import { type Product } from '$lib/types/game.type';
+import { type Product } from '$lib/types/product.type';
 
 export async function load({ params, parent }) {
     const data = await parent();

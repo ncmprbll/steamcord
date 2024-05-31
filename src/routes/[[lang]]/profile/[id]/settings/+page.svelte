@@ -352,7 +352,7 @@
         {:else if selected === "privacy"}
             <div class="dialog-body">{@html DOMPurify.sanitize(marked.parse(data.localization.privacyDesc), {ALLOWED_TAGS: ["p", "br"]})}</div>
             <p class="breaker">{data.localization.profilePrivacy}</p>
-            <div class="dialog-body">{@html DOMPurify.sanitize(marked.parse(data.localization.profilePrivacyDesc.replace(/\r?\n/g, "<br>")), {ALLOWED_TAGS: ["p", "br", "em"]})}body"></div>
+            <div class="dialog-body">{@html DOMPurify.sanitize(marked.parse(data.localization.profilePrivacyDesc.replace(/\r?\n/g, "<br>")), {ALLOWED_TAGS: ["p", "br", "em"]})}</div>
             <form method="PATCH" action="/api/profile/privacy" class="form" on:submit|preventDefault={handlePrivacyUpdate}>
                 <Radio options={privacyOptions} userSelected={selectedPrivacy} on:change={onPrivacyChange}/>
                 <div class="actions">

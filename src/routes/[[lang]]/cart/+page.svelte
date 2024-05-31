@@ -6,7 +6,7 @@
     import linux from '$lib/assets/os/linux.png';
     import Spinner from '$lib/components/Spinner.svelte';
 
-    import { formatPrice } from '$lib/types/game.type';
+    import { formatPrice } from '$lib/types/product.type';
 
     export let data;
     let estimated: number = 0.00;

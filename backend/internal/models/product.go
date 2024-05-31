@@ -8,6 +8,8 @@ import (
 )
 
 const (
+	PERMISSION_UI_PUBLISHING    = "ui.publishing"
+
 	PRODUCTS_PAGE_LIMIT = 15
 )
 
