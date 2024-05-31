@@ -10,6 +10,8 @@ import (
 func NewRouter(h *handlers, mw *middleware.MiddlewareManager) http.Handler {
 	r := chi.NewRouter()
 
+	r.Get("/currencies", h.Currencies())
+
 	r.Group(func(r chi.Router) {
 		r.Use(mw.GetUserMiddleware)
 		r.Get("/tier", h.GetTier())
@@ -21,6 +23,7 @@ func NewRouter(h *handlers, mw *middleware.MiddlewareManager) http.Handler {
 	r.Group(func(r chi.Router) {
 		r.Use(mw.AuthSessionMiddleware)
 		r.Get("/owned", h.GetOwned())
+		r.Post("/", h.CreateProduct())
 	})
 
 	return r

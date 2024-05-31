@@ -1,6 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 
-import { PERMISSION_UI_PUBLISHING } from '$lib/types/product.type.ts';
+import { PERMISSION_UI_PUBLISHING, type Currencies } from '$lib/types/product.type.ts';
 
 export const load = async ({ cookies, params, parent, url }) => {
     const data = await parent();
@@ -23,7 +23,23 @@ export const load = async ({ cookies, params, parent, url }) => {
 	}
 	let merged = {...data.localization, ...localization};
 
+    let currencies: Currencies | undefined;
+    // if (data.permissions.includes(PERMISSION_USERS_MANAGEMENT)) {
+        let result = await fetch(`http://localhost:3000/products/currencies`, {
+            method: "GET",
+            credentials: "include",
+            headers: {
+                Cookie: "session_id=" + cookies.get("session_id")
+            }
+        });
+
+        if (result.status === 200) {
+            currencies = await result.json()
+        }
+    // }
+
     return {
-        localization: merged
+        localization: merged,
+        currencies: currencies
     };
 };

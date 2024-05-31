@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"main/backend/internal/models"
+	"strconv"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -176,7 +177,7 @@ func (s *Repository) FindByID(ctx context.Context, product *models.Product, curr
 					FROM products
 						JOIN LATERAL (SELECT *, (price - (price * products.discount / 100)::NUMERIC(16, 2)) AS final FROM products_prices WHERE currency_code = $1) h ON products.id = h.product_id
 						JOIN currencies ON currencies.code = h.currency_code
-						JOIN products_images ON products.id = products_images.product_id
+						LEFT JOIN products_images ON products.id = products_images.product_id
 						LEFT JOIN products_screenshots ON products.id = products_screenshots.product_id
 					WHERE id = $2
 					GROUP BY id, price, currencies.symbol, final, tier_background_img
@@ -190,9 +191,9 @@ func (s *Repository) FindByID(ctx context.Context, product *models.Product, curr
 						screenshots,
 						about_token,
 						description_token,
-						jsonb_agg(products_platforms.platform) AS platforms
+						COALESCE(jsonb_agg(products_platforms.platform) FILTER (WHERE products_platforms.platform IS NOT NULL), '[]'::jsonb) AS platforms
 					FROM product_price_screenshots
-						JOIN products_platforms ON id = products_platforms.product_id
+						LEFT JOIN products_platforms ON id = products_platforms.product_id
 					GROUP BY id, name, discount, price, tier_background_img, screenshots, about_token, description_token
 				), translated AS (
 					SELECT
@@ -224,8 +225,14 @@ func (s *Repository) FindByID(ctx context.Context, product *models.Product, curr
 
 	for rows.Next() {
 		row := &models.Product{}
+		row.Screenshots = make(models.Screenshots, 0)
+		row.Platforms = make(models.JSONPlatforms, 0)
 		rows.StructScan(row)
 		result = append(result, row)
+	}
+
+	if len(result) == 0 {
+		return nil, nil
 	}
 
 	for _, v := range result {
@@ -263,10 +270,10 @@ func (s *Repository) Search(ctx context.Context, currencyCode, name string, pric
 						discount,
 						price,
 						tier_background_img,
-						jsonb_agg(products_platforms.platform) AS platforms,
+						COALESCE(jsonb_agg(products_platforms.platform) FILTER (WHERE products_platforms.platform IS NOT NULL), '[]'::jsonb) AS platforms,
 						created_at
 					FROM products_price
-						JOIN products_platforms ON id = products_platforms.product_id
+						LEFT JOIN products_platforms ON id = products_platforms.product_id
 						WHERE LOWER(genres::TEXT)::TEXT[] @> LOWER($6::TEXT[]::TEXT)::TEXT[]
 					GROUP BY id, name, discount, price, genres, tier_background_img, created_at
 				)
@@ -286,9 +293,138 @@ func (s *Repository) Search(ctx context.Context, currencyCode, name string, pric
 
 	for rows.Next() {
 		row := &models.SearchProduct{}
+		row.Platforms = make(models.JSONPlatforms, 0)
 		rows.StructScan(row)
 		result = append(result, row)
 	}
 
 	return result, nil
+}
+
+func (s *Repository) Currencies(ctx context.Context) (*models.Currencies, error) {
+	const query = `
+				SELECT
+					*
+				FROM currencies;
+				`
+	rows, err := s.database.QueryxContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := &models.Currencies{}
+	for rows.Next() {
+		row := &models.Currency{}
+		rows.StructScan(row)
+		*result = append(*result, row)
+	}
+
+	return result, nil
+}
+
+func (s *Repository) CreateProduct(ctx context.Context, product *models.PublishProduct) error {
+	tx, err := s.database.BeginTxx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	const queryInsert = `
+						INSERT INTO
+							products (name)
+						VALUES ($1)
+						RETURNING id;
+						`
+	var id int
+	if err = tx.QueryRowxContext(ctx, queryInsert, product.Name).Scan(&id); err != nil {
+		return err
+	}
+	stringId := strconv.Itoa(id)
+
+	const queryInsertAboutToken = `
+							INSERT INTO
+								translations_tokens (token)
+							VALUES ('#' || $1 || '_about')
+							RETURNING TOKEN;
+							`
+	const queryInsertDescriptionToken = `
+							INSERT INTO
+								translations_tokens (token)
+							VALUES ('#' || $1 || '_description')
+							RETURNING TOKEN;
+							`
+	var aboutToken string
+	if err = tx.QueryRowxContext(ctx, queryInsertAboutToken, stringId).Scan(&aboutToken); err != nil {
+		return err
+	}
+	var descriptionToken string
+	if err = tx.QueryRowxContext(ctx, queryInsertDescriptionToken, stringId).Scan(&descriptionToken); err != nil {
+		return err
+	}
+
+	const queryUpdateTokens = `
+							UPDATE
+								products
+							SET
+								about_token = $1,
+								description_token = $2
+							WHERE id = $3
+							`
+	if _, err := tx.ExecContext(ctx, queryUpdateTokens, aboutToken, descriptionToken, id); err != nil {
+		return err
+	}
+
+	const queryInsertPrices = `
+							INSERT INTO
+								products_prices (product_id, currency_code, price)
+							VALUES ($1, $2, $3)
+							`
+	for currency_code, price := range product.Prices {
+		if _, err := tx.ExecContext(ctx, queryInsertPrices, id, currency_code, price); err != nil {
+			return err
+		}
+	}
+
+	const queryInsertTranslations = `
+							INSERT INTO
+								translations (token, locale, text)
+							VALUES ($1, $2, $3)
+							`
+	for locale, text := range product.About {
+		if _, err := tx.ExecContext(ctx, queryInsertTranslations, aboutToken, locale, text); err != nil {
+			return err
+		}
+	}
+	for locale, text := range product.Description {
+		if _, err := tx.ExecContext(ctx, queryInsertTranslations, descriptionToken, locale, text); err != nil {
+			return err
+		}
+	}
+
+	const queryInsertImages = `
+							INSERT INTO
+								products_images (product_id, tier_background_img)
+							VALUES ($1, $2);
+							`
+	if _, err := tx.ExecContext(ctx, queryInsertImages, id, product.Header); err != nil {
+		return err
+	}
+
+	const queryInsertScreenshots = `
+									INSERT INTO
+										products_screenshots (product_id, img)
+									VALUES ($1, $2);
+									`
+	for _, screenshot := range product.Screenshots {
+		if _, err := tx.ExecContext(ctx, queryInsertScreenshots, id, screenshot); err != nil {
+			return err
+		}
+	}
+
+	if err = tx.Commit(); err != nil {
+		return err
+	}
+
+	return nil
 }

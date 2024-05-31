@@ -35,11 +35,27 @@ export type Product = {
 	platforms: string[];
 };
 
+export type PublishProduct = {
+	name: string
+	header: File | string
+	screenshots: File[] | string[]
+	about: string
+	description: string
+	prices: string
+};
+
 export type Price = {
 	original: number;
 	final: number;
 	symbol: string;
 }
+
+export type Currency = {
+	code: string;
+	symbol: string;
+}
+
+export type Currencies = Currency[];
 
 export function formatPrice(price: Price, original: boolean, freeString: string | undefined): string {
 	if (original) {

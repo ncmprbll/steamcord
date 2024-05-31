@@ -45,7 +45,6 @@ export async function load({ params, parent, cookies }) {
 			friendStatus = await friendStatusResult.json()
 		}
 
-
 		const commentsResult = await fetch(`http://localhost:3000/profile/${id}/comments`, {
 			method: "GET",
 			credentials: "include",

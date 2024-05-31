@@ -72,6 +72,22 @@ type SearchProduct struct {
 	CreatedAt         time.Time     `json:"-" db:"created_at"`
 }
 
+type Currency struct {
+	Code string `json:"code" db:"code"`
+	Symbol string `json:"symbol" db:"symbol"`
+}
+
+type Currencies []*Currency
+
+type PublishProduct struct {
+	Name string `json:"name"`
+	Header string `json:"header"`
+	Screenshots []string `json:"screenshots"`
+	About map[string]string `json:"about"`
+	Description map[string]string `json:"description"`
+	Prices map[string]float32 `json:"prices"`
+}
+
 func (p *JSONPrice) Scan(src any) error {
 	bytes, ok := src.([]byte)
 

@@ -43,9 +43,9 @@ func (s *Repository) Cart(ctx context.Context, currencyCode string, user *models
 						discount,
 						price,
 						tier_background_img,
-						jsonb_agg(products_platforms.platform) AS platforms
+						COALESCE(jsonb_agg(products_platforms.platform) FILTER (WHERE products_platforms.platform IS NOT NULL), '[]'::jsonb) AS platforms
 					FROM cart_items_price_image
-						JOIN products_platforms ON id = products_platforms.product_id
+						LEFT JOIN products_platforms ON id = products_platforms.product_id
 					GROUP BY id, name, discount, price, tier_background_img
 				)
 				SELECT
@@ -62,6 +62,7 @@ func (s *Repository) Cart(ctx context.Context, currencyCode string, user *models
 
 	for rows.Next() {
 		row := &models.CartGameRow{}
+		row.Platforms = make(models.JSONPlatforms, 0)
 		rows.Scan(&row.ID, &row.Name, &row.Discount, &row.Price, &row.TierBackgroundImg, &row.Platforms)
 		result = append(result, row)
 	}

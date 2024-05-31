@@ -138,6 +138,11 @@ func (h *handlers) FindByID() http.HandlerFunc {
 			return
 		}
 
+		if product == nil {
+			http.Error(w, "Not Found", http.StatusNotFound)
+			return
+		}
+
 		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(product); err != nil {
 			util.HandleError(w, err)
@@ -171,7 +176,7 @@ func (h *handlers) Search() http.HandlerFunc {
 					util.HandleError(w, err)
 					return
 				}
-		
+
 				w.WriteHeader(http.StatusOK)
 			}
 			priceRangeArray[0] = float32(min)
@@ -235,6 +240,41 @@ func (h *handlers) Search() http.HandlerFunc {
 
 		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(products); err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}
+}
+
+func (h *handlers) Currencies() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		currencies, err := h.productsRepository.Currencies(r.Context())
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(currencies); err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}
+}
+
+func (h *handlers) CreateProduct() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		product := &models.PublishProduct{}
+		if err := json.NewDecoder(r.Body).Decode(product); err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		if err := h.productsRepository.CreateProduct(r.Context(), product); err != nil {
 			util.HandleError(w, err)
 			return
 		}

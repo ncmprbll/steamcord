@@ -1,12 +1,36 @@
 <script lang="ts">
+    import DOMPurify from 'dompurify';
+    import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
     import { pushState } from '$app/navigation';
 
     export let data;
 
-    const screenshotsExtensions = [".jpg", ".jpeg", ".png"];
+    const images = [".jpg", ".jpeg", ".png"];
 
-    let filesInput;
+    let mainImageInput;
+    let screenshotsInput;
     let screenshots = [];
+
+    let aboutTextarea;
+    let descriptionTextarea;
+    let aboutTranslations = {};
+    let descriptionTranslations = {};
+    let selectedAboutLocale = "en";
+    let selectedDescriptionLocale = "en";
+    let aboutPreview = false;
+    let descriptionPreview = false;
+
+    let prices = {};
+    let selectedCurrency = "USD";
+
+    for (let i = 0; i < data.locales.length; i++) {
+        aboutTranslations[data.locales[i].code] = "";
+        descriptionTranslations[data.locales[i].code] = "";
+    }
+
+    for (let i = 0; i < data.currencies.length; i++) {
+        prices[data.currencies[i].code] = 0;
+    }
 
     let searchParams = new URLSearchParams(window.location.search);
     let categories = [
@@ -53,6 +77,34 @@
         pushState(url.toString());
     }
 
+    function onMainImageUpload(event) {
+        let input = event.target;
+        let files = input.files;
+        if (files === undefined) {
+            input.value = null;
+            return;
+        }
+
+        const file = files[0];
+        if (file === undefined) {
+            input.value = null;
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.addEventListener("load", function () {
+            const img = new Image();
+            img.onload = function() {
+                document.getElementById("main-image").setAttribute("src", reader.result);
+            }
+            img.onerror = function() {
+                input.value = null;
+            }
+            img.src = reader.result
+        });
+        reader.readAsDataURL(file);
+    }
+
     function onScreenshotsUpload(event) {
         let input = event.target;
         let files = input.files;
@@ -83,6 +135,46 @@
             reader.readAsDataURL(file);
         }
     }
+
+    function autoGrow(e) {
+        let elem = e.target;
+        elem.style.height = "64px";
+        elem.style.height = (elem.scrollHeight) + "px";
+    }
+
+    setInterval(() => {
+        let a = document.getElementById("about-textarea");
+        let b = document.getElementById("description-textarea");
+
+        if (a !== null) {
+            a.style.height = "64px";
+            a.style.height = (a.scrollHeight) + "px"; 
+        }
+
+        if (b !== null) {
+            b.style.height = "64px";
+            b.style.height = (b.scrollHeight) + "px"; 
+        }
+    }, 50);
+
+    async function handlePublish(event) {
+        const url = event.target.action;
+        const data = new FormData(event.target);
+        data.set("prices", JSON.stringify(prices));
+        data.set("about", JSON.stringify(aboutTranslations));
+        data.set("description", JSON.stringify(descriptionTranslations));
+        let object = {};
+        data.forEach((value, key) => object[key] = value);
+
+        const result = await fetch(url, {
+            method: event.target.method,
+            body: data
+        });
+
+        if (result.status === 200) {
+            window.location.reload();
+        }
+    }
 </script>
 
 <p class="breaker">{data.localization.publishing}</p>
@@ -100,13 +192,21 @@
     </div>
     <div class="settings">
         {#if selected === "publish"}
-            <form method="PATCH" action="/api/***" class="form" on:submit|preventDefault={() => {}}>
+            <form method="POST" action="/api/products" class="form" on:submit|preventDefault={handlePublish}>
                 <div class="box-input">
-                    <label for="old_password">"data.localization.oldPassword"</label>
-                    <input id="old_password" name="old_password" type="password" >
+                    <label for="name">{data.localization.gameName}</label>
+                    <input id="name" name="name" type="text" required >
                 </div>
                 <div class="box-input">
-                    <label for="screenshots">"data.localization.screenshots" {`(${0}/${25})`}</label>
+                    <label for="screenshots">{data.localization.mainImage}</label>
+                    <img id="main-image" class="preview-main-image" alt="Preview" />
+                    <input bind:this={mainImageInput} type="file" name="header" accept={images.join(',')} on:change={onMainImageUpload} style="display: none;" />
+                    <button class="form-button upload" type="button" on:click={() => mainImageInput.click()}>
+                        <span>{data.localization.upload}</span>
+                    </button>
+                </div>
+                <div class="box-input">
+                    <label for="screenshots">{data.localization.screenshots}</label>
                     <div id="slider" class="screenshots-slider">
                         {#each screenshots as src, index}
                             <button class="screenshot-button" type="button">
@@ -114,28 +214,57 @@
                             </button>
                         {/each}
                     </div>
-                    <input bind:this={filesInput} type="file" name="screenshots" accept={screenshotsExtensions.join(',')} multiple on:change={onScreenshotsUpload} style="display: none;" />
-                    <button class="form-button upload" type="button" on:click={() => filesInput.click()}>
-                        <span class:loading={false}>{data.localization.upload}</span>
-                        {#if false}
-                            <Spinner size="16"/>
-                        {/if}
+                    <input bind:this={screenshotsInput} type="file" name="screenshots" accept={images.join(',')} multiple on:change={onScreenshotsUpload} style="display: none;" />
+                    <button class="form-button upload" type="button" on:click={() => screenshotsInput.click()}>
+                        <span>{data.localization.upload}</span>
                     </button>
                 </div>
                 <div class="box-input">
-                    <label for="new_password">"data.localization.newPassword" {`(${0}/${25})`}</label>
-                    <input id="new_password" name="new_password" type="password">
+                    <label for="about">{data.localization.prices}</label>
+                    <select bind:value={selectedCurrency} name="prices" class="user-data-value-select">
+                        {#each data.currencies as currency}
+                            <option value={currency.code} selected={currency.code === selectedCurrency}>{currency.code} ({currency.symbol})</option>
+                        {/each}
+                    </select>
+                    <input bind:value={prices[selectedCurrency]} type="number" name="prices" step=".01" />
                 </div>
                 <div class="box-input">
-                    <label for="confirm_new_password">"data.localization.confirmNewPassword" {`(${0}/${25})`}</label>
-                    <input id="confirm_new_password" name="confirm_new_password" type="password">
+                    <label for="about">{data.localization.description}</label>
+                    <button class="form-button upload" type="button" on:click={() => aboutPreview = !aboutPreview}>
+                        <span>{data.localization.preview}</span>
+                    </button>
+                    <select bind:value={selectedAboutLocale} name="about" class="user-data-value-select">
+                        {#each data.locales as locale}
+                            <option value={locale.code} selected={locale.code === selectedAboutLocale}>{locale.name}</option>
+                        {/each}
+                    </select>
+                    {#if aboutPreview}
+                        <div class="short-description">{aboutTranslations[selectedAboutLocale]}</div>
+                    {:else}
+                        <textarea id="about-textarea" bind:value={aboutTranslations[selectedAboutLocale]} name="about" type="text" style="height: 64px;" on:input={autoGrow} />
+                    {/if}
+                </div>
+                <div class="box-input">
+                    <label for="description">{data.localization.about}</label>
+                    <button class="form-button upload" type="button" on:click={() => descriptionPreview = !descriptionPreview}>
+                        <span>{data.localization.preview}</span>
+                    </button>
+                    <select bind:value={selectedDescriptionLocale} name="description" class="user-data-value-select">
+                        {#each data.locales as locale}
+                            <option value={locale.code} selected={locale.code === selectedDescriptionLocale}>{locale.name}</option>
+                        {/each}
+                    </select>
+                    {#if descriptionPreview}
+                        <div class="description">
+                            {@html DOMPurify.sanitize(marked.parse(descriptionTranslations[selectedDescriptionLocale]), {ALLOWED_TAGS: ["h2", "h3", "p", "ul", "li", "ol", "blockquote", "strong"]})}
+                        </div>
+                    {:else}
+                        <textarea id="description-textarea" bind:value={descriptionTranslations[selectedDescriptionLocale]} name="description" type="text" style="height: 64px;" on:input={autoGrow} />
+                    {/if}
                 </div>
                 <div class="actions">
                     <button class="form-button" type="submit">
-                        <span class:loading={false}>{data.localization.save}</span>
-                        {#if false}
-                            <Spinner size="16"/>
-                        {/if}
+                        <span>{data.localization.publish}</span>
                     </button>
                 </div>
             </form>
@@ -146,6 +275,41 @@
 </div>
 
 <style lang="postcss">
+    .actions {
+        margin-left: auto;
+        width: fit-content;
+    }
+
+    select {
+        background-color: rgb(64, 64, 64);
+        border-radius: 4px;
+        min-width: 0;
+    }
+
+    textarea {
+        resize: none;
+        overflow: auto;
+        outline: none;
+        border-radius: 2px;
+        color: #fff;
+        padding: 10px;
+        background-color: rgb(32, 32, 32);
+        outline: none;
+        font-size: 15px;
+        border: 1px solid #32353c;
+        transition: border 300ms ease-out;
+        box-sizing: border-box;
+        width: 100%;
+        height: 160px;
+        line-height: normal
+    }
+
+    .preview-main-image {
+        object-fit: cover;
+        width: 300px;
+        border-radius: 4px;
+    }
+
     .screenshots-slider {
         display: flex;
         gap: 8px;
@@ -203,7 +367,7 @@
     }
 
     .box-input > label {
-        font-size: 12px;
+        font-size: 16px;
         letter-spacing: 0.5px;
         line-height: 1.3333;
         font-weight: 500;

@@ -66,7 +66,7 @@ CREATE TABLE translations
 (
     token TEXT REFERENCES translations_tokens(token),
     locale VARCHAR(5) REFERENCES locales(code),
-    text TEXT NOT NULL CHECK ( text <> '' ),
+    text TEXT NOT NULL DEFAULT '',
     PRIMARY KEY (token, locale)
 );
 

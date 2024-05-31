@@ -12,4 +12,6 @@ type Repository interface {
 	GetOwnedIDs(context.Context, *models.User) (*models.JSONOwnedProducts, error)
 	FindByID(context.Context, *models.Product, string, string) (*models.Product, error)
 	Search(context.Context, string, string, []float32, string, []string, int, int) ([]*models.SearchProduct, error)
+	Currencies(context.Context) (*models.Currencies, error)
+	CreateProduct(context.Context, *models.PublishProduct) error
 }

@@ -102,10 +102,6 @@
                 <div class="summary">Positive</div>
             </div>
             <div class="meta-row">
-                <div class="subtitle">Platform release date:</div>
-                <div class="summary">24 Sep, 2020</div>
-            </div>
-            <div class="meta-row">
                 <div class="subtitle">{data.localization.releaseDate}:</div>
                 <div class="summary">26 Dec, 2007</div>
             </div>
@@ -222,7 +218,7 @@
     </div>
 </div>
 
-<p class="breaker">{data.localization.reviews}</p>
+<!-- <p class="breaker">{data.localization.reviews}</p>
 <div class="reviews">
     <div class="review">
         <div class="left">
@@ -257,7 +253,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
 <style lang="postcss">
     :root {
