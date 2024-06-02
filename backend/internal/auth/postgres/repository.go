@@ -16,7 +16,7 @@ func New(database *sqlx.DB) *Repository {
 }
 
 func (s *Repository) Register(ctx context.Context, user *models.User) error {
-	_, err := s.database.ExecContext(ctx, "INSERT INTO users (login, email, password) VALUES ($1, $2, $3);", user.Login, user.Email, user.Password)
+	_, err := s.database.ExecContext(ctx, queryRegisterUser, user.Login, user.Email, user.Password)
 	if err != nil {
 		return err
 	}
