@@ -14,4 +14,5 @@ type Repository interface {
 	Search(context.Context, string, string, []float32, string, []string, int, int) ([]*models.SearchProduct, error)
 	Currencies(context.Context) (*models.Currencies, error)
 	CreateProduct(context.Context, *models.PublishProduct) error
+	Sales(context.Context, *models.Product) (*models.Sales, error)
 }

@@ -88,6 +88,11 @@ type PublishProduct struct {
 	Prices map[string]float32 `json:"prices"`
 }
 
+type Sales []*struct {
+	Date string `json:"date" db:"date"`
+	Sales string `json:"sales" db:"sales"`
+}
+
 func (p *JSONPrice) Scan(src any) error {
 	bytes, ok := src.([]byte)
 

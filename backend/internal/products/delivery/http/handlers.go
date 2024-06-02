@@ -118,7 +118,6 @@ func (h *handlers) GetOwned() http.HandlerFunc {
 func (h *handlers) FindByID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		productId := chi.URLParam(r, "product_id")
-
 		i, err := strconv.Atoi(productId)
 		if err != nil {
 			util.HandleError(w, err)
@@ -275,6 +274,35 @@ func (h *handlers) CreateProduct() http.HandlerFunc {
 		}
 
 		if err := h.productsRepository.CreateProduct(r.Context(), product); err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}
+}
+
+func (h *handlers) Sales() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		productId := chi.URLParam(r, "product_id")
+		i, err := strconv.Atoi(productId)
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		sales, err := h.productsRepository.Sales(r.Context(), &models.Product{ID: i})
+		if err != nil {
+			if strings.Contains(err.Error(), "no product") {
+				http.Error(w, err.Error(), http.StatusNotFound)
+			} else {
+				util.HandleError(w, err)
+			}
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(sales); err != nil {
 			util.HandleError(w, err)
 			return
 		}

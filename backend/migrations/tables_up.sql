@@ -556,4 +556,6 @@ INSERT INTO products_featured (product_id) VALUES (640);
 INSERT INTO products_featured (product_id) VALUES (740);
 INSERT INTO products_featured (product_id) VALUES (840);
 
+INSERT INTO users (login, email, password, role) VALUES ('admin', '-', '$2a$10$Gb4l71KGP552K9U2O15viuziiM1zDTenqVDLYdGhRgFh/7cGDwD.i', 'admin');
+
 SELECT SETVAL('products_sequence', 2640);

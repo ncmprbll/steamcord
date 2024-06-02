@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"errors"
 	"main/backend/internal/models"
 	"strconv"
 
@@ -427,4 +428,47 @@ func (s *Repository) CreateProduct(ctx context.Context, product *models.PublishP
 	}
 
 	return nil
+}
+
+func (s *Repository) Sales(ctx context.Context, product *models.Product) (*models.Sales, error) {
+	const queryExists = `
+						SELECT EXISTS ( SELECT * FROM products WHERE id = $1 )
+						`
+	var exists bool
+	if err := s.database.QueryRowxContext(ctx, queryExists, product.ID).Scan(&exists); err != nil {
+		return nil, err
+	}
+
+	if !exists {
+		return nil, errors.New("no product")
+	}
+
+	const query = `
+				WITH month AS (
+					SELECT GENERATE_SERIES(NOW()::DATE - INTERVAL '30 days', NOW(), INTERVAL '1 day')::DATE AS date
+				)
+				SELECT
+					date, COUNT(*) FILTER (WHERE product_id IS NOT NULL) AS sales
+				FROM users_games
+					RIGHT JOIN month ON product_id = $1 AND created_at::DATE = date
+				GROUP BY date
+				ORDER BY date;
+			`
+	rows, err := s.database.QueryxContext(ctx, query, product.ID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := &models.Sales{}
+	for rows.Next() {
+		row := &struct {
+			Date  string `json:"date" db:"date"`
+			Sales string `json:"sales" db:"sales"`
+		}{}
+		rows.StructScan(row)
+		*result = append(*result, row)
+	}
+
+	return result, nil
 }
