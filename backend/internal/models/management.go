@@ -36,8 +36,8 @@ type ManagementRole struct {
 }
 
 type RolePermissions struct {
-	Permissions []string `json:"permissions"`
-	Roles map[string][]string `json:"roles"`
+	Permissions []string            `json:"permissions"`
+	Roles       map[string][]string `json:"roles"`
 }
 
 type Roles []*Role
@@ -45,7 +45,7 @@ type Roles []*Role
 func (u *Role) Validate() error {
 	name := u.Name
 
-	if !regexp.MustCompile(`^[a-zA-Z0-9]*$`).MatchString(name) {
+	if !regexp.MustCompile(`^[a-zA-Z0-9_]*$`).MatchString(name) {
 		return errors.New("validation error: illegal name characters")
 	}
 

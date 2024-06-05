@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"errors"
+	"fmt"
 	"main/backend/internal/models"
 
 	"github.com/jmoiron/sqlx"
@@ -106,7 +107,7 @@ func (s *Repository) Purchase(ctx context.Context, user *models.User) error {
 							users.balance,
 							SUM(price - (price * discount / 100)::NUMERIC(16, 2)) AS total
 						FROM users_cart
-							JOIN users ON users_cart.user_id = $1
+							JOIN users ON users.id = $1
 							JOIN products ON users_cart.product_id = products.id
 							JOIN products_prices ON users_cart.product_id = products_prices.product_id
 						WHERE products_prices.currency_code = users.currency_code GROUP BY users.balance;
@@ -115,6 +116,8 @@ func (s *Repository) Purchase(ctx context.Context, user *models.User) error {
 	if err = tx.QueryRowxContext(ctx, queryTotal, user.UUID).Scan(&balance, &total); err != nil {
 		return err
 	}
+
+	fmt.Println(balance, total)
 
 	if balance < total {
 		return errors.New("insufficient funds")

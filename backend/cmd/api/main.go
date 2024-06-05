@@ -1,12 +1,18 @@
 package main
 
 import (
+	"encoding/json"
+	"io"
 	"net/http"
+	"os"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
+	"github.com/joho/godotenv"
 	"github.com/redis/go-redis/v9"
+	"github.com/stripe/stripe-go/v78"
+	"github.com/stripe/stripe-go/webhook"
 
 	authDelivery "main/backend/internal/auth/delivery/http"
 	authRepository "main/backend/internal/auth/postgres"
@@ -29,6 +35,13 @@ import (
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		panic(err)
+	}
+
+	webhookSecret := os.Getenv("WEBHOOK_SECRET")
+
 	url := "postgres://postgres:password@localhost/postgres"
 	port := "3000"
 
@@ -100,6 +113,40 @@ func main() {
 	r.Mount("/locales", languageRouter)
 	r.Mount("/profile", profileRouter)
 	r.Mount("/management", managementRouter)
+
+	r.Post("/webhook", func(w http.ResponseWriter, r *http.Request) {
+		r.Body = http.MaxBytesReader(w, r.Body, 2<<15)
+
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			return
+		}
+
+		event, err := webhook.ConstructEvent(body, r.Header.Get("Stripe-Signature"), webhookSecret)
+
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		if event.Type == "checkout.session.completed" {
+			var session stripe.CheckoutSession
+			err := json.Unmarshal(event.Data.Raw, &session)
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+
+			if _, err := database.ExecContext(r.Context(), "UPDATE users SET balance = balance + $1 WHERE id = $2", session.AmountTotal/100, session.Metadata["user_id"]); err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+
+			w.WriteHeader(http.StatusOK)
+		}
+
+		w.WriteHeader(http.StatusOK)
+	})
 
 	http.ListenAndServe(":"+port, r)
 }

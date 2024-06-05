@@ -1,4 +1,6 @@
 export const PERMISSION_UI_PUBLISHING = "ui.publishing";
+export const PERMISSION_PUBLISHING_PERSONAL = "publishing.personal";
+export const PERMISSION_PUBLISHING_ALL = "publishing.all";
 
 type NullString = {
 	String: string;

@@ -18,6 +18,8 @@ const localization: Record<string, string> = {
     "ui.publishing": "*ui.publishing* – отображение кнопки 'Издание' в навигационном меню",
     "management.users": "*management.users* – управление пользователями и их данными",
     "management.roles": "*management.roles* – создание ролей, удаление ролей и управление их полномочиями",
+    "publishing.personal": "*publishing.personal* – создание и управление личными публикациями",
+    "publishing.all": "*publishing.all* – создание и управление всеми публикациями",
     "revoke": "Запретить",
     "allow": "Разрешить",
 

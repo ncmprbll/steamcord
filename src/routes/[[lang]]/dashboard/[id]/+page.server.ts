@@ -1,19 +1,20 @@
+import type { Currencies } from '$lib/types/product.type.ts';
 import { redirect } from '@sveltejs/kit';
 
 export const load = async ({ parent, cookies, depends, params }) => {
 	const data = await parent();
 
-	const result = await fetch(`http://localhost:3000/products/${encodeURIComponent(params.id)}/sales`, {
+	let result = await fetch(`http://localhost:3000/products/${encodeURIComponent(params.id)}/sales`, {
 		method: 'GET',
 		credentials: 'include',
 		headers: {
 			Cookie: 'session_id=' + cookies.get('session_id')
 		}
 	});
-
 	if (result.status !== 200) {
 		redirect(302, '/');
 	}
+	const sales = await result.json();
 
 	let localization: Record<string, string> | undefined;
 	try {
@@ -25,8 +26,22 @@ export const load = async ({ parent, cookies, depends, params }) => {
 	}
 	let merged = {...data.localization, ...localization}
 
+	let currencies: Currencies | undefined;
+	result = await fetch(`http://localhost:3000/products/currencies`, {
+		method: "GET",
+		credentials: "include",
+		headers: {
+			Cookie: "session_id=" + cookies.get("session_id")
+		}
+	});
+
+	if (result.status === 200) {
+		currencies = await result.json()
+	}
+
     return {
 		localization: merged,
-		sales: await result.json()
+		sales: sales,
+		currencies: currencies
     };
 };

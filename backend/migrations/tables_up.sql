@@ -220,16 +220,23 @@ INSERT INTO translations_tokens (token) VALUES ('#2540_description');
 
 INSERT INTO users_roles (name, can_delete) VALUES ('user', FALSE);
 INSERT INTO users_roles (name, can_delete) VALUES ('admin', FALSE);
+INSERT INTO users_roles (name, can_delete) VALUES ('publisher', FALSE);
 
 INSERT INTO permissions (name) VALUES ('ui.management');
 INSERT INTO permissions (name) VALUES ('ui.publishing');
 INSERT INTO permissions (name) VALUES ('management.users');
 INSERT INTO permissions (name) VALUES ('management.roles');
+INSERT INTO permissions (name) VALUES ('publishing.personal');
+INSERT INTO permissions (name) VALUES ('publishing.all');
 
 INSERT INTO users_role_permissions (role_id, permission) VALUES (2, 'ui.management');
 INSERT INTO users_role_permissions (role_id, permission) VALUES (2, 'ui.publishing');
 INSERT INTO users_role_permissions (role_id, permission) VALUES (2, 'management.users');
 INSERT INTO users_role_permissions (role_id, permission) VALUES (2, 'management.roles');
+INSERT INTO users_role_permissions (role_id, permission) VALUES (2, 'publishing.personal');
+INSERT INTO users_role_permissions (role_id, permission) VALUES (2, 'publishing.all');
+INSERT INTO users_role_permissions (role_id, permission) VALUES (3, 'ui.publishing');
+INSERT INTO users_role_permissions (role_id, permission) VALUES (3, 'publishing.personal');
 
 INSERT INTO locales (code, name) VALUES ('ru', 'Русский');
 INSERT INTO locales (code, name) VALUES ('en', 'English');

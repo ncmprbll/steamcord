@@ -1,5 +1,10 @@
 const localization: Record<string, string> = {
-	"sales": "Sales"
+	"dashboard": "Dashboard",
+	"sales": "Sales",
+	"priceManagement": "Price management",
+	"prices": "Prices",
+	"discount": "Discount",
+	"save": "Save"
 };
 
 export { localization };

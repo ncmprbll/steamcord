@@ -23,7 +23,8 @@ const localization: Record<string, string> = {
     'signOut': 'Выйти',
     "allProducts": "Все игры",
     "management": "Управление",
-    "publishing": "Издание"
+    "publishing": "Издание",
+    "navAddFunds": "Пополнить баланс",
 };
 
 export { localization };
