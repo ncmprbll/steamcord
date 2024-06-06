@@ -25,6 +25,8 @@ const localization: Record<string, string> = {
     "management": "Управление",
     "publishing": "Издание",
     "navAddFunds": "Пополнить баланс",
+    "languages": "Языки",
+    "cart": "Корзина",
 };
 
 export { localization };

@@ -132,11 +132,10 @@
                     </AnchorContext>
                 {/if}
                 {#if $page.data?.permissions !== undefined && $page.data.permissions.includes(PERMISSION_UI_PUBLISHING)}
-                <AnchorContext href={`${$page.data.lang}/publishing`}>
-                    {$page.data.localization.publishing}
-                </AnchorContext>
-            {/if}
-                <!-- <a data-sveltekit-reload href="/">{$page.data.localization.community}</a> -->
+                    <AnchorContext href={`${$page.data.lang}/publishing`}>
+                        {$page.data.localization.publishing}
+                    </AnchorContext>
+                {/if}
             </div>
             <div class="menu-right">
                 <AnchorContext
@@ -198,15 +197,30 @@
                     <input placeholder={$page.data.localization.search} value="">
                 </div>
             </div>
-            <a data-sveltekit-reload href="/">{$page.data.localization.store}</a>
-            <a data-sveltekit-reload href="/">{$page.data.localization.community}</a>
-            {#if $page.data.me !== undefined}
-                <a data-sveltekit-reload href="{$page.data?.lang}/cart" class="cart">
-                    <span>Cart</span>
-                    &nbsp;
-                    <span>{count}</span>
-                </a>
+            <div class="anchor-group">
+                <a data-sveltekit-reload class="group-main" href="{$page.data?.lang}/">{$page.data.localization.store}</a>
+                <a data-sveltekit-reload href={`${$page.data?.lang}/search`}>{$page.data.localization.allProducts}</a>
+            </div>
+            {#if $page.data?.permissions !== undefined && $page.data.permissions.includes(PERMISSION_UI_MANAGEMENT)}
+                <div class="anchor-group">
+                    <a data-sveltekit-reload class="group-main" href={`${$page.data.lang}/management`}>{$page.data.localization.management}</a>
+                </div>
             {/if}
+            {#if $page.data?.permissions !== undefined && $page.data.permissions.includes(PERMISSION_UI_PUBLISHING)}
+                <div class="anchor-group">
+                    <a data-sveltekit-reload class="group-main" href={`${$page.data.lang}/publishing`}>{$page.data.localization.publishing}</a>
+                </div>
+            {/if}
+            <div class="anchor-group">
+                <a data-sveltekit-reload class="group-main" href="{$page.data?.lang}/">{$page.data.localization.languages}</a>
+                {#each languagesContextMenu as item}
+                    {#if item.type === "button"}
+                        <button on:click={item.callback}>{item.text}</button>
+                    {:else if item.type === "anchor"}
+                        <a data-sveltekit-reload href={item.href}>{item.text}</a>
+                    {/if}
+                {/each}
+            </div>
             {#if $page.data.me === undefined}
                 <button class="login" on:click={() => {
                     loginVisible = !loginVisible
@@ -214,20 +228,53 @@
                     Login
                 </button>
             {:else}
-                <a data-sveltekit-reload href="{$page.data?.lang}/profile/{$page.data.me.id}">
-                    <div>
-                        {$page.data.me.id}
-                    </div>
-                    <div>
-                        {formatBalance($page.data.me.balance, $page.data.me.currency_code)}
-                    </div>
-                </a>
+                <div class="anchor-group">
+                    <a data-sveltekit-reload class="group-main" href="{$page.data?.lang}/profile/{$page.data.me.id}">{$page.data.me.login}</a>
+                    <a data-sveltekit-reload href="{$page.data?.lang}/cart">{$page.data.localization.cart} {count}</a>
+                    {#each profileContextMenu as item}
+                        {#if item.type === "button"}
+                            <button on:click={item.callback}>{item.text}</button>
+                        {:else if item.type === "anchor"}
+                            <a data-sveltekit-reload href={item.href}>{item.text}</a>
+                        {/if}
+                    {/each}
+                </div>
             {/if}
         </div>
     </div>
 </nav>
 
 <style lang="postcss">
+    .anchor-group a:not(.group-main), .anchor-group button {
+        display: block;
+        margin-left: 16px;
+        margin-bottom: 4px;
+    }
+
+    .anchor-group {
+        width: 100%;
+        padding-bottom: 4px;
+        border-bottom: 1px solid #3b3b3b;
+    }
+
+    .anchor-group .group-main {
+        font-weight: 600g
+    }
+
+    .anchor-group button {
+        color: #b7bdbf;
+        transition: color 350ms;
+        font-size: 16px;
+        line-height: var(--store-line-height);
+        text-align: left;
+        white-space: nowrap;
+    }
+
+    .anchor-group button:hover {
+        color: #ebf2f4;
+        cursor: pointer;
+    }
+
     .profile-info {
         text-align: right;
     }
@@ -302,7 +349,7 @@
     }
 
     .mobile-drawer.expanded {
-        max-height: 201px;
+        max-height: 600px;
         margin: 0 auto;
     }
 

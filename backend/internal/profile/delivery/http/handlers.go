@@ -112,9 +112,9 @@ func (h *handlers) PasswordUpdate() http.HandlerFunc {
 			Name:     "session_id",
 			Value:    sessionId,
 			Path:     "/",
-			MaxAge:   3600,
+			MaxAge:   86400,
 			HttpOnly: true,
-			Secure:   true,
+			Secure:   false,
 			SameSite: http.SameSiteLaxMode,
 		}
 
