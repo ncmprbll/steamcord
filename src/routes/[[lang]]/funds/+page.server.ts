@@ -1,3 +1,4 @@
+import { BASE_LANGUAGE } from '$env/static/private';
 import type { Currencies } from '$lib/types/product.type.ts';
 import { redirect } from '@sveltejs/kit';
 
@@ -6,7 +7,7 @@ export const load = async ({ parent, cookies, depends, params }) => {
 
 	let localization: Record<string, string> | undefined;
 	try {
-		const imported = await import(`../../../lib/lang/${params.lang || "en"}/funds.ts`); // Vite, please (sveltejs/kit#9296, vitejs/vite#10460)
+		const imported = await import(`../../../lib/lang/${params.lang || BASE_LANGUAGE}/funds.ts`); // Vite, please (sveltejs/kit#9296, vitejs/vite#10460)
 		localization = imported.localization;
 	} catch {
 		const imported = await import("../../../lib/lang/en/funds.ts");

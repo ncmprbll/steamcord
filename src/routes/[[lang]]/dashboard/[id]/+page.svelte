@@ -1,15 +1,18 @@
 <script lang="ts">
-    import Chart from 'chart.js/auto'
+    import Chart, { type ChartItem } from 'chart.js/auto'
     import 'chartjs-adapter-moment';
 	import { onMount } from 'svelte';
+    import { BASE_CURRENCY } from "$env/static/public";
 
     export let data;
 
     let prices = {};
-    let selectedCurrency = "USD";
+    let selectedCurrency = BASE_CURRENCY;
 
-    for (let i = 0; i < data.currencies.length; i++) {
-        prices[data.currencies[i].code] = 0;
+    if (data.currencies !== undefined) {
+        for (let i = 0; i < data.currencies.length; i++) {
+            prices[data.currencies[i].code] = 0;
+        }
     }
 
     Chart.defaults.backgroundColor = '#9BD0F5';
@@ -20,7 +23,7 @@
         const d = data.sales.map((report) => { return { x: report.date, y: report.sales } });
 
         new Chart(
-            document.getElementById('chart'),
+            document.getElementById('chart') as ChartItem,
             {
                 type: 'line',
                 data: {
@@ -59,9 +62,11 @@
     <div class="box-input">
         <label for="about">{data.localization.prices}</label>
         <select bind:value={selectedCurrency} name="prices" class="user-data-value-select">
-            {#each data.currencies as currency}
-                <option value={currency.code} selected={currency.code === selectedCurrency}>{currency.code} ({currency.symbol})</option>
-            {/each}
+            {#if data.currencies !== undefined}
+                {#each data.currencies as currency}
+                    <option value={currency.code} selected={currency.code === selectedCurrency}>{currency.code} ({currency.symbol})</option>
+                {/each}
+            {/if}
         </select>
         <input bind:value={prices[selectedCurrency]} type="number" name="prices" step=".01" />
     </div>

@@ -1,6 +1,6 @@
 <script lang="ts">
     import DOMPurify from 'dompurify';
-    import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
+    import { marked } from 'marked';
     import { pushState } from '$app/navigation';
     import { scale } from 'svelte/transition';
     import { quintOut } from 'svelte/easing';
@@ -20,10 +20,13 @@
     const ERROR_DURATION = 6000;
     const avatarExtensions = [".jpg", ".jpeg", ".png"];
 
-    let fileInput;
+    let fileInput: HTMLInputElement;
 
-    let displayName: string = data.me.display_name;
-    let about: string = (data.me.about || "").replace(/\r?/g, "");;
+    let login = data.me!.login;
+    let avatar = data.me!.avatar;
+
+    let displayName: string = data.me!.display_name;
+    let about: string = (data.me!.about || "").replace(/\r?/g, "");;
     let newPassword: string = "";
     let confirmNewPassword: string = "";
     let displayNameLength: number = 0;
@@ -78,14 +81,14 @@
     }
 
     if (!foundCategory) {
-        selected = categories[0].id;
+        selected = categories[0].id || "general";
     }
 
 	async function handleUpdate(event) {
 		const url = event.target.action;
         const data = new FormData(event.target);
 
-        const fileToUpload = data.get("fileToUpload");
+        const fileToUpload = data.get("fileToUpload") as File;
         const displayName = data.get("display_name");
         const about = data.get("about");
 
@@ -187,14 +190,18 @@
         reader.addEventListener("load", function () {
             const img = new Image();
             img.onload = function() {
-                if (this.width !== this.height) {
+                if (img.width < 184) {
+                    input.value = null;
+                    avatarError("fileSmall");
+                    return;
+                } else if (img.width !== img.height) {
                     input.value = null;
                     avatarError("fileNotSquare");
                     return;
                 }
 
                 for (const previewImage of document.getElementsByClassName("preview-image")) {
-                    previewImage.setAttribute("src", reader.result);
+                    previewImage.setAttribute("src", reader.result!.toString());
                 }
                 hasAvatarToUpload = true;
                 avatarUploadLoading = false;
@@ -203,7 +210,7 @@
                 input.value = null;
                 avatarError("invalidFile");
             }
-            img.src = reader.result
+            img.src = reader.result!.toString()
         });
         reader.readAsDataURL(file);
     }
@@ -212,7 +219,7 @@
         selected = id;
         const url = new URL(window.location.href);
         url.searchParams.set('category', id);
-        pushState(url.toString());
+        pushState(url.toString(), {});
     }
 
     const privacyOptions = [{
@@ -226,8 +233,8 @@
 		label: data.localization.public,
 	}]
 
-    let originalPrivacy = data.me.privacy;
-    let selectedPrivacy = data.me.privacy;
+    let originalPrivacy = data.me!.privacy;
+    let selectedPrivacy = data.me!.privacy;
     function onPrivacyChange(event) {
         selectedPrivacy = event.detail;
     }
@@ -252,7 +259,7 @@
     }
 </script>
 
-<p class="breaker">{data.localization.title.replace("[login]", data.me.login)}</p>
+<p class="breaker">{data.localization.title.replace("[login]", login)}</p>
 <div class="settings-window">
     <div class="settings-categories">
         {#each categories as category}
@@ -273,15 +280,15 @@
             {/if}
             <div class="preview-images-holder">
                 <div class="preview-box">
-                    <img class="preview-image avatar-big" src={data.me.avatar || "/content/avatars/default.png"} alt="Preview" />
+                    <img class="preview-image avatar-big" src={avatar || "/content/avatars/default.png"} alt="Preview" />
                     <div class="preview-dimensions">184px</div>
                 </div>
                 <div class="preview-box">
-                    <img class="preview-image avatar-medium" src={data.me.avatar || "/content/avatars/default.png"} alt="Preview" />
+                    <img class="preview-image avatar-medium" src={avatar || "/content/avatars/default.png"} alt="Preview" />
                     <div class="preview-dimensions">64px</div>
                 </div>
                 <div class="preview-box">
-                    <img class="preview-image avatar-small" src={data.me.avatar || "/content/avatars/default.png"} alt="Preview" />
+                    <img class="preview-image avatar-small" src={avatar || "/content/avatars/default.png"} alt="Preview" />
                     <div class="preview-dimensions">32px</div>
                 </div>
             </div>
@@ -310,7 +317,7 @@
                 </div>
                 <div class="box-input">
                     <label for="about">{data.localization.about} {`(${aboutLength}/${MAX_ABOUT_LENGTH})`}</label>
-                    <textarea bind:value={about} name="about" type="text" maxlength="{MAX_ABOUT_LENGTH}"/>
+                    <textarea bind:value={about} name="about" maxlength="{MAX_ABOUT_LENGTH}"/>
                 </div>
                 <div class="actions">
                     <button class="form-button" type="submit">

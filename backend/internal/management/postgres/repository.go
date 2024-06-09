@@ -22,7 +22,7 @@ func (s *Repository) GetPermissions(ctx context.Context, user *models.User) (*mo
 	}
 
 	permissions := &models.Permissions{}
-	if err := s.database.QueryRowxContext(ctx, "SELECT JSONB_AGG(permission) permissions FROM users_role_permissions WHERE role_id = $1;", id).Scan(permissions); err != nil {
+	if err := s.database.QueryRowxContext(ctx, "SELECT COALESCE(JSONB_AGG(permission), '[]'::JSONB) permissions FROM users_role_permissions WHERE role_id = $1;", id).Scan(permissions); err != nil {
 		return nil, err
 	}
 

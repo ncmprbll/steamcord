@@ -41,11 +41,11 @@ func main() {
 	}
 
 	webhookSecret := os.Getenv("WEBHOOK_SECRET")
-
-	url := "postgres://postgres:password@localhost/postgres"
+	postgresSource := os.Getenv("SERVER_POSTGRES_SOURCE")
+	redisSource := os.Getenv("SERVER_REDIS_SOURCE")
 	port := "3000"
 
-	database, err := sqlx.Open("pgx", url)
+	database, err := sqlx.Open("pgx", postgresSource)
 
 	if err != nil {
 		panic(err)
@@ -58,7 +58,7 @@ func main() {
 	}
 
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
+		Addr:     redisSource,
 		Password: "",
 		DB:       0,
 	})
@@ -107,12 +107,14 @@ func main() {
 	profileRouter := profileDelivery.NewRouter(profileHandlers, manager)
 	managementRouter := managementDelivery.NewRouter(managementHandlers, manager)
 
-	r.Mount("/auth", authRouter)
-	r.Mount("/products", productsRouter)
-	r.Mount("/cart", cartRouter)
-	r.Mount("/locales", languageRouter)
-	r.Mount("/profile", profileRouter)
-	r.Mount("/management", managementRouter)
+	r.Route("/api", func(r chi.Router) {
+		r.Mount("/auth", authRouter)
+		r.Mount("/products", productsRouter)
+		r.Mount("/cart", cartRouter)
+		r.Mount("/locales", languageRouter)
+		r.Mount("/profile", profileRouter)
+		r.Mount("/management", managementRouter)
+	})
 
 	r.Post("/webhook", func(w http.ResponseWriter, r *http.Request) {
 		r.Body = http.MaxBytesReader(w, r.Body, 2<<15)

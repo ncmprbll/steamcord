@@ -1,6 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 
 import { PERMISSION_UI_PUBLISHING, type Currencies } from '$lib/types/product.type.ts';
+import { BASE_LANGUAGE, SERVER_API_URL } from '$env/static/private';
 
 export const load = async ({ cookies, params, parent, url }) => {
     const data = await parent();
@@ -15,7 +16,7 @@ export const load = async ({ cookies, params, parent, url }) => {
 
     let localization: Record<string, string> | undefined;
 	try {
-		const imported = await import(`../../../lib/lang/${params.lang || "en"}/publishing.ts`); // Vite, please (sveltejs/kit#9296, vitejs/vite#10460)
+		const imported = await import(`../../../lib/lang/${params.lang || BASE_LANGUAGE}/publishing.ts`); // Vite, please (sveltejs/kit#9296, vitejs/vite#10460)
 		localization = imported.localization;
 	} catch {
 		const imported = await import("../../../lib/lang/en/publishing.ts");
@@ -25,7 +26,7 @@ export const load = async ({ cookies, params, parent, url }) => {
 
     let currencies: Currencies | undefined;
     // if (data.permissions.includes(PERMISSION_USERS_MANAGEMENT)) {
-        let result = await fetch(`http://localhost:3000/products/currencies`, {
+        let result = await fetch(`${SERVER_API_URL}/products/currencies`, {
             method: "GET",
             credentials: "include",
             headers: {

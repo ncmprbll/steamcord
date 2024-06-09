@@ -1,9 +1,10 @@
 import type { PublishProduct } from '$lib/types/product.type.js';
 import { writeFileSync } from 'fs';
 import crypto from 'crypto';
+import { SERVER_API_URL } from '$env/static/private';
 
 export async function GET({ cookies, request, url }) {
-	return await fetch(`http://localhost:3000/products?${url.searchParams.toString()}`, {
+	return await fetch(`${SERVER_API_URL}/products?${url.searchParams.toString()}`, {
 		method: request.method,
 		credentials: 'include',
 		headers: {
@@ -64,7 +65,7 @@ export async function POST({ cookies, request, url }) {
 	object.header = headerPath;
 	object.screenshots = screenshots;
 
-	return await fetch(`http://localhost:3000/products`, {
+	return await fetch(`${SERVER_API_URL}/products`, {
 		method: request.method,
 		credentials: 'include',
 		headers: {

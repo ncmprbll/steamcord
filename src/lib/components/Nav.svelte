@@ -5,6 +5,7 @@
     import { PERMISSION_UI_MANAGEMENT } from '$lib/types/management.type.ts';
     import { PERMISSION_UI_PUBLISHING } from '$lib/types/product.type.ts';
     import AnchorContext from '$lib/components/AnchorContext.svelte';
+    import { type ContextMenuItem } from '$lib/types/context.type';
 
     export let loginVisible: boolean;
 
@@ -23,7 +24,7 @@
         });
     };
 
-    let languagesContextMenu = [];
+    let languagesContextMenu: ContextMenuItem[] = [];
 
     function setLanguage(code: string) {
         const path = $page.url.pathname;
@@ -40,6 +41,7 @@
             languagesContextMenu[i] = {
                 text: $page.data.locales[i].name,
                 type: "button",
+                href: undefined,
                 callback: () => {
                     setLanguage($page.data.locales[i].code)
                 }
@@ -47,33 +49,38 @@
         }
     }
 
-    let storeContextMenu = [
+    let storeContextMenu: ContextMenuItem[] = [
         {
             text: $page.data.localization.allProducts,
             type: "anchor",
-            href: `${$page.data?.lang}/search`
+            href: `${$page.data?.lang}/search`,
+            callback: undefined
         }
     ]
 
-    let profileContextMenu = [
+    let profileContextMenu: ContextMenuItem[] = [
         {
             text: $page.data.localization.profile,
             type: "anchor",
-            href: `${$page.data?.lang}/profile/${$page.data?.me?.id}`
+            href: `${$page.data?.lang}/profile/${$page.data?.me?.id}`,
+            callback: undefined
         },
         {
             text: $page.data.localization.navAddFunds,
             type: "anchor",
-            href: `${$page.data?.lang}/funds`
+            href: `${$page.data?.lang}/funds`,
+            callback: undefined
         },
         {
             text: $page.data.localization.settings,
             type: "anchor",
-            href: `${$page.data?.lang}/profile/${$page.data?.me?.id}/settings`
+            href: `${$page.data?.lang}/profile/${$page.data?.me?.id}/settings`,
+            callback: undefined
         },
         {
             text: $page.data.localization.signOut,
             type: "button",
+            href: undefined,
             callback: async () => {
                 const result = await fetch("/api/auth/logout", {
                     method: "POST",
@@ -258,7 +265,7 @@
     }
 
     .anchor-group .group-main {
-        font-weight: 600g
+        font-weight: 600
     }
 
     .anchor-group button {

@@ -9,7 +9,6 @@ import (
 func (mw *MiddlewareManager) GetUserMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		sessionIdCookie, err := r.Cookie("session_id")
-
 		if err != nil {
 			next.ServeHTTP(w, r.WithContext(r.Context()))
 			return

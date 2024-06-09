@@ -1,9 +1,10 @@
 import type { User } from '$lib/types/user.type';
+import { BASE_LANGUAGE, SERVER_API_URL } from '$env/static/private';
 
 export async function load({ params, cookies }) {
     let localization: Record<string, string> | undefined;
 	try {
-		const imported = await import(`../../lib/lang/${params.lang || "en"}/nav.ts`); // Vite, please (sveltejs/kit#9296, vitejs/vite#10460)
+		const imported = await import(`../../lib/lang/${params.lang || BASE_LANGUAGE}/nav.ts`); // Vite, please (sveltejs/kit#9296, vitejs/vite#10460)
 		localization = imported.localization;
 	} catch {
 		const imported = await import("../../lib/lang/en/nav.ts");
@@ -13,14 +14,14 @@ export async function load({ params, cookies }) {
     let error: string | undefined;
     let me: User | undefined;
     let locales: Record<string, string>[] | undefined;
-    let permissions: string[] | undefined;
+    let permissions: string[] = [];
     let lang: string = "";
 
     if (params.lang !== undefined) {
         lang = "/" + params.lang;
     }
 
-    let result = await fetch('http://localhost:3000/locales/');
+    let result = await fetch(`${SERVER_API_URL}/locales`);
     if (result.status === 200) {
         locales = await result.json();
     }
@@ -37,7 +38,7 @@ export async function load({ params, cookies }) {
         };
     }
 
-    result = await fetch('http://localhost:3000/auth/me', {
+    result = await fetch(`${SERVER_API_URL}/auth/me`, {
         method: 'GET',
         credentials: 'include',
         headers: {
@@ -45,12 +46,12 @@ export async function load({ params, cookies }) {
         }
     });
 
+    let cart: number[] = [];
     if (result.status === 200) {
         me = await result.json();
-        me!.cart = [];
         me!.owned = [];
 
-        result = await fetch('http://localhost:3000/management/permissions', {
+        result = await fetch(`${SERVER_API_URL}/management/permissions`, {
             method: 'GET',
             credentials: 'include',
             headers: {
@@ -61,7 +62,7 @@ export async function load({ params, cookies }) {
             permissions = await result.json();
         }
 
-        result = await fetch('http://localhost:3000/cart/ids', {
+        result = await fetch(`${SERVER_API_URL}/cart/ids`, {
             method: 'GET',
             credentials: 'include',
             headers: {
@@ -69,10 +70,11 @@ export async function load({ params, cookies }) {
             }
         });
         if (result.status === 200) {
-            me!.cart = await result.json();
+            cart = await result.json();
+            // me!.cart = await result.json();
         }
 
-        result = await fetch('http://localhost:3000/products/owned', {
+        result = await fetch(`${SERVER_API_URL}/products/owned`, {
             method: 'GET',
             credentials: 'include',
             headers: {
@@ -93,6 +95,7 @@ export async function load({ params, cookies }) {
 		localization: localization,
         locales: locales,
         permissions: permissions,
-        lang: lang
+        lang: lang,
+        cart: cart
 	};
 }

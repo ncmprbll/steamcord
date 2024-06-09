@@ -4,7 +4,7 @@ export const ssr = false;
 
 export const load = async ({ parent, data }) => {
     if (data.me !== undefined) {
-        data.me.cart = writable(data.me.cart);
+        data.me.cart = writable(data.cart);
     }
 
     return {

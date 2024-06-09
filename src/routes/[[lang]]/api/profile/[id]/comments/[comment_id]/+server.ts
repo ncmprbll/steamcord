@@ -1,5 +1,7 @@
+import { SERVER_API_URL } from "$env/static/private";
+
 export async function DELETE({ cookies, request, params }) {
-	return await fetch(`http://localhost:3000/profile/${params.id}/comments/${params.comment_id}`, {
+	return await fetch(`${SERVER_API_URL}/profile/${params.id}/comments/${params.comment_id}`, {
 		method: request.method,
 		credentials: 'include',
 		headers: {

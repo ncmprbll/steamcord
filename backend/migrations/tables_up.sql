@@ -77,6 +77,7 @@ CREATE TABLE products
     id BIGINT PRIMARY KEY DEFAULT nextval('products_sequence'),
     name VARCHAR(64) NOT NULL CHECK ( name <> '' ),
     discount SMALLINT DEFAULT 0 NOT NULL CHECK ( discount >= 0 AND discount <= 100 ),
+    publisher TEXT DEFAULT '' NOT NULL,
     about_token TEXT REFERENCES translations_tokens(token),
     description_token TEXT REFERENCES translations_tokens(token),
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
@@ -409,7 +410,7 @@ In the towns of Muldraugh and West Point, survivors must loot houses, build defe
 INSERT INTO translations (token, locale, text) VALUES ('#2540_description', 'en', 'Project Zomboid is the ultimate in zombie survival. Alone or in MP: you loot, build, craft, fight, farm and fish in a struggle to survive. A hardcore RPG skillset, a vast map, massively customisable sandbox and a cute tutorial raccoon await the unwary. So how will you die? All it takes is a bite..');
 -- INSERT INTO translations (token, locale, text) VALUES ('#2540_description', 'ru', '');
 
-INSERT INTO products (id, name, discount, about_token, description_token) VALUES (440, 'Cyberpunk 2077: Phantom Liberty', 100, '#440_about', '#440_description');
+INSERT INTO products (id, name, discount, publisher, about_token, description_token) VALUES (440, 'Cyberpunk 2077: Phantom Liberty', 100, 'CD Projekt Red', '#440_about', '#440_description');
 INSERT INTO products (id, name, discount, about_token, description_token) VALUES (540, 'Baldur''s Gate 3', 10, '#540_about', '#540_description');
 INSERT INTO products (id, name, discount) VALUES (640, 'Fallout 4: Game of the Year Edition', 75);
 INSERT INTO products (id, name, discount) VALUES (740, 'Divinity: Original Sin 2 - Definitive Edition', 69);

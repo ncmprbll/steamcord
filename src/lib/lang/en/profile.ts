@@ -16,7 +16,8 @@ const localization: Record<string, string> = {
     'inviteSent': 'Friend invite sent',
     'inviteBlocked': 'Friend invite blocked',
     'commentPlaceholder': 'Add a comment',
-    'postComment': 'Post comment'
+    'postComment': 'Post comment',
+    'searchDesc': 'Search for people.',
 };
 
 export { localization };

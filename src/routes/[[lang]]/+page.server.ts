@@ -1,11 +1,12 @@
 import type { FeaturedGame, TierGame } from "$lib/types/product.type";
+import { SERVER_API_URL, BASE_LANGUAGE } from '$env/static/private';;
 
 export const load = async ({ cookies, params, parent }) => {
     const data = await parent();
     const sessionId = cookies.get('session_id');
 	// shortestDescription: "Cyberpunk 2077: Phantom Liberty",
     // shortDescription: "FREEDOM ALWAYS COMES AT A PRICE",
-    const highlightsResult = await fetch('http://localhost:3000/products/featured', {
+    const highlightsResult = await fetch(`${SERVER_API_URL}/products/featured`, {
         credentials: 'include',
 		headers: {
 			Cookie: 'session_id=' + sessionId
@@ -15,7 +16,7 @@ export const load = async ({ cookies, params, parent }) => {
     if (highlightsResult.status === 200)
         highlights = await highlightsResult.json();
 
-    const randomGamesResult = await fetch('http://localhost:3000/products/tier', {
+    const randomGamesResult = await fetch(`${SERVER_API_URL}/products/tier`, {
         credentials: 'include',
 		headers: {
 			Cookie: 'session_id=' + sessionId
@@ -25,7 +26,7 @@ export const load = async ({ cookies, params, parent }) => {
     if (randomGamesResult.status === 200)
         randomGames = await randomGamesResult.json();
 
-    const horrorGamesResult = await fetch('http://localhost:3000/products/tier?genre=Horror&count=4', {
+    const horrorGamesResult = await fetch(`${SERVER_API_URL}/products/tier?genre=Horror&count=4`, {
         credentials: 'include',
 		headers: {
 			Cookie: 'session_id=' + sessionId
@@ -37,7 +38,7 @@ export const load = async ({ cookies, params, parent }) => {
 
     let localization: Record<string, string> | undefined;
 	try {
-		const imported = await import(`../../lib/lang/${params.lang || "en"}/main.ts`); // Vite, please (sveltejs/kit#9296, vitejs/vite#10460)
+		const imported = await import(`../../lib/lang/${params.lang || BASE_LANGUAGE}/main.ts`); // Vite, please (sveltejs/kit#9296, vitejs/vite#10460)
 		localization = imported.localization;
 	} catch {
 		const imported = await import("../../lib/lang/en/main.ts");

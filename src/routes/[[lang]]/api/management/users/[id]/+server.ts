@@ -1,3 +1,5 @@
+import { SERVER_API_URL } from "$env/static/private";
+
 export async function PATCH({ cookies, request, params }) {
 	const data = await request.formData();
 	let object = {};
@@ -7,7 +9,7 @@ export async function PATCH({ cookies, request, params }) {
 	}
 	let json = JSON.stringify(object);
 
-	return await fetch(`http://localhost:3000/management/users/${params.id}`, {
+	return await fetch(`${SERVER_API_URL}/management/users/${params.id}`, {
 		method: request.method,
 		credentials: 'include',
 		headers: {

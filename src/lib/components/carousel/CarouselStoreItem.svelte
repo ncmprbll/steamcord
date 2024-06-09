@@ -27,7 +27,7 @@
         });
     };
 
-    export function resize(e: Event, p?: HTMLElement) {
+    export function resize(e: Event | undefined, p?: HTMLElement) {
         if (p !== undefined) {
             width = p.offsetWidth;
             return;
@@ -36,7 +36,7 @@
         width = paragraph?.offsetWidth;
 	}
 
-    onMount(resize);
+    onMount(() => { resize(undefined, undefined) });
 
     $: {
         if (width === 0 || width === undefined) {
@@ -59,7 +59,7 @@
             body: JSON.stringify({product_id: game.id})
         });
 
-        await new Promise(r => setTimeout(r, 750)); // Artificial delay
+        // await new Promise(r => setTimeout(r, 750)); // Artificial delay
 
         loading = false;
 
@@ -83,7 +83,7 @@
     <div class="screenshot" style="{style}">
         <picture>
             <source type="image/jpeg" class="big-spot__background-source" srcset={game.featured_background_img}>
-            <img class="big-spot__background-source" src alt="Highlight cover" style="object-fit: none;">
+            <img class="big-spot__background-source" src={game.featured_background_img} alt="Highlight cover" style="object-fit: none;">
         </picture>
         <div class="wall-gradient-full" class:wall-gradient-full--active={!active}></div>
         <div class="item" class:item--active={active}>
@@ -91,7 +91,7 @@
             <div class="logo">
                 <picture>
                     <source type="image/jpeg" srcset={game.featured_logo_img}>
-                    <img class="logo-image" src alt="Logo">
+                    <img class="logo-image" src={game.featured_logo_img} alt="Logo">
                 </picture>
             </div>
             <div class="item-info">
@@ -100,11 +100,11 @@
                         {#if game.name !== undefined && game.name !== ""}
                             <span class="short-short-description-box">{game.name}</span>
                         {/if}
-                        {#if game.shortDescription !== undefined && game.shortDescription !== ""}
+                        <!-- {#if game.shortDescription !== undefined && game.shortDescription !== ""}
                             <span class="short-description-box">
                                 <div class="short-description-text">{game.shortDescription}</div>
                             </span>
-                        {/if}
+                        {/if} -->
                     </div>
                     {#if game.platforms !== undefined}
                         <div>
@@ -134,24 +134,26 @@
                         <div class="discount-final-price">{formatPrice(game.price, false, $page.data.localization.free)}</div>
                     </div>
                 </div>
-                <div class="actions-right-side">
-                    {#if $page.data?.me?.owned.includes(game.id)}
-                        <div class="button owned">
-                            <span>{$page.data.localization.owned}</span>
-                        </div>
-                    {:else if !alreadyInCart}
-                        <button class="button" disabled={loading} on:click|stopPropagation|preventDefault={addToCart}>
-                            <span class:loading={loading}>{$page.data.localization.addToCart}</span>
-                            {#if loading}
-                                <Spinner absolute={true} size="16"/>
-                            {/if}
-                        </button>
-                    {:else if alreadyInCart}
-                        <div class="button in-cart">
-                            <span>{$page.data.localization.inCart}</span>
-                        </div>
-                    {/if}
-                </div>
+                {#if $page.data?.me !== undefined}
+                    <div class="actions-right-side">
+                        {#if $page.data?.me?.owned.includes(game.id)}
+                            <div class="button owned">
+                                <span>{$page.data.localization.owned}</span>
+                            </div>
+                        {:else if !alreadyInCart}
+                            <button class="button" disabled={loading} on:click|stopPropagation|preventDefault={addToCart}>
+                                <span class:loading={loading}>{$page.data.localization.addToCart}</span>
+                                {#if loading}
+                                    <Spinner absolute={true} size="16"/>
+                                {/if}
+                            </button>
+                        {:else if alreadyInCart}
+                            <div class="button in-cart">
+                                <span>{$page.data.localization.inCart}</span>
+                            </div>
+                        {/if}
+                    </div>
+                {/if}
             </div>
         </div>
     </div>
@@ -311,7 +313,7 @@
         height: auto;
     }
 
-    .short-description-text {
+    /* .short-description-text {
         display: -webkit-box;
         line-clamp: 4;
         overflow: hidden;
@@ -328,7 +330,7 @@
         display: -ms-flexbox;
         display: flex;
         margin-bottom: 10px;
-    }
+    } */
 
     .short-short-description-box {
         display: block;

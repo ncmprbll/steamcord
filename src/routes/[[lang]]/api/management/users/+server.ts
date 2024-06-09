@@ -1,5 +1,7 @@
+import { SERVER_API_URL } from "$env/static/private";
+
 export async function GET({ cookies, request, url }) {
-	return await fetch(`http://localhost:3000/management/users?${url.searchParams.toString()}`, {
+	return await fetch(`${SERVER_API_URL}/management/users?${url.searchParams.toString()}`, {
 		method: request.method,
 		credentials: 'include',
 		headers: {

@@ -20,6 +20,7 @@ const localization: Record<string, string> = {
     "systemNetwork": "Сеть",
     "systemStorage": "Место на диске",
     "free": "Бесплатно",
+    "reviewsNone": "Нет отзывов",
 };
 
 export { localization };

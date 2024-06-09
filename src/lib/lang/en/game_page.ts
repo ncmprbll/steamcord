@@ -20,6 +20,7 @@ const localization: Record<string, string> = {
     "systemNetwork": "Network",
     "systemStorage": "Storage",
     "free": "Free",
+    "reviewsNone": "No reviews",
 };
 
 export { localization };

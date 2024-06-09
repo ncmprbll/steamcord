@@ -1,3 +1,4 @@
+import { SERVER_API_URL } from '$env/static/private';
 import { error } from '@sveltejs/kit';
 
 export async function POST({ cookies, request }) {
@@ -9,7 +10,7 @@ export async function POST({ cookies, request }) {
 		});
 	}
 
-	return await fetch("http://localhost:3000/cart/purchase", {
+	return await fetch(`${SERVER_API_URL}/cart/purchase`, {
 		method: request.method,
 		credentials: "include",
 		headers: {

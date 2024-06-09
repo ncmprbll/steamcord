@@ -3,7 +3,6 @@ package postgres
 import (
 	"context"
 	"errors"
-	"fmt"
 	"main/backend/internal/models"
 
 	"github.com/jmoiron/sqlx"
@@ -116,8 +115,6 @@ func (s *Repository) Purchase(ctx context.Context, user *models.User) error {
 	if err = tx.QueryRowxContext(ctx, queryTotal, user.UUID).Scan(&balance, &total); err != nil {
 		return err
 	}
-
-	fmt.Println(balance, total)
 
 	if balance < total {
 		return errors.New("insufficient funds")

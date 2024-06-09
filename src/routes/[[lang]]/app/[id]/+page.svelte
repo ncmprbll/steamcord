@@ -1,14 +1,14 @@
 <script lang="ts">
     import DOMPurify from 'dompurify';
-    import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
+    import { marked } from 'marked';
 
     import windows from '$lib/assets/os/windows.png';
     import mac from '$lib/assets/os/mac.png';
     import linux from '$lib/assets/os/linux.png';
-    import { goto } from "$app/navigation";
     import { page } from "$app/stores"; 
     import { formatPrice } from '$lib/types/product.type';
     import Spinner from '$lib/components/Spinner.svelte';
+    import { formatDate } from "$lib/util/date";
 
     export let data;
 
@@ -34,7 +34,7 @@
             body: JSON.stringify({product_id: data.product.id})
         });
 
-        await new Promise(r => setTimeout(r, 750)); // Artificial delay
+        // await new Promise(r => setTimeout(r, 750)); // Artificial delay
 
         loadingCart = false;
 
@@ -55,10 +55,6 @@
     let previous = -1;
     let selected = 0;
 </script>
-
-<svelte:head>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-</svelte:head>
 
 <div class="header-content">
     <div class="media-content">
@@ -99,11 +95,11 @@
         <div class="meta-summary">
             <div class="meta-row">
                 <div class="subtitle">{data.localization.reviews}:</div>
-                <div class="summary">Positive</div>
+                <div class="summary">{data.localization.reviewsNone}</div>
             </div>
             <div class="meta-row">
                 <div class="subtitle">{data.localization.releaseDate}:</div>
-                <div class="summary">26 Dec, 2007</div>
+                <div class="summary">{formatDate(data.product.created_at, data.localization)}</div>
             </div>
         </div>
     </div>
@@ -163,8 +159,7 @@
     </div>
     <div class="aside">
         <div class="price-block">
-            <!-- {#if game.discount !== 0 && game.discount !== undefined} -->
-            {#if true}
+            {#if data.product.discount !== 0 && data.product.discount !== undefined}
                 <div class="discount">-{data.product.discount}%</div>
                 <div class="discount-original-price">{formatPrice(data.product.price, true, data.localization.free)}</div>
                 <div class="discount-final-price">{formatPrice(data.product.price, false, data.localization.free)}</div>
@@ -189,9 +184,9 @@
                     <span>{$page.data.localization.inCart}</span>
                 </a>
             {/if}
-            <div class="button">
+            <!-- <div class="button">
                 <span>{data.localization.addToWishlist}</span>
-            </div>
+            </div> -->
         {/if}
         <div class="meta-data">
             <div class="meta-row">
@@ -210,50 +205,11 @@
             </div>
             <div class="meta-row">
                 <div class="meta-subtitle">{data.localization.publisher}</div>
-                <div class="platforms-icons">
-                    Landfall Games
-                </div>
+                <div class="platforms-icons">{data.product.publisher}</div>
             </div>
         </div>
     </div>
 </div>
-
-<!-- <p class="breaker">{data.localization.reviews}</p>
-<div class="reviews">
-    <div class="review">
-        <div class="left">
-            <div class="player-info">
-                <div class="avatar">
-                    <img src="https://avatars.akamai.steamstatic.com/50456f88f839a416022715c64b6681a923f64366.jpg" srcset="https://avatars.akamai.steamstatic.com/50456f88f839a416022715c64b6681a923f64366.jpg 1x, https://avatars.akamai.steamstatic.com/50456f88f839a416022715c64b6681a923f64366_medium.jpg 2x" alt="Avatar">
-                </div>
-                <div class="name">
-                    Whtoo24k2
-                </div>
-            </div>
-        </div>
-        <div class="right">
-            <div class="status recommended">Recommended</div>
-            <div class="review-content">1p2o3p1o562jkltaj3wkjtkp23j12j3j12lk4j1lk2j56lk12jlk4j1lk1p2o3p1o562jkltaj3wkjtkp23j12j3j12lk4j1lk2j56lk12jlk4j1lk1p2o3p1o562jkltaj3wkjtkp23j12j3j12lk4j1lk2j56lk12jlk4j1lk1p2o3p1o562jkltaj3wkjtkp23j12j3j12lk4j1lk2j56lk12jlk4j1lk1p2o3p1o562jkltaj3wkjtkp23j12j3j12lk4j1lk2j56lk12jlk4j1lk</div>
-        </div>
-    </div>
-    <div class="review">
-        <div class="left">
-            <div class="player-info">
-                <div class="avatar">
-                    <img src="https://avatars.akamai.steamstatic.com/50456f88f839a416022715c64b6681a923f64366.jpg" srcset="https://avatars.akamai.steamstatic.com/50456f88f839a416022715c64b6681a923f64366.jpg 1x, https://avatars.akamai.steamstatic.com/50456f88f839a416022715c64b6681a923f64366_medium.jpg 2x" alt="Avatar">
-                </div>
-                <div class="name">
-                    Whtoo24k2
-                </div>
-            </div>
-        </div>
-        <div class="right">
-            <div class="status not-recommended">Not Recommended</div>
-            <div class="review-content">1p2o3p1o562jkltaj3wkjtkp23j12j3j12lk4j1lk2j56lk12jlk4j1lk1p2o3p1o562jkltaj3wkjtkp23j12j3j12lk4j1lk2j56lk12jlk4j1lk1p2o3p1o562jkltaj3wkjtkp23j12j3j12lk4j1lk2j56lk12jlk4j1lk1p2o3p1o562jkltaj3wkjtkp23j12j3j12lk4j1lk2j56lk12jlk4j1lk1p2o3p1o562jkltaj3wkjtkp23j12j3j12lk4j1lk2j56lk12jlk4j1lk1p2o3p1o562jkltaj3wkjtkp23j12j3j12lk4j1lk2j56lk12jlk4j1lk1p2o3p1o562jkltaj3wkjtkp23j12j3j12lk4j1lk2j56lk12jlk4j1lk1p2o3p1o562jkltaj3wkjtkp23j12j3j12lk4j1lk2j56lk12jlk4j1lk1p2o3p1o562jkltaj3wkjtkp23j12j3j12lk4j1lk2j56lk12jlk4j1lk1p2o3p1o562jkltaj3wkjtkp23j12j3j12lk4j1lk2j56lk12jlk4j1lk
-            </div>
-        </div>
-    </div>
-</div> -->
 
 <style lang="postcss">
     :root {
@@ -308,56 +264,6 @@
         100% {
             background-position: 0% 82%
         }
-    }
-
-    .review {
-        display: flex;
-        padding: 8px 16px;
-    }
-
-    .player-info {
-        display: flex;
-        gap: 16px;
-        align-items: center;
-        padding-right: 16px;
-        overflow: hidden;
-    }
-
-    .avatar {
-        width: 34px;
-        height: 34px;
-        flex: 0 0 34px;
-    }
-
-    .name {
-        text-overflow: ellipsis;
-        overflow: hidden;
-    }
-
-    .left {
-        display: flex;
-        width: 20%;
-        border-right: 1px solid #3b3b3b;
-    }
-
-    .right {
-        padding: 8px 16px;
-        word-break: break-word;
-    }
-
-    .status {
-        font-size: 18px;
-        font-weight: 600;
-        letter-spacing: 2px;
-        margin-bottom: 8px;
-    }
-
-    .status.recommended {
-        color: green;
-    }
-
-    .status.not-recommended {
-        color: red;
     }
 
     td {
@@ -635,19 +541,6 @@
             order: -1;
             width: 100%;
             position: static;
-        }
-
-        .review {
-            flex-direction: column;
-        }
-
-        .left {
-            width: 100%;
-            border-right: none;
-        }
-
-        .right {
-            padding: 16px 0;
         }
     }
 </style>

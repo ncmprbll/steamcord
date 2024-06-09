@@ -16,7 +16,8 @@ const localization: Record<string, string> = {
     'inviteSent': 'Запрос дружбы отправлен',
     'inviteBlocked': 'Запрос дружбы заблокирован',
     'commentPlaceholder': 'Напишите комментарий',
-    'postComment': 'Отправить'
+    'postComment': 'Отправить',
+    'searchDesc': 'Поиск людей по имени профиля.',
 };
 
 export { localization };

@@ -1,10 +1,11 @@
+import { BASE_LANGUAGE } from '$env/static/private';
 import { fail } from '@sveltejs/kit';
 
 export const load = async ({ cookies, params, parent, url }) => {
     const data = await parent();
     let localization: Record<string, string> | undefined;
 	try {
-		const imported = await import(`../../../lib/lang/${params.lang || "en"}/search.ts`); // Vite, please (sveltejs/kit#9296, vitejs/vite#10460)
+		const imported = await import(`../../../lib/lang/${params.lang || BASE_LANGUAGE}/search.ts`); // Vite, please (sveltejs/kit#9296, vitejs/vite#10460)
 		localization = imported.localization;
 	} catch {
 		const imported = await import("../../../lib/lang/en/search.ts");

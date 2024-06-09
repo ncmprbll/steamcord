@@ -1,10 +1,10 @@
-import { json } from '@sveltejs/kit';
+import { SERVER_API_URL } from '$env/static/private';
 
 export async function POST({ cookies, request }) {
 	const sessionId = cookies.get('session_id');
 	const text = await request.text();
 
-	return await fetch("http://localhost:3000/cart", {
+	return await fetch(`${SERVER_API_URL}/cart`, {
 		method: request.method,
 		credentials: 'include',
 		headers: {
@@ -18,7 +18,7 @@ export async function DELETE({ cookies, request }) {
 	const sessionId = cookies.get('session_id');
 	const text = await request.text();
 
-	return await fetch("http://localhost:3000/cart", {
+	return await fetch(`${SERVER_API_URL}/cart`, {
 		method: request.method,
 		credentials: 'include',
 		headers: {

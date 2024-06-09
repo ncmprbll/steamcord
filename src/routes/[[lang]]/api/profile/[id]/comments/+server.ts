@@ -1,5 +1,7 @@
+import { SERVER_API_URL } from "$env/static/private";
+
 export async function GET({ cookies, request, params, url }) {
-	let fetchURL = new URL(`http://localhost:3000/profile/${params.id}/comments`);
+	let fetchURL = new URL(`${SERVER_API_URL}/profile/${params.id}/comments`);
 	url.searchParams.forEach((v, k) => {
 		fetchURL.searchParams.set(k, v);
 	});
@@ -19,7 +21,7 @@ export async function POST({ cookies, request, params }) {
 	data.forEach((value, key) => object[key] = value);
 	let json = JSON.stringify(object);
 
-	return await fetch(`http://localhost:3000/profile/${params.id}/comments`, {
+	return await fetch(`${SERVER_API_URL}/profile/${params.id}/comments`, {
 		method: request.method,
 		credentials: 'include',
 		headers: {

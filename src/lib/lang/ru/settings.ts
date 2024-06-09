@@ -28,6 +28,7 @@ const localization: Record<string, string> = {
     "invalidFile": "Файл не является изображением.",
     "fileTooBig": "Файл в размере больше 1 МБ.",
     "fileNotSquare": "Изображение не квадратное.",
+    "fileSmall": "Изображение слишком маленькое.",
 };
 
 export { localization };

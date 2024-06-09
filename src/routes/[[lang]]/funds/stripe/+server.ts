@@ -1,12 +1,10 @@
 import { redirect } from '@sveltejs/kit';
 import stripe from 'stripe';
 
-import { STRIPE_SECRET } from '$env/static/private';
+import { SERVER_API_URL, STRIPE_SECRET } from '$env/static/private';
 
-const YOUR_DOMAIN = 'http://localhost:5173/';
-
-export async function POST({ cookies, request }) {
-    let result = await fetch('http://localhost:3000/auth/me', {
+export async function POST({ url, cookies, request }) {
+    let result = await fetch(`${SERVER_API_URL}/auth/me`, {
         method: 'GET',
         credentials: 'include',
         headers: {
@@ -44,8 +42,8 @@ export async function POST({ cookies, request }) {
 			},
 		],
 		mode: 'payment',
-		success_url: `${YOUR_DOMAIN}`,
-		cancel_url: `${YOUR_DOMAIN}`,
+		success_url: url.origin,
+		cancel_url: url.origin,
 		metadata: {
 			'user_id': me.id
 		}

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { SpinnerTypes } from './types/spinner.type';
+	import type { SpinnerTypes } from '$lib/types/spinner.type';
 	export let color: SpinnerTypes['color'] = '#FFF';
 	export let unit: SpinnerTypes['unit'] = 'px';
 	export let duration: SpinnerTypes['duration'] = '1.5s';

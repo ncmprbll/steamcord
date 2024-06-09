@@ -1,6 +1,6 @@
 export type ContextMenuItem = {
 	text: string;
 	type: "anchor" | "button";
-	href: string;
-	callback: (...args: any) => void;
+	href: string | undefined;
+	callback: ((...args: any) => void) | undefined;
 }

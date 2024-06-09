@@ -1,7 +1,7 @@
 import { type Writable } from 'svelte/store';
 
-type Cart = number[] | Writable<Cart>
-type Owned = Cart
+type Cart = Writable<number[]>
+type Owned = number[]
 
 export type User = {
 	id: string

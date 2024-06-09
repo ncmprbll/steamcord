@@ -1,3 +1,4 @@
+import { BASE_LANGUAGE, SERVER_API_URL } from '$env/static/private';
 import { redirect } from '@sveltejs/kit';
 
 export const load = async ({ parent, cookies, depends, params }) => {
@@ -9,7 +10,7 @@ export const load = async ({ parent, cookies, depends, params }) => {
 	}
 
 	const sessionId = cookies.get('session_id');
-	const result = await fetch('http://localhost:3000/cart', {
+	const result = await fetch(`${SERVER_API_URL}/cart`, {
 		method: 'GET',
 		credentials: 'include',
 		headers: {
@@ -23,7 +24,7 @@ export const load = async ({ parent, cookies, depends, params }) => {
 
 	let localization: Record<string, string> | undefined;
 	try {
-		const imported = await import(`../../../lib/lang/${params.lang || "en"}/cart.ts`); // Vite, please (sveltejs/kit#9296, vitejs/vite#10460)
+		const imported = await import(`../../../lib/lang/${params.lang || BASE_LANGUAGE}/cart.ts`); // Vite, please (sveltejs/kit#9296, vitejs/vite#10460)
 		localization = imported.localization;
 	} catch {
 		const imported = await import("../../../lib/lang/en/cart.ts");

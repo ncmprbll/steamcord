@@ -1,8 +1,9 @@
+import { SERVER_API_URL } from '$env/static/private';
 import { unlinkSync } from 'fs';
 
 export async function DELETE({ cookies, request }) {
 	const sessionId = cookies.get('session_id');
-	const result = await fetch("http://localhost:3000/profile/avatar", {
+	const result = await fetch(`${SERVER_API_URL}/profile/avatar`, {
 		method: request.method,
 		credentials: 'include',
 		headers: {

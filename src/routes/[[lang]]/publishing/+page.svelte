@@ -1,18 +1,19 @@
 <script lang="ts">
     import DOMPurify from 'dompurify';
-    import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
+    import { marked } from 'marked';
     import { pushState } from '$app/navigation';
+    import { BASE_CURRENCY } from "$env/static/public";
 
     export let data;
 
     const images = [".jpg", ".jpeg", ".png"];
 
-    let mainImageInput;
-    let screenshotsInput;
-    let screenshots = [];
+    let mainImageInput: HTMLInputElement;
+    let screenshotsInput: HTMLInputElement;
+    let screenshots: string[] = [];
 
-    let aboutTextarea;
-    let descriptionTextarea;
+    // let aboutTextarea;
+    // let descriptionTextarea;
     let aboutTranslations = {};
     let descriptionTranslations = {};
     let selectedAboutLocale = "en";
@@ -21,15 +22,19 @@
     let descriptionPreview = false;
 
     let prices = {};
-    let selectedCurrency = "USD";
+    let selectedCurrency = BASE_CURRENCY;
 
-    for (let i = 0; i < data.locales.length; i++) {
-        aboutTranslations[data.locales[i].code] = "";
-        descriptionTranslations[data.locales[i].code] = "";
+    if (data.locales !== undefined) {
+        for (let i = 0; i < data.locales.length; i++) {
+            aboutTranslations[data.locales[i].code] = "";
+            descriptionTranslations[data.locales[i].code] = "";
+        }
     }
 
-    for (let i = 0; i < data.currencies.length; i++) {
-        prices[data.currencies[i].code] = 0;
+    if (data.currencies !== undefined) {
+        for (let i = 0; i < data.currencies.length; i++) {
+            prices[data.currencies[i].code] = 0;
+        }
     }
 
     let searchParams = new URLSearchParams(window.location.search);
@@ -42,14 +47,14 @@
                 return true
             }
         },
-        {
-            id: "edit",
-            type: "category",
-            name: data.localization.categoryEdit,
-            permissionCheck: function() {
-                return true
-            }
-        }
+        // {
+        //     id: "edit",
+        //     type: "category",
+        //     name: data.localization.categoryEdit,
+        //     permissionCheck: function() {
+        //         return true
+        //     }
+        // }
     ]
     let selected = searchParams.get("category") || "";
     let foundCategory = false;
@@ -74,7 +79,7 @@
         selected = id;
         const url = new URL(window.location.href);
         url.searchParams.set('category', id);
-        pushState(url.toString());
+        pushState(url.toString(), {});
     }
 
     function onMainImageUpload(event) {
@@ -95,12 +100,12 @@
         reader.addEventListener("load", function () {
             const img = new Image();
             img.onload = function() {
-                document.getElementById("main-image").setAttribute("src", reader.result);
+                document.getElementById("main-image")!.setAttribute("src", reader.result!.toString());
             }
             img.onerror = function() {
                 input.value = null;
             }
-            img.src = reader.result
+            img.src = reader.result!.toString()
         });
         reader.readAsDataURL(file);
     }
@@ -125,12 +130,12 @@
                 const img = new Image();
                 screenshots = [];
                 img.onload = function() {
-                    screenshots = [...screenshots, reader.result];
+                    screenshots = [...screenshots, reader.result!.toString()];
                 }
                 img.onerror = function() {
                     input.value = null;
                 }
-                img.src = reader.result
+                img.src = reader.result!.toString()
             });
             reader.readAsDataURL(file);
         }
@@ -222,9 +227,11 @@
                 <div class="box-input">
                     <label for="about">{data.localization.prices}</label>
                     <select bind:value={selectedCurrency} name="prices" class="user-data-value-select">
-                        {#each data.currencies as currency}
-                            <option value={currency.code} selected={currency.code === selectedCurrency}>{currency.code} ({currency.symbol})</option>
-                        {/each}
+                        {#if data.currencies !== undefined}
+                            {#each data.currencies as currency}
+                                <option value={currency.code} selected={currency.code === selectedCurrency}>{currency.code} ({currency.symbol})</option>
+                            {/each}
+                        {/if}
                     </select>
                     <input bind:value={prices[selectedCurrency]} type="number" name="prices" step=".01" />
                 </div>
@@ -234,14 +241,16 @@
                         <span>{data.localization.preview}</span>
                     </button>
                     <select bind:value={selectedAboutLocale} name="about" class="user-data-value-select">
-                        {#each data.locales as locale}
-                            <option value={locale.code} selected={locale.code === selectedAboutLocale}>{locale.name}</option>
-                        {/each}
+                        {#if data.locales !== undefined}
+                            {#each data.locales as locale}
+                                <option value={locale.code} selected={locale.code === selectedAboutLocale}>{locale.name}</option>
+                            {/each}
+                        {/if}
                     </select>
                     {#if aboutPreview}
                         <div class="short-description">{aboutTranslations[selectedAboutLocale]}</div>
                     {:else}
-                        <textarea id="about-textarea" bind:value={aboutTranslations[selectedAboutLocale]} name="about" type="text" style="height: 64px;" on:input={autoGrow} />
+                        <textarea id="about-textarea" bind:value={aboutTranslations[selectedAboutLocale]} name="about" style="height: 64px;" on:input={autoGrow} />
                     {/if}
                 </div>
                 <div class="box-input">
@@ -250,16 +259,18 @@
                         <span>{data.localization.preview}</span>
                     </button>
                     <select bind:value={selectedDescriptionLocale} name="description" class="user-data-value-select">
-                        {#each data.locales as locale}
-                            <option value={locale.code} selected={locale.code === selectedDescriptionLocale}>{locale.name}</option>
-                        {/each}
+                        {#if data.locales !== undefined}
+                            {#each data.locales as locale}
+                                <option value={locale.code} selected={locale.code === selectedDescriptionLocale}>{locale.name}</option>
+                            {/each}
+                        {/if}
                     </select>
                     {#if descriptionPreview}
                         <div class="description">
                             {@html DOMPurify.sanitize(marked.parse(descriptionTranslations[selectedDescriptionLocale]), {ALLOWED_TAGS: ["h2", "h3", "p", "ul", "li", "ol", "blockquote", "strong"]})}
                         </div>
                     {:else}
-                        <textarea id="description-textarea" bind:value={descriptionTranslations[selectedDescriptionLocale]} name="description" type="text" style="height: 64px;" on:input={autoGrow} />
+                        <textarea id="description-textarea" bind:value={descriptionTranslations[selectedDescriptionLocale]} name="description" style="height: 64px;" on:input={autoGrow} />
                     {/if}
                 </div>
                 <div class="actions">
@@ -268,8 +279,6 @@
                     </button>
                 </div>
             </form>
-        {:else if selected === "edit"}
-
         {/if}
     </div>
 </div>

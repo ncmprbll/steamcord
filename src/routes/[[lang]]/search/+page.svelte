@@ -3,12 +3,6 @@
     import { pushState } from '$app/navigation';
 
     import SearchProduct from '$lib/components/SearchProduct.svelte';
-    import Spinner from '$lib/components/Spinner.svelte';
-
-    import windows from '$lib/assets/os/windows.png';
-    import mac from '$lib/assets/os/mac.png';
-    import linux from '$lib/assets/os/linux.png';
-    import { formatPrice } from '$lib/types/product.type';
 
     export let data;
 
@@ -35,18 +29,18 @@
         }
     }
 
-    let searchTimer;
-    let priceRangeTimer;
-    let items;
+    let searchTimer: string | number | NodeJS.Timeout | undefined;
+    let priceRangeTimer: string | number | NodeJS.Timeout | undefined;
+    let items: HTMLDivElement;
     let offset = 0;
     let waitForProductsToLoad = false;
 
     window.onscroll = async function(ev) {
-        if (!waitForProductsToLoad && (window.innerHeight + window.pageYOffset) >= document.body.offsetHeight - BOTTOM_OFFSET_PX) {
+        if (!waitForProductsToLoad && (window.innerHeight + window.scrollY) >= document.body.offsetHeight - BOTTOM_OFFSET_PX) {
             waitForProductsToLoad = true;
 
             const searchParams = new URLSearchParams(new URL(window.location.href).searchParams);
-            searchParams.set("pageOffset", offset);
+            searchParams.set("pageOffset", offset.toString());
             offset += PRODUCTS_PAGE_LIMIT;
             let url = `/api/products?${searchParams.toString()}`;
             const result = await fetch(url);
@@ -76,7 +70,7 @@
         }
     }
 
-    async function search(e) {
+    async function search(e: any | undefined) {
         if (e !== undefined && e.key !== "Enter") {
             return;
         }
@@ -84,7 +78,7 @@
         const url = new URL(window.location.href);
         url.searchParams.set("term", searchValue);
         try {
-            pushState(url.toString());
+            pushState(url.toString(), {});
         } catch (e) {}
         url.searchParams.delete("pageOffset");
         url.searchParams.delete("pageLimit");
@@ -105,19 +99,19 @@
     function onGenreSelection(e) {
         const url = new URL(window.location.href);
         let genres = url.searchParams.get("genres") || "";
-        genres = genres.split(",").filter(i => i !== "");
+        let genresArray = genres.split(",").filter(i => i !== "");
         if (e.target.checked) {
-            genres.push(e.target.name);
+            genresArray.push(e.target.name);
         } else {
-            genres = genres.filter(i => i !== e.target.name);
+            genresArray = genresArray.filter(i => i !== e.target.name);
         }
-        genres = genres.join(",");
+        genres = genresArray.join(",");
         url.searchParams.set("genres", genres);
 
         try {
-            pushState(url.toString());
+            pushState(url.toString(), {});
         } catch (e) {}
-        search();
+        search(undefined);
     }
 
     
@@ -125,16 +119,16 @@
         const url = new URL(window.location.href);
         if (e.target.checked) {
             specials = true;
-            url.searchParams.set("specials", 1);
+            url.searchParams.set("specials", "1");
         } else {
             specials = false;
             url.searchParams.delete("specials");
         }
 
         try {
-            pushState(url.toString());
+            pushState(url.toString(), {});
         } catch (e) {}
-        search();
+        search(undefined);
     }
 
     function priceRangeKeyUp(e) {
@@ -156,13 +150,13 @@
         url.searchParams.set("priceRange", [minPrice || 0, maxPrice || 550000].join(","));
 
         try {
-            pushState(url.toString());
+            pushState(url.toString(), {});
         } catch (e) {}
-        search();
+        search(undefined);
     }
 
 	onMount(async () => {
-        await search();
+        await search(undefined);
 	});
 </script>
 

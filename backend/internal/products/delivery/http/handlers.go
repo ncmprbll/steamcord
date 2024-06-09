@@ -7,6 +7,7 @@ import (
 	"main/backend/internal/products"
 	"main/backend/internal/util"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 
@@ -24,7 +25,7 @@ func NewAuthHandlers(pR products.Repository) *handlers {
 func (h *handlers) GetTier() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var (
-			currencyCode = "USD"
+			currencyCode = os.Getenv("BASE_CURRENCY")
 			rows         []*models.TierRow
 			err          error
 		)
@@ -66,9 +67,8 @@ func (h *handlers) GetTier() http.HandlerFunc {
 
 func (h *handlers) GetFeatured() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		currencyCode := "USD"
+		currencyCode := os.Getenv("BASE_CURRENCY")
 		found, ok := r.Context().Value("user").(*models.User)
-
 		if ok {
 			currencyCode = found.CurrencyCode
 		}
@@ -124,9 +124,8 @@ func (h *handlers) FindByID() http.HandlerFunc {
 			return
 		}
 
-		currencyCode := "USD"
+		currencyCode := os.Getenv("BASE_CURRENCY")
 		found, ok := r.Context().Value("user").(*models.User)
-
 		if ok {
 			currencyCode = found.CurrencyCode
 		}
@@ -224,9 +223,8 @@ func (h *handlers) Search() http.HandlerFunc {
 			}
 		}
 
-		currencyCode := "USD"
+		currencyCode := os.Getenv("BASE_CURRENCY")
 		found, ok := r.Context().Value("user").(*models.User)
-
 		if ok {
 			currencyCode = found.CurrencyCode
 		}

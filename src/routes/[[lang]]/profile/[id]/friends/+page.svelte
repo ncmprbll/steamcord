@@ -13,54 +13,37 @@
 
     const DONE_TYPING_INTERVAL = 500;
 
-    let users;
-    let roles;
-    let rolePermissions;
+    let users = [];
     let searchValue: string = "";
-
-    if (data.permissions !== undefined) {
-        if (data.permissions.includes(PERMISSION_USERS_MANAGEMENT)) {
-            users = data.users?.users;
-        }
-
-        if (data.permissions.includes(PERMISSION_ROLES_MANAGEMENT)) {
-            roles = data.roles;
-            rolePermissions = data.rolePermissions;
-        }
-    }
 
     let searchParams = new URLSearchParams(window.location.search);
     let categories = [
         {
-            id: "users",
+            id: "friends",
             type: "category",
-            name: data.localization.categoryUsers,
-            permissionCheck: function() {
-                return data.permissions !== undefined && data.permissions.includes(PERMISSION_USERS_MANAGEMENT);
-            }
+            name: data.localization.friends
         },
         {
-            id: "roles",
+            id: "search",
             type: "category",
-            name: data.localization.categoryRoles,
-            permissionCheck: function() {
-                return data.permissions !== undefined && data.permissions.includes(PERMISSION_ROLES_MANAGEMENT);
-            }
+            name: data.localization.searchPeople
         },
         {
-            id: "permissions",
+            id: "incoming",
             type: "category",
-            name: data.localization.categoryRolePermissions,
-            permissionCheck: function() {
-                return data.permissions !== undefined && data.permissions.includes(PERMISSION_ROLES_MANAGEMENT);
-            }
+            name: data.localization.incoming
+        },
+        {
+            id: "outgoing",
+            type: "category",
+            name: data.localization.outgoing
         }
     ]
     let selected = searchParams.get("category") || "";
     let foundCategory = false;
 
     for (let i = 0; i < categories.length; i++) {
-        if (categories[i].id === selected && (!categories[i].permissionCheck || categories[i].permissionCheck())) {
+        if (categories[i].id === selected) {
             foundCategory = true;
             break;
         }
@@ -68,10 +51,8 @@
 
     if (!foundCategory) {
         for (let i = 0; i < categories.length; i++) {
-            if (!categories[i].permissionCheck || categories[i].permissionCheck()) {
-                selected = categories[i].id;
-                break;
-            }
+            selected = categories[i].id;
+            break;
         }
     }
 
@@ -115,84 +96,23 @@
             users = data.users;
         }
     }
-
-    let rolesErrorString: string = "";
-
-    async function handleRoleAdd(event) {
-		const url = event.target.action;
-		const data = new FormData(event.target);
-
-        const result = await fetch(url, {
-            method: event.target.method,
-            body: data
-        });
-
-        if (result.status === 200) {
-            window.location.reload();
-        } else {
-            rolesErrorString = (await result.text()).replaceAll("\n", "");
-        }
-    }
-
-    async function handleRoleDelete(id) {
-        const result = await fetch(`/api/management/roles/${id}`, {
-            method: "DELETE"
-        });
-
-        window.location.reload();
-    }
-
-    let selectedRolePermission: string = searchParams.get("role") || "user";
-
-    if (rolePermissions !== undefined && rolePermissions.roles[selectedRolePermission] === undefined) {
-        selectedRolePermission = "user";
-    }
-
-    async function handlePermissionUpdate(name, permission, del) {
-        let id: number = 0;
-
-        for (let i = 0; i < roles.length; i++) {
-            if (roles[i].name === name) {
-                id = roles[i].id;
-                break;
-            }
-        }
-
-        if (id === 0) {
-            return;
-        }
-
-        const result = await fetch(`/api/management/roles/${id}/permissions`, {
-            method: del ? "DELETE" : "POST",
-            body: JSON.stringify([permission])
-        });
-
-        window.location.reload();
-    }
-
-	function onRoleChange() {
-        const url = new URL(window.location.href);
-        url.searchParams.set('role', selectedRolePermission);
-        pushState(url.toString(), {});
-	}
 </script>
 
 <p class="breaker">{data.localization.management}</p>
 <div class="settings-window">
     <div class="settings-categories">
         {#each categories as category}
-            {#if !category.permissionCheck || category.permissionCheck()}
-                {#if category.type === "category"}
-                    <button class="category" class:active={category.id === selected} on:click={() => onClickCategory(category.id)}>{category.name}</button>
-                {:else if category.type === "breaker"}
-                    <div class="categories-breaker"/>
-                {/if}
+            {#if category.type === "category"}
+                <button class="category" class:active={category.id === selected} on:click={() => onClickCategory(category.id)}>{category.name}</button>
+            {:else if category.type === "breaker"}
+                <div class="categories-breaker"/>
             {/if}
         {/each}
     </div>
     <div class="settings">
-        {#if selected === "users"}
-            <div class="dialog-body">{@html DOMPurify.sanitize(marked.parse(data.localization.usersDesc), {ALLOWED_TAGS: ["p", "br"]})}</div>
+        {#if selected === "friends"}
+        {:else if selected === "search"}
+            <div class="dialog-body">{@html DOMPurify.sanitize(marked.parse(data.localization.searchDesc), {ALLOWED_TAGS: ["p", "br"]})}</div>
             <p class="breaker">{data.localization.categoryUsers}</p>
             <div class="menu-search-bar">
                 <span class="search-icon">
@@ -207,89 +127,10 @@
                     <ManagementUser {user} />
                 {/each}
             {/if} 
-        {:else if selected === "roles"}
-            <div class="dialog-body">{@html DOMPurify.sanitize(marked.parse(data.localization.rolesDesc), {ALLOWED_TAGS: ["p", "br"]})}</div>
-            <p class="breaker">{data.localization.categoryRoles}</p>
-            {#if rolesErrorString !== ""}
-                <div transition:scale={{ duration: 500, opacity: 0, start: 0, easing: quintOut }} class="dialog-body error">{@html DOMPurify.sanitize(marked.parse(data.localization[rolesErrorString]), {ALLOWED_TAGS: ["p", "br"]})}</div>
-            {/if}
-            <form method="POST" action="/api/management/roles/" class="flex-form" on:submit|preventDefault={handleRoleAdd}>
-                <input name="name" type="text" required maxlength="20">
-                <button class="form-button" type="submit">{data.localization.addRole}</button>
-            </form>
-            <table>
-                <thead>
-                    <tr>
-                        <th scope="col">{data.localization.roleName}</th>
-                        <th scope="col">{data.localization.roleCreatedAt}</th>
-                        <th scope="col">{data.localization.roleUpdatedAt}</th>
-                        <th scope="col"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {#if roles !== undefined && roles.length > 0}
-                        {#each roles as role}
-                            <tr>
-                                <th scope="row">{role.name}</th>
-                                <td>{formatDateWithTime(role.created_at, data.localization)}</td>
-                                <td>{formatDateWithTime(role.updated_at, data.localization)}</td>
-                                <td>
-                                    <button class="form-button" disabled={!role.can_delete} on:click={() => handleRoleDelete(role.id)}>{data.localization.deleteRole}</button>
-                                </td>
-                            </tr>
-                        {/each}
-                    {/if}
-                </tbody>
-            </table>
-        {:else if selected === "permissions"}
-            <div class="dialog-body">{@html DOMPurify.sanitize(marked.parse(data.localization.rolePermissionsDesc), {ALLOWED_TAGS: ["p", "br"]})}</div>
-            {#if rolePermissions !== undefined}
-                <div class="permissions-description">
-                    {#each rolePermissions.permissions as permission}
-                        {@html DOMPurify.sanitize(marked.parse(data.localization[permission].replace(/\r?\n/g, "<br>")), {ALLOWED_TAGS: ["p", "br", "em"]})}
-                    {/each}
-                </div>
-            {/if}
-            <p class="breaker">{data.localization.categoryRolePermissions}</p>
-            {#if roles !== undefined && roles.length > 0}
-                <select bind:value={selectedRolePermission} name="name" on:change={onRoleChange}>
-                    {#each roles as role}
-                        <option value={role.name}>{role.name}</option>
-                    {/each}
-                </select>
-            {/if}
-            <table>
-                <tbody>
-                    {#if rolePermissions !== undefined}
-                        {#each rolePermissions.permissions as permission}
-                            <tr>
-                                <td>{permission}</td>
-                                <td>
-                                    <button class="form-button"
-                                        class:allow={!rolePermissions.roles[selectedRolePermission].includes(permission)}
-                                        class:revoke={rolePermissions.roles[selectedRolePermission].includes(permission)}
-                                        on:click={() => {handlePermissionUpdate(selectedRolePermission, permission, rolePermissions.roles[selectedRolePermission].includes(permission))}}
-                                    >
-                                        {rolePermissions.roles[selectedRolePermission].includes(permission) ? data.localization.revoke : data.localization.allow}
-                                    </button>
-                                </td>
-                            </tr>
-                        {/each}
-                    {/if}
-                    <!-- {#if rolePermissions !== undefined}
-                        {#each Object.entries(rolePermissions.roles) as [role, permissions]}
-                            <tr>
-                                <th scope="row">{role.name}</th>
-                                <td>{formatDateWithTime(role.created_at, data.localization)}</td>
-                                <td>{formatDateWithTime(role.updated_at, data.localization)}</td>
-                                <td>
-                                    <button class="form-button" disabled={!role.can_delete} on:click={() => handleRoleDelete(role.id)}>{data.localization.deleteRole}</button>
-                                </td>
-                            </tr>
-                        {/each}
-                    {/if} -->
-                </tbody>
-            </table>
+        {:else if selected === "incoming"}
+            
+        {:else if selected === "outgoing"}
+            
         {/if}
     </div>
 </div>

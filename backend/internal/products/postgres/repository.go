@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"main/backend/internal/models"
+	"os"
 	"strconv"
 
 	"github.com/jmoiron/sqlx"
@@ -170,11 +171,13 @@ func (s *Repository) FindByID(ctx context.Context, product *models.Product, curr
 						products.id,
 						products.name,
 						products.discount,
+						products.publisher,
 						jsonb_build_object('original', h.price, 'final', h.final, 'symbol', currencies.symbol) AS price,
 						products_images.tier_background_img,
 						COALESCE(jsonb_agg(products_screenshots.img) FILTER (WHERE products_screenshots.img IS NOT NULL), '[]'::jsonb) AS screenshots,
 						about_token,
-						description_token
+						description_token,
+						products.created_at
 					FROM products
 						JOIN LATERAL (SELECT *, (price - (price * products.discount / 100)::NUMERIC(16, 2)) AS final FROM products_prices WHERE currency_code = $1) h ON products.id = h.product_id
 						JOIN currencies ON currencies.code = h.currency_code
@@ -187,36 +190,40 @@ func (s *Repository) FindByID(ctx context.Context, product *models.Product, curr
 						id,
 						name,
 						discount,
+						publisher,
 						price,
 						tier_background_img,
 						screenshots,
 						about_token,
 						description_token,
+						created_at,
 						COALESCE(jsonb_agg(products_platforms.platform) FILTER (WHERE products_platforms.platform IS NOT NULL), '[]'::jsonb) AS platforms
 					FROM product_price_screenshots
 						LEFT JOIN products_platforms ON id = products_platforms.product_id
-					GROUP BY id, name, discount, price, tier_background_img, screenshots, about_token, description_token
+					GROUP BY id, name, discount, publisher, price, tier_background_img, screenshots, about_token, description_token, created_at
 				), translated AS (
 					SELECT
 						id,
 						name,
 						discount,
+						publisher,
 						price,
 						tier_background_img,
 						screenshots,
 						locale,
 						MAX(CASE WHEN token = about_token THEN COALESCE(text, '') END) about,
 						MAX(CASE WHEN token = description_token THEN COALESCE(text, '') END) description,
+						created_at,
 						platforms
 					FROM translations
-						RIGHT JOIN product_platforms ON (locale = $3 OR locale = 'en') AND (token = about_token OR token = description_token)
-					GROUP BY id, name, discount, price, tier_background_img, screenshots, locale, platforms
+						RIGHT JOIN product_platforms ON (locale = $3 OR locale = $4) AND (token = about_token OR token = description_token)
+					GROUP BY id, name, discount, price, tier_background_img, screenshots, locale, platforms, publisher, created_at
 				)
 				SELECT
 					*
 				FROM translated;
 				`
-	rows, err := s.database.QueryxContext(ctx, query, currencyCode, product.ID, locale)
+	rows, err := s.database.QueryxContext(ctx, query, currencyCode, product.ID, locale, os.Getenv("BASE_LANGUAGE"))
 	if err != nil {
 		return nil, err
 	}

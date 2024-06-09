@@ -9,7 +9,7 @@
     export let product;
 </script>
 
-<a href="{$page.data.lang}/app/{product.id}" class="item">
+<a data-sveltekit-reload href="{$page.data.lang}/app/{product.id}" class="item">
     <div class="image-center">
         <img class="item-image" src={product.tier_background_img} alt="Game"/>
     </div>

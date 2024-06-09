@@ -8,33 +8,35 @@ type NullString = {
 }
 
 export type FeaturedGame = {
-	id: string | number;
+	id: number;
 	name: string;
 	discount: number;
-	prices: Record<string, number>;
+	price: Price;
 	featured_background_img: string;
 	featured_logo_img: string;
 	platforms: string[];
 };
 
 export type TierGame = {
-	id: string | number;
+	id: number;
 	name: string;
 	discount: number;
-	prices: Record<string, number>;
+	price: Price;
 	tier_background_img: string;
 };
 
 export type Product = {
-	id: string | number;
+	id: number;
 	name: string;
 	discount: number;
-	prices: Record<string, number>;
+	publisher: string;
+	price: Price;
 	tier_background_img: string;
 	screenshots: string[];
 	about: NullString;
 	description: NullString;
 	platforms: string[];
+	created_at: string;
 };
 
 export type PublishProduct = {

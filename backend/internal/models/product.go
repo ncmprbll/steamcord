@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	PERMISSION_UI_PUBLISHING    = "ui.publishing"
+	PERMISSION_UI_PUBLISHING = "ui.publishing"
 
 	PRODUCTS_PAGE_LIMIT = 15
 )
@@ -53,6 +53,7 @@ type Product struct {
 	ID                int            `json:"id" db:"id"`
 	Name              string         `json:"name" db:"name"`
 	Discount          int            `json:"discount" db:"discount"`
+	Publisher         string         `json:"publisher" db:"publisher"`
 	Price             JSONPrice      `json:"price" db:"price"`
 	TierBackgroundImg string         `json:"tier_background_img" db:"tier_background_img"`
 	Screenshots       Screenshots    `json:"screenshots" db:"screenshots"`
@@ -60,6 +61,7 @@ type Product struct {
 	About             sql.NullString `json:"about" db:"about"`
 	Description       sql.NullString `json:"description" db:"description"`
 	Platforms         JSONPlatforms  `json:"platforms" db:"platforms"`
+	CreatedAt         *time.Time     `json:"created_at,omitempty" db:"created_at"`
 }
 
 type SearchProduct struct {
@@ -73,23 +75,23 @@ type SearchProduct struct {
 }
 
 type Currency struct {
-	Code string `json:"code" db:"code"`
+	Code   string `json:"code" db:"code"`
 	Symbol string `json:"symbol" db:"symbol"`
 }
 
 type Currencies []*Currency
 
 type PublishProduct struct {
-	Name string `json:"name"`
-	Header string `json:"header"`
-	Screenshots []string `json:"screenshots"`
-	About map[string]string `json:"about"`
-	Description map[string]string `json:"description"`
-	Prices map[string]float32 `json:"prices"`
+	Name        string             `json:"name"`
+	Header      string             `json:"header"`
+	Screenshots []string           `json:"screenshots"`
+	About       map[string]string  `json:"about"`
+	Description map[string]string  `json:"description"`
+	Prices      map[string]float32 `json:"prices"`
 }
 
 type Sales []*struct {
-	Date string `json:"date" db:"date"`
+	Date  string `json:"date" db:"date"`
 	Sales string `json:"sales" db:"sales"`
 }
 

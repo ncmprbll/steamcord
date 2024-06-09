@@ -4,6 +4,7 @@ import crypto from 'crypto';
 import type { ISizeCalculationResult } from 'image-size/dist/types/interface';
 
 import { type UserGeneralUpdate } from '$lib/types/user.type';
+import { SERVER_API_URL } from '$env/static/private';
 
 const MAX_FILE_SIZE_BYTES = 1024 * 1024; // Megabyte
 
@@ -32,7 +33,7 @@ export async function PATCH({ cookies, request }) {
 		try {
 			result = sizeOf(uint8)
 
-			if (result !== undefined && result.width == result.height) {
+			if (result !== undefined && result.width !== undefined && result.width >= 184 && result.width == result.height) {
 				let fileName = crypto.randomBytes(20).toString('hex');
 				if (file.type === "image/png") {
 					fileName += ".png";
@@ -51,7 +52,7 @@ export async function PATCH({ cookies, request }) {
 	object.avatar = path;
 	let json = JSON.stringify(object);
 
-	return await fetch("http://localhost:3000/profile", {
+	return await fetch(`${SERVER_API_URL}/profile`, {
 		method: request.method,
 		credentials: 'include',
 		headers: {

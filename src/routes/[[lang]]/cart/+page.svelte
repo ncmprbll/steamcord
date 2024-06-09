@@ -40,7 +40,7 @@
             body: JSON.stringify({product_id: gameId})
         });
 
-        await new Promise(r => setTimeout(r, 750)); // Artificial delay
+        // await new Promise(r => setTimeout(r, 750)); // Artificial delay
 
         loadings[gameId] = false;
 
@@ -63,7 +63,7 @@
             credentials: 'include'
         });
 
-        await new Promise(r => setTimeout(r, 750)); // Artificial delay
+        // await new Promise(r => setTimeout(r, 750)); // Artificial delay
 
         purchaseLoading = false;
 
@@ -140,7 +140,7 @@
                     {/if}
                 {/if}
             </div>
-            <button class="button" disabled={data.cart.length === 0 || data.me.balance < estimated} on:click|preventDefault={purchase}>
+            <button class="button" disabled={data.cart.length === 0 || (data.me !== undefined && data.me.balance < estimated)} on:click|preventDefault={purchase}>
                 <span class:loading={purchaseLoading}>{data.localization.purchase}</span>
                 {#if purchaseLoading}
                     <Spinner absolute={true} size="16"/>

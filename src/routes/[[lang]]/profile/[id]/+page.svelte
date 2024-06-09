@@ -1,7 +1,4 @@
 <script lang="ts">
-    import DOMPurify from 'dompurify';
-    import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
-
     import trash from '$lib/assets/util/trash.png';
     import { type FriendStatus } from '$lib/types/profile.type';
     import { formatDate, formatDateWithTime } from "$lib/util/date";
@@ -12,10 +9,10 @@
     const COMMENTS_PAGE_LIMIT = 10;
     const PAGES_LEFT_RIGHT_OFFSET_VISIBILITY = 2;
 
-    let name: string = data.user?.display_name;
+    let name: string = data.user?.display_name!;
     let about: string = data.user?.about || "";
     let hidden: boolean = data.user?.hidden || false;
-    let status: FriendStatus = data.friendStatus;
+    let status: FriendStatus = data.friendStatus!;
     about = about.replace(/\r?\n/g, "<br>");
     // about = DOMPurify.sanitize(marked.parse(about, { breaks: true }), {ALLOWED_TAGS: ["br"]});
 
@@ -34,7 +31,7 @@
         pagesOffset = COMMENTS_PAGE_LIMIT * (page - 1);
 
         let searchParams = new URLSearchParams();
-        searchParams.set("pageOffset", pagesOffset);
+        searchParams.set("pageOffset", pagesOffset.toString());
         let url = `/api/profile/${data.user?.id}/comments?${searchParams.toString()}`;
         const result = await fetch(url);
         const json = await result.json();
@@ -182,11 +179,6 @@
                             <div class="milestone-value">{formatDate(data.user.created_at, data.localization)}</div>
                         </div>
                     </div>
-                    {#if data.me !== undefined && data.user.id === data.me.id}
-                        <a data-sveltekit-reload href="{window.location.href}/settings" class="profile-button">
-                            <span>{data.localization.settings}</span>
-                        </a>
-                    {/if}
                 </div>
             </div>
         {/if}
@@ -243,7 +235,7 @@
                                     </div>
                                     <div>{comment.text}</div>
                                 </div>
-                                {#if data.me !== undefined && (data.user.id === data.me.id || comment.commenter === data.me.id)}
+                                {#if data.me !== undefined && (data.user.id === data.me.id || comment.commentator === data.me.id)}
                                     <button class="delete-comment-button" type="button" on:click={() => deleteComment(comment.id)}>
                                         <img class="delete-comment-icon" src={trash} alt="Delete Comment">
                                     </button>
@@ -430,17 +422,6 @@
         top: 96px; /* 80 (navbar height) + 16 (margin) */
     }
 
-    .profile-button {
-        border-radius: 2px;
-        padding: 1px;
-        display: inline-block;
-        text-decoration: none;
-        cursor: pointer;
-        background-color: rgb(66, 66, 90);
-        transition: all 0.1s ease-in-out;
-        width: fit-content;
-    }
-
     .about.empty {
         color: #8b8b8b;
     }
@@ -483,21 +464,6 @@
         color: #90989b;
         overflow: hidden;
         text-overflow: ellipsis;
-    }
-
-    .profile-button > span {
-        padding: 4px 10px;
-        border-radius: 2px;
-        display: block;
-        background-color: rgb(66, 66, 90);
-    }
-
-    .profile-button:hover {
-        background-color: rgb(74, 74, 98);
-    }
-
-    .profile-button:hover > span {
-        background-color: rgb(74, 74, 98);
     }
 
     img {

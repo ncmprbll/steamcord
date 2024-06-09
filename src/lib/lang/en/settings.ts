@@ -28,6 +28,7 @@ const localization: Record<string, string> = {
     "invalidFile": "File's not an image.",
     "fileTooBig": "File's exceeded 1 MB size threshold.",
     "fileNotSquare": "File is not a square.",
+    "fileSmall": "File is too small.",
 };
 
 export { localization };
