@@ -6,14 +6,16 @@
     import { quintOut } from 'svelte/easing';
 
     import { formatDateWithTime } from "$lib/util/date";
-    import ManagementUser from '$lib/components/ManagementUser.svelte';
-    import { PERMISSION_USERS_MANAGEMENT, PERMISSION_ROLES_MANAGEMENT } from '$lib/types/management.type.ts';
+    import SearchUser from '$lib/components/SearchUser.svelte';
+    import type { User } from '$lib/types/user.type.js';
 
     export let data;
 
     const DONE_TYPING_INTERVAL = 500;
+    const USERS_PAGE_LIMIT = 20;
+    const BOTTOM_OFFSET_PX = 400;
 
-    let users = [];
+    let users: User[] = [];
     let searchValue: string = "";
 
     let searchParams = new URLSearchParams(window.location.search);
@@ -26,17 +28,17 @@
         {
             id: "search",
             type: "category",
-            name: data.localization.searchPeople
+            name: data.localization.categorySearch
         },
         {
             id: "incoming",
             type: "category",
-            name: data.localization.incoming
+            name: data.localization.categoryIncoming
         },
         {
             id: "outgoing",
             type: "category",
-            name: data.localization.outgoing
+            name: data.localization.categoryOutgoing
         }
     ]
     let selected = searchParams.get("category") || "";
@@ -79,26 +81,48 @@
         }
     }
 
+    let offset = 0;
+    let waitForUsersToLoad = false;
+
     async function search(e) {
         if (e !== undefined && e.key !== "Enter") {
             return;
         }
 
-        const url = new URL(window.location.href);
-        url.searchParams.set("term", searchValue);
-        try {
-            pushState(url.toString(), {});
-        } catch (e) {}
-        const result = await fetch(`/api/management/users?${url.searchParams.toString()}`);
-        const data = await result.json();
+        const searchParams = new URLSearchParams();
+        searchParams.set("term", searchValue);
+        const result = await fetch(`/api/profile/search?${searchParams.toString()}`);
 
         if (result.status === 200) {
-            users = data.users;
+            users = await result.json();
+            offset = 0;
+            waitForUsersToLoad = false;
         }
     }
+
+    window.onscroll = async function(ev) {
+        if (!waitForUsersToLoad && (window.innerHeight + window.scrollY) >= document.body.offsetHeight - BOTTOM_OFFSET_PX) {
+            waitForUsersToLoad = true;
+
+            const searchParams = new URLSearchParams();
+            searchParams.set("term", searchValue);
+            offset += USERS_PAGE_LIMIT;
+            searchParams.set("pageOffset", offset.toString());
+            let url = `/api/profile/search?${searchParams.toString()}`;
+            const result = await fetch(url);
+            const json = await result.json();
+
+            users = [...users, ...json];
+
+            if (json.length >= USERS_PAGE_LIMIT) {
+                waitForUsersToLoad = false;
+            }
+        }
+    };
+
 </script>
 
-<p class="breaker">{data.localization.management}</p>
+<p class="breaker">{data.localization.friends}</p>
 <div class="settings-window">
     <div class="settings-categories">
         {#each categories as category}
@@ -113,20 +137,28 @@
         {#if selected === "friends"}
         {:else if selected === "search"}
             <div class="dialog-body">{@html DOMPurify.sanitize(marked.parse(data.localization.searchDesc), {ALLOWED_TAGS: ["p", "br"]})}</div>
-            <p class="breaker">{data.localization.categoryUsers}</p>
+            <p class="breaker">{data.localization.categorySearch}</p>
             <div class="menu-search-bar">
                 <span class="search-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 21 20" preserveAspectRatio="xMidYMid meet"><g transform="scale(1 -1) rotate(-45 -11.93502884 -2)" stroke="currentColor" stroke-width="1.65" fill="none" fill-rule="evenodd"><circle cx="7.70710678" cy="7.70710678" r="7"></circle><path d="M15.2071068 8.62132034h5.6923881" stroke-linecap="square"></path></g></svg>
                 </span>
                 <div class="search-input-wrapper">
-                    <input placeholder={data.localization.search} bind:value={searchValue} on:keydown={searchKeyDown} on:keyup={searchKeyUp}>
+                    <input placeholder={data.localization.searchFriends} bind:value={searchValue} on:keydown={searchKeyDown} on:keyup={searchKeyUp}>
                 </div>
             </div>
             {#if users !== undefined && users.length > 0}
                 {#each users as user}
-                    <ManagementUser {user} />
+                    <SearchUser {user} />
                 {/each}
-            {/if} 
+            {:else}
+                <div>
+                    {#if searchValue.length === 0}
+                        {data.localization.startSearching}
+                    {:else}
+                        {data.localization.noResultsQueryShort}
+                    {/if}
+                </div>
+            {/if}
         {:else if selected === "incoming"}
             
         {:else if selected === "outgoing"}

@@ -19,6 +19,9 @@ const (
 	MIN_DISPLAY_NAME_LENGTH = 1
 	MAX_DISPLAY_NAME_LENGTH = 20
 	MAX_ABOUT_LENGTH        = 256
+
+	MIN_NAME_SEARCH_LENGTH = 3
+	USERS_PAGE_LIMIT       = 20
 )
 
 type User struct {
@@ -39,6 +42,13 @@ type User struct {
 	LoginDate    *time.Time `json:"login_date,omitempty" db:"login_date"`
 
 	Hidden bool `json:"hidden,omitempty"`
+}
+
+type SearchUser struct {
+	UUID        uuid.UUID `json:"id" db:"id"`
+	Avatar      string    `json:"avatar" db:"avatar"`
+	DisplayName string    `json:"display_name" db:"display_name"`
+	IsFriend    bool      `json:"is_friend" db:"is_friend"`
 }
 
 type PublicUser struct {

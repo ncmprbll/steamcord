@@ -18,6 +18,12 @@ const localization: Record<string, string> = {
     'commentPlaceholder': 'Add a comment',
     'postComment': 'Post comment',
     'searchDesc': 'Search for people.',
+    'noResultsQueryShort': 'No results or the query is too short.',
+    'startSearching': 'Find friends by typing in the search box!',
+    'searchFriends': 'Search (min. 3 characters)',
+    'categorySearch': 'Search',
+    'categoryIncoming': 'Incoming',
+    'categoryOutgoing': 'Outgoing',
 };
 
 export { localization };

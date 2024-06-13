@@ -25,6 +25,8 @@ func NewRouter(h *handlers, mw *middleware.MiddlewareManager) http.Handler {
 		r.Patch("/password", h.PasswordUpdate())
 		r.Patch("/privacy", h.PrivacyUpdate())
 		r.Delete("/avatar", h.DeleteAvatar())
+
+		r.Get("/search", h.Search())
 	})
 
 	return r

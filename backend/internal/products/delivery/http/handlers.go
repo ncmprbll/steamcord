@@ -204,8 +204,8 @@ func (h *handlers) Search() http.HandlerFunc {
 				util.HandleError(w, err)
 				return
 			}
-			if pageLimitInteger > 15 {
-				pageLimitInteger = 15
+			if pageLimitInteger > models.PRODUCTS_PAGE_LIMIT {
+				pageLimitInteger = models.PRODUCTS_PAGE_LIMIT
 			}
 		}
 

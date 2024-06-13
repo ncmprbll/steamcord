@@ -19,4 +19,5 @@ type Repository interface {
 	FriendInvite(context.Context, *models.User, *models.User) error
 	HandleFriendInvite(context.Context, *models.User, *models.User, string) error
 	DeleteFriend(context.Context, *models.User, *models.User) (bool, error)
+	Search(context.Context, string, int, int) ([]*models.User, error)
 }

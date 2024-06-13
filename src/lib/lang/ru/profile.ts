@@ -18,6 +18,12 @@ const localization: Record<string, string> = {
     'commentPlaceholder': 'Напишите комментарий',
     'postComment': 'Отправить',
     'searchDesc': 'Поиск людей по имени профиля.',
+    'noResultsQueryShort': 'Нет результатов или запрос слишком короткий.',
+    'startSearching': 'Найдите друзей, введя запрос в поисковую строку!',
+    'searchFriends': 'Поиск (мин. 3 символа)',
+    'categorySearch': 'Поиск',
+    'categoryIncoming': 'Исходящие',
+    'categoryOutgoing': 'Входящие',
 };
 
 export { localization };

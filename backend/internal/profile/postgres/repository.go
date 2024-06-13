@@ -342,3 +342,35 @@ func (s *Repository) DeleteFriend(ctx context.Context, user1 *models.User, user2
 
 	return affected != 0, nil
 }
+
+func (s *Repository) Search(ctx context.Context, name string, pageLimit, pageOffset int) ([]*models.User, error) {
+	result := []*models.User{}
+
+	if len(name) < models.MIN_NAME_SEARCH_LENGTH {
+		return result, nil
+	}
+
+	const query = `
+				SELECT
+					id,
+					avatar,
+					display_name
+				FROM users
+				WHERE LOWER(display_name) LIKE '%' || LOWER($1) || '%'
+				ORDER BY display_name
+				LIMIT $2 OFFSET $3;
+				`
+	rows, err := s.database.QueryxContext(ctx, query, name, pageLimit, pageOffset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		row := &models.User{}
+		rows.StructScan(row)
+		result = append(result, row)
+	}
+
+	return result, nil
+}

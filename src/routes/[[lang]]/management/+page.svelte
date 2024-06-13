@@ -206,7 +206,7 @@
                 {#each users as user}
                     <ManagementUser {user} />
                 {/each}
-            {/if} 
+            {/if}
         {:else if selected === "roles"}
             <div class="dialog-body">{@html DOMPurify.sanitize(marked.parse(data.localization.rolesDesc), {ALLOWED_TAGS: ["p", "br"]})}</div>
             <p class="breaker">{data.localization.categoryRoles}</p>

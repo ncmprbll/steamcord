@@ -404,3 +404,51 @@ func (h *handlers) DeleteComment() http.HandlerFunc {
 		w.WriteHeader(http.StatusNoContent)
 	}
 }
+
+func (h *handlers) Search() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		term := r.URL.Query().Get("term")
+
+		pageLimit := r.URL.Query().Get("pageLimit")
+		pageLimitInteger := models.USERS_PAGE_LIMIT
+		if pageLimit != "" {
+			var err error
+			pageLimitInteger, err = strconv.Atoi(pageLimit)
+			if err != nil {
+				util.HandleError(w, err)
+				return
+			}
+			if pageLimitInteger > models.USERS_PAGE_LIMIT {
+				pageLimitInteger = models.USERS_PAGE_LIMIT
+			}
+		}
+
+		pageOffset := r.URL.Query().Get("pageOffset")
+		pageOffsetInteger := 0
+		if pageOffset != "" {
+			var err error
+			pageOffsetInteger, err = strconv.Atoi(pageOffset)
+			if err != nil {
+				util.HandleError(w, err)
+				return
+			}
+			if pageOffsetInteger < 0 {
+				pageOffsetInteger = 0
+			}
+		}
+
+		products, err := h.profileRepository.Search(r.Context(), term, pageLimitInteger, pageOffsetInteger)
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(products); err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}
+}
