@@ -17,13 +17,17 @@ const localization: Record<string, string> = {
     'inviteBlocked': 'Запрос дружбы заблокирован',
     'commentPlaceholder': 'Напишите комментарий',
     'postComment': 'Отправить',
-    'searchDesc': 'Поиск людей по имени профиля.',
+    'searchDesc': 'Поиск людей по имени профиля по всей платформе.',
     'noResultsQueryShort': 'Нет результатов или запрос слишком короткий.',
-    'startSearching': 'Найдите друзей, введя запрос в поисковую строку!',
+    'startSearching': 'Найдите людей, введя запрос в поисковую строку.',
     'searchFriends': 'Поиск (мин. 3 символа)',
-    'categorySearch': 'Поиск',
-    'categoryIncoming': 'Исходящие',
-    'categoryOutgoing': 'Входящие',
+    'categoryFriends': 'Друзья',
+    'categorySearch': 'Поиск людей',
+    'categoryIncoming': 'Входящие',
+    'categoryOutgoing': 'Исходящие',
+    'incomingDesc': 'Входящие запросы в друзья.',
+    'outgoingDesc': 'Исходящие запросы в друзья.',
+    'friendsDesc': 'Ваш список друзей.',
 };
 
 export { localization };

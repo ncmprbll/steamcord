@@ -17,13 +17,17 @@ const localization: Record<string, string> = {
     'inviteBlocked': 'Friend invite blocked',
     'commentPlaceholder': 'Add a comment',
     'postComment': 'Post comment',
-    'searchDesc': 'Search for people.',
+    'searchDesc': 'Search for people across the platform.',
     'noResultsQueryShort': 'No results or the query is too short.',
-    'startSearching': 'Find friends by typing in the search box!',
+    'startSearching': 'Find people by typing in the search box.',
     'searchFriends': 'Search (min. 3 characters)',
-    'categorySearch': 'Search',
+    'categoryFriends': 'Friends',
+    'categorySearch': 'Search people',
     'categoryIncoming': 'Incoming',
     'categoryOutgoing': 'Outgoing',
+    'incomingDesc': 'Incoming friend requests.',
+    'outgoingDesc': 'Outgoing friend requests.',
+    'friendsDesc': 'Your friend list.',
 };
 
 export { localization };

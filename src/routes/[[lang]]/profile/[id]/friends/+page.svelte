@@ -16,6 +16,9 @@
     const BOTTOM_OFFSET_PX = 400;
 
     let users: User[] = [];
+    let friends: User[] = data.friends || [];
+    let outgoing: User[] = data.outgoing || [];
+    let incoming: User[] = data.incoming || [];
     let searchValue: string = "";
 
     let searchParams = new URLSearchParams(window.location.search);
@@ -23,7 +26,7 @@
         {
             id: "friends",
             type: "category",
-            name: data.localization.friends
+            name: `${data.localization.friends} ${friends.length}`
         },
         {
             id: "search",
@@ -33,12 +36,12 @@
         {
             id: "incoming",
             type: "category",
-            name: data.localization.categoryIncoming
+            name: `${data.localization.categoryIncoming} ${incoming.length}`
         },
         {
             id: "outgoing",
             type: "category",
-            name: data.localization.categoryOutgoing
+            name: `${data.localization.categoryOutgoing} ${outgoing.length}`
         }
     ]
     let selected = searchParams.get("category") || "";
@@ -82,7 +85,13 @@
     }
 
     let offset = 0;
+    let offsetFriends = 0;
+    let offsetOutgoing = 0;
+    let offsetIncoming = 0;
     let waitForUsersToLoad = false;
+    let waitForFriendsToLoad = false;
+    let waitForOutgoingToLoad = false;
+    let waitForIncomingToLoad = false;
 
     async function search(e) {
         if (e !== undefined && e.key !== "Enter") {
@@ -101,21 +110,77 @@
     }
 
     window.onscroll = async function(ev) {
-        if (!waitForUsersToLoad && (window.innerHeight + window.scrollY) >= document.body.offsetHeight - BOTTOM_OFFSET_PX) {
-            waitForUsersToLoad = true;
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - BOTTOM_OFFSET_PX) {
+            if (!waitForUsersToLoad) {
+                waitForUsersToLoad = true;
 
-            const searchParams = new URLSearchParams();
-            searchParams.set("term", searchValue);
-            offset += USERS_PAGE_LIMIT;
-            searchParams.set("pageOffset", offset.toString());
-            let url = `/api/profile/search?${searchParams.toString()}`;
-            const result = await fetch(url);
-            const json = await result.json();
+                const searchParams = new URLSearchParams();
+                searchParams.set("term", searchValue);
+                offset += USERS_PAGE_LIMIT;
+                searchParams.set("pageOffset", offset.toString());
+                let url = `/api/profile/search?${searchParams.toString()}`;
+                const result = await fetch(url);
+                const json = await result.json();
 
-            users = [...users, ...json];
+                users = [...users, ...json];
 
-            if (json.length >= USERS_PAGE_LIMIT) {
-                waitForUsersToLoad = false;
+                if (json.length >= USERS_PAGE_LIMIT) {
+                    waitForUsersToLoad = false;
+                }
+            }
+
+            if (!waitForFriendsToLoad) {
+                waitForFriendsToLoad = true;
+
+                const searchParams = new URLSearchParams();
+                searchParams.set("term", searchValue);
+                offsetFriends += USERS_PAGE_LIMIT;
+                searchParams.set("pageOffset", offsetFriends.toString());
+                let url = `/api/profile/friends?${searchParams.toString()}`;
+                const result = await fetch(url);
+                const json = await result.json();
+
+                friends = [...friends, ...json];
+
+                if (json.length >= USERS_PAGE_LIMIT) {
+                    waitForFriendsToLoad = false;
+                }
+            }
+
+            if (!waitForOutgoingToLoad) {
+                waitForOutgoingToLoad = true;
+
+                const searchParams = new URLSearchParams();
+                searchParams.set("term", searchValue);
+                offsetOutgoing += USERS_PAGE_LIMIT;
+                searchParams.set("pageOffset", offsetOutgoing.toString());
+                let url = `/api/profile/friends/outgoing?${searchParams.toString()}`;
+                const result = await fetch(url);
+                const json = await result.json();
+
+                outgoing = [...outgoing, ...json];
+
+                if (json.length >= USERS_PAGE_LIMIT) {
+                    waitForOutgoingToLoad = false;
+                }
+            }
+
+            if (!waitForIncomingToLoad) {
+                waitForIncomingToLoad = true;
+
+                const searchParams = new URLSearchParams();
+                searchParams.set("term", searchValue);
+                offsetIncoming += USERS_PAGE_LIMIT;
+                searchParams.set("pageOffset", offsetIncoming.toString());
+                let url = `/api/profile/friends/incoming?${searchParams.toString()}`;
+                const result = await fetch(url);
+                const json = await result.json();
+
+                incoming = [...incoming, ...json];
+
+                if (json.length >= USERS_PAGE_LIMIT) {
+                    waitForIncomingToLoad = false;
+                }
             }
         }
     };
@@ -135,6 +200,13 @@
     </div>
     <div class="settings">
         {#if selected === "friends"}
+            <div class="dialog-body">{@html DOMPurify.sanitize(marked.parse(data.localization.friendsDesc), {ALLOWED_TAGS: ["p", "br"]})}</div>
+            <p class="breaker">{data.localization.categoryFriends}</p>
+            {#if friends !== undefined && friends.length > 0}
+                {#each friends as user}
+                    <SearchUser {user} />
+                {/each}
+            {/if}
         {:else if selected === "search"}
             <div class="dialog-body">{@html DOMPurify.sanitize(marked.parse(data.localization.searchDesc), {ALLOWED_TAGS: ["p", "br"]})}</div>
             <p class="breaker">{data.localization.categorySearch}</p>
@@ -160,9 +232,21 @@
                 </div>
             {/if}
         {:else if selected === "incoming"}
-            
+            <div class="dialog-body">{@html DOMPurify.sanitize(marked.parse(data.localization.incomingDesc), {ALLOWED_TAGS: ["p", "br"]})}</div>
+            <p class="breaker">{data.localization.categoryIncoming}</p>
+            {#if incoming !== undefined && incoming.length > 0}
+                {#each incoming as user}
+                    <SearchUser {user} />
+                {/each}
+            {/if}
         {:else if selected === "outgoing"}
-            
+            <div class="dialog-body">{@html DOMPurify.sanitize(marked.parse(data.localization.outgoingDesc), {ALLOWED_TAGS: ["p", "br"]})}</div>
+            <p class="breaker">{data.localization.categoryOutgoing}</p>
+            {#if outgoing !== undefined && outgoing.length > 0}
+                {#each outgoing as user}
+                    <SearchUser {user} />
+                {/each}
+            {/if}
         {/if}
     </div>
 </div>

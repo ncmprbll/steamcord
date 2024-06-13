@@ -374,3 +374,98 @@ func (s *Repository) Search(ctx context.Context, name string, pageLimit, pageOff
 
 	return result, nil
 }
+
+func (s *Repository) GetFriends(ctx context.Context, user *models.User, pageLimit, pageOffset int) ([]*models.User, error) {
+	result := []*models.User{}
+
+	const query = `
+				SELECT
+					user_id2 AS id,
+					avatar,
+					display_name
+				FROM users_friends
+					JOIN users ON users.id = users_friends.user_id2
+				WHERE user_id1 = $1
+				UNION
+				SELECT
+					user_id1 AS id,
+					avatar,
+					display_name
+				FROM users_friends
+					JOIN users ON users.id = users_friends.user_id1
+				WHERE user_id2 = $1
+				ORDER BY display_name
+				LIMIT $2 OFFSET $3;
+				`
+	rows, err := s.database.QueryxContext(ctx, query, user.UUID, pageLimit, pageOffset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		row := &models.User{}
+		rows.StructScan(row)
+		result = append(result, row)
+	}
+
+	return result, nil
+}
+
+func (s *Repository) GetInvitesOutgoing(ctx context.Context, user *models.User, pageLimit, pageOffset int) ([]*models.User, error) {
+	result := []*models.User{}
+
+	const query = `
+				SELECT
+					invitee AS id,
+					avatar,
+					display_name
+				FROM users_friend_invites
+					JOIN users ON users.id = users_friend_invites.invitee
+				WHERE inviter = $1 AND status = 'pending'
+				ORDER BY users_friend_invites.created_at
+				LIMIT $2 OFFSET $3;
+				`
+	rows, err := s.database.QueryxContext(ctx, query, user.UUID, pageLimit, pageOffset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		row := &models.User{}
+		rows.StructScan(row)
+		result = append(result, row)
+	}
+
+	return result, nil
+}
+
+func (s *Repository) GetInvitesIncoming(ctx context.Context, user *models.User, pageLimit, pageOffset int) ([]*models.User, error) {
+	result := []*models.User{}
+
+	const query = `
+				SELECT
+					inviter AS id,
+					avatar,
+					display_name
+				FROM users_friend_invites
+					JOIN users ON users.id = users_friend_invites.inviter
+				WHERE invitee = $1 AND status = 'pending'
+				ORDER BY users_friend_invites.created_at
+				LIMIT $2 OFFSET $3;
+				`
+	rows, err := s.database.QueryxContext(ctx, query, user.UUID, pageLimit, pageOffset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		row := &models.User{}
+		rows.Scan(&row.UUID, &row.Avatar, &row.DisplayName)
+		result = append(result, row)
+	}
+
+	return result, nil
+}

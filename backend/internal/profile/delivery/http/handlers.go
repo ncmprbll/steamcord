@@ -452,3 +452,147 @@ func (h *handlers) Search() http.HandlerFunc {
 		w.WriteHeader(http.StatusOK)
 	}
 }
+
+func (h *handlers) GetFriends() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		found := r.Context().Value("user").(*models.User)
+
+		pageLimit := r.URL.Query().Get("pageLimit")
+		pageLimitInteger := models.USERS_PAGE_LIMIT
+		if pageLimit != "" {
+			var err error
+			pageLimitInteger, err = strconv.Atoi(pageLimit)
+			if err != nil {
+				util.HandleError(w, err)
+				return
+			}
+			if pageLimitInteger > models.USERS_PAGE_LIMIT {
+				pageLimitInteger = models.USERS_PAGE_LIMIT
+			}
+		}
+
+		pageOffset := r.URL.Query().Get("pageOffset")
+		pageOffsetInteger := 0
+		if pageOffset != "" {
+			var err error
+			pageOffsetInteger, err = strconv.Atoi(pageOffset)
+			if err != nil {
+				util.HandleError(w, err)
+				return
+			}
+			if pageOffsetInteger < 0 {
+				pageOffsetInteger = 0
+			}
+		}
+
+		products, err := h.profileRepository.GetFriends(r.Context(), found, pageLimitInteger, pageOffsetInteger)
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(products); err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}
+}
+
+func (h *handlers) InvitesOutgoing() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		found := r.Context().Value("user").(*models.User)
+
+		pageLimit := r.URL.Query().Get("pageLimit")
+		pageLimitInteger := models.USERS_PAGE_LIMIT
+		if pageLimit != "" {
+			var err error
+			pageLimitInteger, err = strconv.Atoi(pageLimit)
+			if err != nil {
+				util.HandleError(w, err)
+				return
+			}
+			if pageLimitInteger > models.USERS_PAGE_LIMIT {
+				pageLimitInteger = models.USERS_PAGE_LIMIT
+			}
+		}
+
+		pageOffset := r.URL.Query().Get("pageOffset")
+		pageOffsetInteger := 0
+		if pageOffset != "" {
+			var err error
+			pageOffsetInteger, err = strconv.Atoi(pageOffset)
+			if err != nil {
+				util.HandleError(w, err)
+				return
+			}
+			if pageOffsetInteger < 0 {
+				pageOffsetInteger = 0
+			}
+		}
+
+		products, err := h.profileRepository.GetInvitesOutgoing(r.Context(), found, pageLimitInteger, pageOffsetInteger)
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(products); err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}
+}
+
+func (h *handlers) InvitesIncoming() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		found := r.Context().Value("user").(*models.User)
+
+		pageLimit := r.URL.Query().Get("pageLimit")
+		pageLimitInteger := models.USERS_PAGE_LIMIT
+		if pageLimit != "" {
+			var err error
+			pageLimitInteger, err = strconv.Atoi(pageLimit)
+			if err != nil {
+				util.HandleError(w, err)
+				return
+			}
+			if pageLimitInteger > models.USERS_PAGE_LIMIT {
+				pageLimitInteger = models.USERS_PAGE_LIMIT
+			}
+		}
+
+		pageOffset := r.URL.Query().Get("pageOffset")
+		pageOffsetInteger := 0
+		if pageOffset != "" {
+			var err error
+			pageOffsetInteger, err = strconv.Atoi(pageOffset)
+			if err != nil {
+				util.HandleError(w, err)
+				return
+			}
+			if pageOffsetInteger < 0 {
+				pageOffsetInteger = 0
+			}
+		}
+
+		products, err := h.profileRepository.GetInvitesIncoming(r.Context(), found, pageLimitInteger, pageOffsetInteger)
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(products); err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}
+}
