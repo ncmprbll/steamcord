@@ -1,3 +1,5 @@
+import type { Product } from "./product.type"
+
 export type DisplayComment = {
     id: number
     commentator: string
@@ -16,4 +18,9 @@ export type FriendStatus = {
     isFriend: boolean
     hasIncomingInvite: boolean
     hasOutgoingInvite: boolean
+}
+
+export type Games = {
+    games: Product[]
+    total: number
 }

@@ -26,29 +26,33 @@
         {
             id: "friends",
             type: "category",
-            name: `${data.localization.friends} ${friends.length}`
+            name: `${data.localization.friends} ${friends.length}`,
+            shouldShow: function() { return true }
         },
         {
             id: "search",
             type: "category",
-            name: data.localization.categorySearch
+            name: data.localization.categorySearch,
+            shouldShow: function() { return data.me?.id === data.user?.id }
         },
         {
             id: "incoming",
             type: "category",
-            name: `${data.localization.categoryIncoming} ${incoming.length}`
+            name: `${data.localization.categoryIncoming} ${incoming.length}`,
+            shouldShow: function() { return data.me?.id === data.user?.id }
         },
         {
             id: "outgoing",
             type: "category",
-            name: `${data.localization.categoryOutgoing} ${outgoing.length}`
+            name: `${data.localization.categoryOutgoing} ${outgoing.length}`,
+            shouldShow: function() { return data.me?.id === data.user?.id },
         }
     ]
     let selected = searchParams.get("category") || "";
     let foundCategory = false;
 
     for (let i = 0; i < categories.length; i++) {
-        if (categories[i].id === selected) {
+        if (categories[i].id === selected && categories[i].shouldShow()) {
             foundCategory = true;
             break;
         }
@@ -56,8 +60,10 @@
 
     if (!foundCategory) {
         for (let i = 0; i < categories.length; i++) {
-            selected = categories[i].id;
-            break;
+            if (categories[i].shouldShow()) {
+                selected = categories[i].id;
+                break;
+            }
         }
     }
 
@@ -184,17 +190,18 @@
             }
         }
     };
-
 </script>
 
 <p class="breaker">{data.localization.friends}</p>
 <div class="settings-window">
     <div class="settings-categories">
         {#each categories as category}
-            {#if category.type === "category"}
-                <button class="category" class:active={category.id === selected} on:click={() => onClickCategory(category.id)}>{category.name}</button>
-            {:else if category.type === "breaker"}
-                <div class="categories-breaker"/>
+            {#if category.shouldShow()}
+                {#if category.type === "category"}
+                    <button class="category" class:active={category.id === selected} on:click={() => onClickCategory(category.id)}>{category.name}</button>
+                {:else if category.type === "breaker"}
+                    <div class="categories-breaker"/>
+                {/if}
             {/if}
         {/each}
     </div>

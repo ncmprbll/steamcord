@@ -3,6 +3,7 @@
     import { pushState } from '$app/navigation';
 
     import SearchProduct from '$lib/components/SearchProduct.svelte';
+    import type { Product } from '$lib/types/product.type.js';
 
     export let data;
 
@@ -29,6 +30,7 @@
         }
     }
 
+    let products: Product[] = data.products || [];
     let searchTimer: string | number | NodeJS.Timeout | undefined;
     let priceRangeTimer: string | number | NodeJS.Timeout | undefined;
     let items: HTMLDivElement;
@@ -40,15 +42,13 @@
             waitForProductsToLoad = true;
 
             const searchParams = new URLSearchParams(new URL(window.location.href).searchParams);
-            searchParams.set("pageOffset", offset.toString());
             offset += PRODUCTS_PAGE_LIMIT;
+            searchParams.set("pageOffset", offset.toString());
             let url = `/api/products?${searchParams.toString()}`;
             const result = await fetch(url);
             const json = await result.json();
 
-            for (let i = 0; i < json.length; i++) {
-                new SearchProduct({target: items, props: {product: json[i]}});
-            }
+            products = [...products, ...json];
 
             if (json.length >= PRODUCTS_PAGE_LIMIT) {
                 waitForProductsToLoad = false;
@@ -84,15 +84,11 @@
         url.searchParams.delete("pageLimit");
         url.searchParams.set("priceRange", [minPrice || 0, maxPrice || 550000].join(","));
         const result = await fetch(`/api/products?${url.searchParams.toString()}`);
-        const products = await result.json();
 
-        offset = PRODUCTS_PAGE_LIMIT;
-        waitForProductsToLoad = false;
-
-        items.replaceChildren();
-
-        for (let i = 0; i < products.length; i++) {
-            new SearchProduct({target: items, props: {product: products[i]}});
+        if (result.status === 200) {
+            products = await result.json();
+            offset = 0;
+            waitForProductsToLoad = false;
         }
     }
 
@@ -201,7 +197,17 @@
             </div>
         </div>
     </div>
-    <div bind:this={items} class="items" />
+    <div class="items" >
+        {#if products !== undefined && products.length > 0}
+            {#each products as product}
+                <SearchProduct {product} />
+            {/each}
+        {:else}
+            <div>
+                {data.localization.noResultsQueryShort}
+            </div>
+        {/if}
+    </div>
 </div>
 
 <style lang="postcss">

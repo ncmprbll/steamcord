@@ -3,6 +3,7 @@ package http
 import (
 	"encoding/json"
 	"errors"
+	"main/backend/internal/auth"
 	"main/backend/internal/models"
 	"main/backend/internal/profile"
 	"main/backend/internal/session"
@@ -18,10 +19,11 @@ import (
 type handlers struct {
 	sessionRepository session.Repository
 	profileRepository profile.Repository
+	authRepository    auth.Repository
 }
 
-func NewAuthHandlers(sR session.Repository, pR profile.Repository) *handlers {
-	return &handlers{sR, pR}
+func NewAuthHandlers(sR session.Repository, pR profile.Repository, aR auth.Repository) *handlers {
+	return &handlers{sR, pR, aR}
 }
 
 func (h *handlers) Update() http.HandlerFunc {
@@ -455,7 +457,46 @@ func (h *handlers) Search() http.HandlerFunc {
 
 func (h *handlers) GetFriends() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		found := r.Context().Value("user").(*models.User)
+		found, ok := r.Context().Value("user").(*models.User)
+		userId := chi.URLParam(r, "user_id")
+		if userId != "" {
+			uuid, err := uuid.Parse(userId)
+			if err != nil {
+				util.HandleError(w, err)
+				return
+			}
+
+			user, err := h.authRepository.FindByUUID(r.Context(), &models.User{UUID: uuid})
+			if err != nil {
+				util.HandleError(w, err)
+				return
+			}
+
+			if user.Privacy == "private" {
+				if !ok || found.UUID != user.UUID {
+					user.ApplyPrivacy()
+				}
+			} else if user.Privacy == "friendsOnly" {
+				if ok && found.UUID != user.UUID {
+					friends, err := h.profileRepository.IsFriend(r.Context(), user, found)
+					if err != nil {
+						util.HandleError(w, err)
+						return
+					}
+					if !friends {
+						user.ApplyPrivacy()
+					}
+				} else if !ok {
+					user.ApplyPrivacy()
+				}
+			}
+
+			found.UUID = uuid
+			if user.Hidden {
+				w.WriteHeader(http.StatusUnauthorized)
+				return
+			}
+		}
 
 		pageLimit := r.URL.Query().Get("pageLimit")
 		pageLimitInteger := models.USERS_PAGE_LIMIT
@@ -485,14 +526,14 @@ func (h *handlers) GetFriends() http.HandlerFunc {
 			}
 		}
 
-		products, err := h.profileRepository.GetFriends(r.Context(), found, pageLimitInteger, pageOffsetInteger)
+		friends, err := h.profileRepository.GetFriends(r.Context(), found, pageLimitInteger, pageOffsetInteger)
 		if err != nil {
 			util.HandleError(w, err)
 			return
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		if err := json.NewEncoder(w).Encode(products); err != nil {
+		if err := json.NewEncoder(w).Encode(friends); err != nil {
 			util.HandleError(w, err)
 			return
 		}
@@ -589,6 +630,95 @@ func (h *handlers) InvitesIncoming() http.HandlerFunc {
 
 		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(products); err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}
+}
+
+func (h *handlers) GetGames() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		term := r.URL.Query().Get("term")
+
+		found, ok := r.Context().Value("user").(*models.User)
+		userId := chi.URLParam(r, "user_id")
+		if userId != "" {
+			uuid, err := uuid.Parse(userId)
+			if err != nil {
+				util.HandleError(w, err)
+				return
+			}
+
+			user, err := h.authRepository.FindByUUID(r.Context(), &models.User{UUID: uuid})
+			if err != nil {
+				util.HandleError(w, err)
+				return
+			}
+
+			if user.Privacy == "private" {
+				if !ok || found.UUID != user.UUID {
+					user.ApplyPrivacy()
+				}
+			} else if user.Privacy == "friendsOnly" {
+				if ok && found.UUID != user.UUID {
+					friends, err := h.profileRepository.IsFriend(r.Context(), user, found)
+					if err != nil {
+						util.HandleError(w, err)
+						return
+					}
+					if !friends {
+						user.ApplyPrivacy()
+					}
+				} else if !ok {
+					user.ApplyPrivacy()
+				}
+			}
+
+			found.UUID = uuid
+			if user.Hidden {
+				w.WriteHeader(http.StatusUnauthorized)
+				return
+			}
+		}
+
+		pageLimit := r.URL.Query().Get("pageLimit")
+		pageLimitInteger := models.PRODUCTS_PAGE_LIMIT
+		if pageLimit != "" {
+			var err error
+			pageLimitInteger, err = strconv.Atoi(pageLimit)
+			if err != nil {
+				util.HandleError(w, err)
+				return
+			}
+			if pageLimitInteger > models.PRODUCTS_PAGE_LIMIT {
+				pageLimitInteger = models.PRODUCTS_PAGE_LIMIT
+			}
+		}
+
+		pageOffset := r.URL.Query().Get("pageOffset")
+		pageOffsetInteger := 0
+		if pageOffset != "" {
+			var err error
+			pageOffsetInteger, err = strconv.Atoi(pageOffset)
+			if err != nil {
+				util.HandleError(w, err)
+				return
+			}
+			if pageOffsetInteger < 0 {
+				pageOffsetInteger = 0
+			}
+		}
+
+		games, err := h.profileRepository.GetGames(r.Context(), found, term, pageLimitInteger, pageOffsetInteger)
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(games); err != nil {
 			util.HandleError(w, err)
 			return
 		}

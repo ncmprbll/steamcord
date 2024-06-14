@@ -7,6 +7,7 @@
     import { formatPrice } from '$lib/types/product.type';
 
     export let product;
+    export let hidePrice = false;
 </script>
 
 <a data-sveltekit-reload href="{$page.data.lang}/app/{product.id}" class="item">
@@ -18,29 +19,33 @@
             <div class="game-name">
                 {product.name}
             </div>
-            <div>
-                {#if product.platforms.includes("windows")}
-                    <img src={windows} alt="Windows">
-                {/if}
-                {#if product.platforms.includes("mac")}
-                    <img src={mac} alt="Mac">
-                {/if}
-                {#if product.platforms.includes("linux")}
-                    <img src={linux} alt="Linux">
-                {/if}
-            </div>
-        </div>
-        <div class="price">
-            {#if product.discount !== undefined && product.discount !== 0}
-                <span class="discount">-{product.discount}%</span>
+            {#if product.platforms !== undefined && product.platforms !== null}
+                <div>
+                    {#if product.platforms.includes("windows")}
+                        <img src={windows} alt="Windows">
+                    {/if}
+                    {#if product.platforms.includes("mac")}
+                        <img src={mac} alt="Mac">
+                    {/if}
+                    {#if product.platforms.includes("linux")}
+                        <img src={linux} alt="Linux">
+                    {/if}
+                </div>
             {/if}
-            <div class="discount-prices">
-                {#if product.discount !== undefined && product.discount !== 0}
-                    <div class="discount-original-price">{formatPrice(product.price, true, $page.data.localization.free)}</div>
-                {/if}
-                <div class="discount-final-price">{formatPrice(product.price, false, $page.data.localization.free)}</div>
-            </div>
         </div>
+        {#if !hidePrice}
+            <div class="price">
+                {#if product.discount !== undefined && product.discount !== 0}
+                    <span class="discount">-{product.discount}%</span>
+                {/if}
+                <div class="discount-prices">
+                    {#if product.discount !== undefined && product.discount !== 0}
+                        <div class="discount-original-price">{formatPrice(product.price, true, $page.data.localization.free)}</div>
+                    {/if}
+                    <div class="discount-final-price">{formatPrice(product.price, false, $page.data.localization.free)}</div>
+                </div>
+            </div>
+        {/if}
     </div>
 </a>
 

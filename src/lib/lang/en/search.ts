@@ -5,7 +5,8 @@ const localization: Record<string, string> = {
     "priceRangeFrom": "from ...",
     "priceRangeTo": "to ...",
     "specialOffers": "Special offers",
-    "genres": "Genres"
+    "genres": "Genres",
+    'noResultsQueryShort': 'No results or the query is too short.',
 };
 
 export { localization };

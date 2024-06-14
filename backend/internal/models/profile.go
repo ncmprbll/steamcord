@@ -62,6 +62,11 @@ type FriendStatus struct {
 	HasOutgoingInvite bool `json:"hasOutgoingInvite"`
 }
 
+type Games struct {
+	Games []*Product `json:"games"`
+	Total int        `json:"total"`
+}
+
 func (c *Comment) Validate() error {
 	text := c.Text
 

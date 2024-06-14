@@ -27,7 +27,10 @@ func NewRouter(h *handlers, mw *middleware.MiddlewareManager) http.Handler {
 		r.Delete("/avatar", h.DeleteAvatar())
 
 		r.Get("/search", h.Search())
+		r.Get("/games", h.GetGames())
+		r.Get("/{user_id}/games", h.GetGames())
 		r.Get("/friends", h.GetFriends())
+		r.Get("/{user_id}/friends", h.GetFriends())
 		r.Get("/friends/outgoing", h.InvitesOutgoing())
 		r.Get("/friends/incoming", h.InvitesIncoming())
 	})

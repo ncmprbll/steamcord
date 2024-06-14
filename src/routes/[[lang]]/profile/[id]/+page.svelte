@@ -172,7 +172,7 @@
                     <div>
                         <div class="milestone">
                             <div class="milestone-text">{data.localization.gamesOwned}</div>
-                            <div class="milestone-value">0</div>
+                            <div class="milestone-value">{data.games?.total || 0}</div>
                         </div>
                         <div class="milestone">
                             <div class="milestone-text">{data.localization.dateJoined}</div>

@@ -27,7 +27,9 @@ const localization: Record<string, string> = {
     'categoryOutgoing': 'Исходящие',
     'incomingDesc': 'Входящие запросы в друзья.',
     'outgoingDesc': 'Исходящие запросы в друзья.',
-    'friendsDesc': 'Ваш список друзей.',
+    'friendsDesc': 'Список друзей.',
+    'userGames': 'Игры пользователя',
+    'userHasNoGames': 'У пользователя нет игр.',
 };
 
 export { localization };

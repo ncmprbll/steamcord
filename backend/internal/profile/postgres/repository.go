@@ -469,3 +469,44 @@ func (s *Repository) GetInvitesIncoming(ctx context.Context, user *models.User, 
 
 	return result, nil
 }
+
+func (s *Repository) GetGames(ctx context.Context, user *models.User, term string, pageLimit, pageOffset int) (*models.Games, error) {
+	result := []*models.Product{}
+
+	var total int
+	const queryTotal = `
+				SELECT
+					COUNT(*)
+				FROM users_games
+				WHERE user_id = $1;
+				`
+	if err := s.database.QueryRowxContext(ctx, queryTotal, user.UUID).Scan(&total); err != nil {
+		return nil, err
+	}
+
+	const query = `
+				SELECT
+					products.id,
+					products.name,
+					products_images.tier_background_img
+				FROM users_games
+					JOIN products ON users_games.product_id = products.id
+					JOIN products_images ON users_games.product_id = products_images.product_id
+				WHERE user_id = $1 AND LOWER(products.name) LIKE '%' || LOWER($2) || '%'
+				ORDER BY users_games.created_at
+				LIMIT $3 OFFSET $4;
+				`
+	rows, err := s.database.QueryxContext(ctx, query, user.UUID, term, pageLimit, pageOffset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		row := &models.Product{}
+		rows.StructScan(row)
+		result = append(result, row)
+	}
+
+	return &models.Games{Games: result, Total: total}, nil
+}

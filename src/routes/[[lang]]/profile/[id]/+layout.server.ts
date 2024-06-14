@@ -1,5 +1,5 @@
 import { type User } from '$lib/types/user.type';
-import { type ProfileComments, type FriendStatus } from '$lib/types/profile.type';
+import { type ProfileComments, type FriendStatus, type Games } from '$lib/types/profile.type';
 import { BASE_LANGUAGE, SERVER_API_URL } from '$env/static/private';
 
 export async function load({ params, parent, cookies }) {
@@ -59,10 +59,24 @@ export async function load({ params, parent, cookies }) {
 			comments = await commentsResult.json()
 		}
 
+		const gamesResult = await fetch(`${SERVER_API_URL}/profile/${id}/games?pageLimit=0`, {
+			method: "GET",
+			credentials: "include",
+			headers: {
+				Cookie: "session_id=" + sessionId
+			}
+		});
+
+		let games: Games | undefined;
+		if (gamesResult.status === 200) {
+			games = await gamesResult.json()
+		}
+
         return {
             user: await result.json() as User,
 			friendStatus: friendStatus,
 			comments: comments,
+			games: games,
             localization: merged
         };
     };

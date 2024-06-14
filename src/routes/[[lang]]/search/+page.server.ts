@@ -1,5 +1,5 @@
-import { BASE_LANGUAGE } from '$env/static/private';
-import { fail } from '@sveltejs/kit';
+import { BASE_LANGUAGE, SERVER_API_URL } from '$env/static/private';
+import type { Product } from '$lib/types/product.type.ts';
 
 export const load = async ({ cookies, params, parent, url }) => {
     const data = await parent();
@@ -13,7 +13,23 @@ export const load = async ({ cookies, params, parent, url }) => {
 	}
 	let merged = {...data.localization, ...localization}
 
+	const sessionId = cookies.get('session_id');
+
+	const productsResult = await fetch(`${SERVER_API_URL}/products?${url.searchParams.toString()}}`, {
+		method: "GET",
+		credentials: "include",
+		headers: {
+			Cookie: "session_id=" + sessionId
+		}
+	});
+
+	let products: Product[] | undefined;
+	if (productsResult.status === 200) {
+		products = await productsResult.json()
+	}
+
     return {
+		products: products,
         localization: merged
     };
 };

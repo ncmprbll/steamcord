@@ -10,7 +10,7 @@ export const load = async ({ params, parent, url, cookies }) => {
 	const sessionId = cookies.get('session_id');
 
 	let friends;
-	const friendsFetch = await fetch(`${SERVER_API_URL}/profile/friends`, {
+	const friendsFetch = await fetch(`${SERVER_API_URL}/profile/${params.id}/friends`, {
 		method: "GET",
 		credentials: "include",
 		headers: {

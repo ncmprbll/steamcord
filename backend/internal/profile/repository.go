@@ -23,4 +23,5 @@ type Repository interface {
 	GetFriends(context.Context,  *models.User, int, int) ([]*models.User, error)
 	GetInvitesOutgoing(context.Context, *models.User, int, int) ([]*models.User, error)
 	GetInvitesIncoming(context.Context, *models.User, int, int) ([]*models.User, error)
+	GetGames(context.Context, *models.User, string, int, int) (*models.Games, error)
 }
