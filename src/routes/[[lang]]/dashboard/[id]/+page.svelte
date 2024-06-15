@@ -122,17 +122,6 @@
         pointer-events: none;
     }
 
-    .form-button.upload {
-        transition-property: opacity,background,color,box-shadow;
-        transition-duration: .2s;
-        transition-timing-function: ease-out;
-        background: #3d4450;
-    }
-
-    .form-button.upload:hover {
-        background: #464d58;
-    }
-
     .form-button:hover {
         background: linear-gradient(90deg, #06BFFF 30%, #2D73FF 100%);
     }
@@ -143,7 +132,7 @@
         gap: 8px;
         margin-bottom: 20px;
     }
-
+g
     .box-input > label {
         font-size: 12px;
         letter-spacing: 0.5px;
