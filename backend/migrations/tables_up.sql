@@ -261,7 +261,8 @@ INSERT INTO genres (genre) VALUES ('Indie');
 INSERT INTO genres (genre) VALUES ('Simulation');
 INSERT INTO genres (genre) VALUES ('Casual');
 INSERT INTO genres (genre) VALUES ('Multiplayer');
-
+docker run --name redis -p 127.0.0.1:6379:6379 -d redis:7.2.4
+docker run --name postgres --env=POSTGRES_PASSWORD=password -p 127.0.0.1:5432:5432 -d postgres:16
 INSERT INTO translations (token, locale, text) VALUES ('#440_about', 'en', '
 Cyberpunk 2077 is an open-world, action-adventure RPG set in the megalopolis of Night City, where you play as a cyberpunk mercenary wrapped up in a do-or-die fight for survival. Improved and featuring all-new free additional content, customize your character and playstyle as you take on jobs, build a reputation, and unlock upgrades. The relationships you forge and the choices you make will shape the story and the world around you. Legends are made here. What will yours be?
 

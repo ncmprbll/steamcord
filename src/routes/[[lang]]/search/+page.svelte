@@ -193,14 +193,6 @@
                         <label for={genre.genre.toLowerCase()}>{data.localization[genre.genre.toLowerCase()]}</label>
                     </div>
                 {/each}
-                <!-- <div>
-                    <input type="checkbox" id="horror" name="Horror" checked={genres.includes("Horror")} on:change={onGenreSelection} />
-                    <label for="horror">Horror</label>
-                </div>
-                <div>
-                    <input type="checkbox" id="survival" name="Survival" checked={genres.includes("Survival")} on:change={onGenreSelection} />
-                    <label for="survival">Survival</label>
-                </div> -->
             </div>
         </div>
     </div>
@@ -220,12 +212,12 @@
 <style lang="postcss">
     input::-webkit-outer-spin-button,
     input::-webkit-inner-spin-button {
-        -webkit-appearance: none;
+        appearance: none;
         margin: 0;
     }
 
     input[type=number] {
-        -moz-appearance: textfield;
+        appearance: textfield;
     }
 
     .price-range {
@@ -236,14 +228,8 @@
     }
 
     .price-range-input {
-        -webkit-align-items: center;
-        -webkit-box-align: center;
-        -ms-flex-align: center;
         align-items: center;
         align-self: center;
-        display: -webkit-box;
-        display: -webkit-flex;
-        display: -ms-flexbox;
         display: flex;
         background: rgb(64, 64, 64);
         border-radius: 4px;
@@ -292,14 +278,8 @@
     }
 
     .menu-search-bar {
-        -webkit-align-items: center;
-        -webkit-box-align: center;
-        -ms-flex-align: center;
         align-items: center;
         align-self: center;
-        display: -webkit-box;
-        display: -webkit-flex;
-        display: -ms-flexbox;
         display: flex;
         background: rgb(32, 32, 36);
         border-radius: 24px;
@@ -322,9 +302,6 @@
         -webkit-box-align: center;
         -ms-flex-align: center;
         align-items: center;
-        display: -webkit-box;
-        display: -webkit-flex;
-        display: -ms-flexbox;
         display: flex;
         height: 100%;
         width: 100%;
@@ -370,13 +347,6 @@
         width: 100%;
         min-width: 0;
     }
-
-    /* .info {
-        flex-grow: 1;
-        display: flex;
-        justify-content: space-between;
-        overflow: hidden;
-    } */
 
     @media (max-width: 850px) {
         .container {

@@ -337,7 +337,7 @@
             <form method="PATCH" action="/api/profile/password" class="form" on:submit|preventDefault={handlePasswordUpdate}>
                 <div class="box-input">
                     <label for="old_password">{data.localization.oldPassword}</label>
-                    <input id="old_password" name="old_password" type="password" required minlength="{MIN_PASSWORD_LENGTH}" maxlength="{MAX_PASSWORD_LENGTH}">
+                    <input id="old_password" name="old_password" type="password" required maxlength="{MAX_PASSWORD_LENGTH}">
                 </div>
                 <div class="box-input">
                     <label for="new_password">{data.localization.newPassword} {`(${newPasswordLength}/${MAX_PASSWORD_LENGTH})`}</label>

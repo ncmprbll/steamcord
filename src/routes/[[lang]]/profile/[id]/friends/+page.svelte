@@ -267,50 +267,6 @@
         margin-bottom: 16px;
     }
 
-    select {
-        width: 100%;
-        padding: 4px;
-        font-size: 16px;
-        background-color: rgb(64, 64, 64);
-        border-radius: 4px;
-        min-width: 0;
-    }
-
-    table {
-        width: 100%;
-        margin-top: 18px;
-        border-collapse: collapse;
-        border: 2px solid rgb(140 140 140);
-        font-size: 14px;
-        letter-spacing: 1px;
-    }
-
-    thead {
-        background-color: rgb(48, 48, 48);
-    }
-
-    th, td {
-        border: 1px solid rgb(160 160 160);
-        padding: 8px 10px;
-    }
-
-    td {
-        text-align: center;
-    }
-
-    th:last-of-type, td:last-of-type {
-        padding: 0;
-    }
-
-    tbody > tr:nth-of-type(even) {
-        background-color: rgb(32, 32, 32);
-    }
-
-    .flex-form {
-        display: flex;
-        gap: 8px;
-    }
-
     input {
         border-radius: 2px;
         color: #fff;
@@ -376,56 +332,6 @@
         overflow: hidden;
     }
 
-    .form-button {
-        background: linear-gradient(90deg, #06BFFF 0%, #2D73FF 100%);
-        border-radius: 2px;
-        border: none;
-        outline: none;
-        padding: 12px;
-        color: #fff;
-        font-size: 16px;
-        font-weight: 400;
-        font-family: inherit;
-        text-align: center;
-        cursor: pointer;
-        white-space: nowrap;
-    }
-
-    td > .form-button {
-        width: 100%;
-        height: 100%;
-        border-radius: 0;
-        padding: 12px 0;
-    }
-
-    .form-button:disabled {
-        background: rgba(61, 67, 77, .35);
-        color: #464d58;
-        box-shadow: none;
-        cursor: default;
-        pointer-events: none;
-    }
-
-    .form-button:hover {
-        background: linear-gradient(90deg, #06BFFF 30%, #2D73FF 100%);
-    }
-
-    .form-button.revoke {
-        background: rgb(137, 9, 9);
-    }
-
-    .form-button.revoke:hover {
-        background: rgb(153, 25, 25);
-    }
-
-    .form-button.allow {
-        background: rgb(25, 133, 23);
-    }
-
-    .form-button.allow:hover {
-        background: rgb(41, 149, 39);
-    }
-
     input {
         border-radius: 2px;
         color: #fff;
@@ -445,12 +351,6 @@
 
     :global(.dialog-body > p) {
         margin-top: 0;
-    }
-
-    .dialog-body.error {
-        padding: 16px;
-        border: 2px #7c0000 solid;
-        border-radius: 4px;
     }
 
     :global(.dialog-body.error > p:last-child) {

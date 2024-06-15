@@ -110,46 +110,6 @@
         margin: 0;
     }
 
-    input[type=number] {
-        -moz-appearance: textfield;
-    }
-
-    .price-range {
-        display: flex;
-        justify-content: center;
-        gap: 8px;
-        margin-bottom: 4px;
-    }
-
-    .price-range-input {
-        -webkit-align-items: center;
-        -webkit-box-align: center;
-        -ms-flex-align: center;
-        align-items: center;
-        align-self: center;
-        display: -webkit-box;
-        display: -webkit-flex;
-        display: -ms-flexbox;
-        display: flex;
-        background: rgb(64, 64, 64);
-        border-radius: 4px;
-        width: 100%;
-        height: 40px;
-    }
-
-    .price-range-input > input {
-        margin: 0 4px;
-        border-color: rgba(0, 0, 0, 0);
-        color: #ebf2f4;
-        outline: none;
-        text-overflow: ellipsis;
-        width: 100%;
-    }
-
-    .filters-section {
-        margin-bottom: 16px;
-    }
-
     .search-icon {
         display: block;
         line-height: 0;
@@ -171,10 +131,6 @@
         font-size: 18px;
         font-weight: 600;
         letter-spacing: 3px;
-    }
-
-    .breaker.filters {
-        margin-bottom: 4px;
     }
 
     .menu-search-bar {
@@ -217,31 +173,12 @@
         overflow-x: hidden;
     }
 
-    .right-side {
-        position: relative;
-    }
-
     p {
         margin-top: 0;
         margin-bottom: 1em;
         border-bottom: 1px solid #3b3b3b;
         height: 32px;
     }
-
-    .right-side-box {
-        display: flex;
-        flex-direction: column;
-        border-radius: 4px;
-        padding: 15px;
-        background-color: rgb(32, 32, 32);
-        min-width: 280px;
-        position: sticky;
-        top: 96px; /* 80 (navbar height) + 16 (margin) */
-    }
-
-    .right-side-box .filters-section:last-child {
-        margin-bottom: 0;
-    } 
 
     .container {
         display: flex;
@@ -256,13 +193,6 @@
         width: 100%;
         min-width: 0;
     }
-
-    /* .info {
-        flex-grow: 1;
-        display: flex;
-        justify-content: space-between;
-        overflow: hidden;
-    } */
 
     @media (max-width: 850px) {
         .container {

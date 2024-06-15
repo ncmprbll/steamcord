@@ -82,7 +82,7 @@ func (h *handlers) Login() http.HandlerFunc {
 			return
 		}
 
-		sessionId, err := h.sessionRepository.CreateSession(r.Context(), &models.Session{UserID: found.UUID}, 30005)
+		sessionId, err := h.sessionRepository.CreateSession(r.Context(), &models.Session{UserID: found.UUID}, 24 * 60 * 60)
 		if err != nil {
 			util.HandleError(w, err)
 			return

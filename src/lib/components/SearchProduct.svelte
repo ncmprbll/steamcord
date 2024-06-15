@@ -121,7 +121,7 @@
     }
 
     .item-image {
-        height: 100%;
+        height: 70px;
         border-radius: 4px;
     }
 

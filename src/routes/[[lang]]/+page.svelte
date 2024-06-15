@@ -3,7 +3,7 @@
 
     import Carousel from '$lib/components/carousel/Carousel.svelte';
     import Tier from '$lib/components/tier/Tier.svelte';
-    import Discover from '$lib/components/Discover/Discover.svelte';
+    // import Discover from '$lib/components/discover/Discover.svelte';
 </script>
 
 <Carousel highlights={data.highlights} />
