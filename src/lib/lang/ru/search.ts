@@ -7,6 +7,17 @@ const localization: Record<string, string> = {
     "specialOffers": "Специальные предложения",
     "genres": "Жанры",
     'noResultsQueryShort': 'Нет результатов или запрос слишком короткий.',
+
+    'horror': 'Ужасы',
+    'survival': 'Выживание',
+    'action': 'Экшен',
+    'rpg': 'RPG',
+    'adventure': 'Приключения',
+    'strategy': 'Стратегия',
+    'indie': 'Инди',
+    'simulation': 'Симуляция',
+    'casual': 'Казуальная',
+    'multiplayer': 'Мультиплеер'
 };
 
 export { localization };

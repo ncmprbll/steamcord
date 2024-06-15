@@ -11,6 +11,8 @@
     const PRODUCTS_PAGE_LIMIT = 15;
     const BOTTOM_OFFSET_PX = 400;
 
+    let g = data.genres || [];
+
     let searchValue: string = "";
     const params = new URLSearchParams(window.location.search);
     searchValue = params.get("term") || "";
@@ -33,7 +35,6 @@
     let products: Product[] = data.products || [];
     let searchTimer: string | number | NodeJS.Timeout | undefined;
     let priceRangeTimer: string | number | NodeJS.Timeout | undefined;
-    let items: HTMLDivElement;
     let offset = 0;
     let waitForProductsToLoad = false;
 
@@ -186,14 +187,20 @@
             </div>
             <div class="filters-section">
                 <p class="breaker filters">{data.localization.genres}</p>
-                <div>
+                {#each g as genre}
+                    <div>
+                        <input type="checkbox" id={genre.genre.toLowerCase()} name={genre.genre} checked={genres.includes(genre.genre)} on:change={onGenreSelection} />
+                        <label for={genre.genre.toLowerCase()}>{data.localization[genre.genre.toLowerCase()]}</label>
+                    </div>
+                {/each}
+                <!-- <div>
                     <input type="checkbox" id="horror" name="Horror" checked={genres.includes("Horror")} on:change={onGenreSelection} />
                     <label for="horror">Horror</label>
                 </div>
                 <div>
                     <input type="checkbox" id="survival" name="Survival" checked={genres.includes("Survival")} on:change={onGenreSelection} />
                     <label for="survival">Survival</label>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>

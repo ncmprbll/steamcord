@@ -2,12 +2,12 @@
     import Chart, { type ChartItem } from 'chart.js/auto'
     import 'chartjs-adapter-moment';
 	import { onMount } from 'svelte';
-    import { BASE_CURRENCY } from "$env/static/public";
+    import { PUBLIC_BASE_CURRENCY } from "$env/static/public";
 
     export let data;
 
     let prices = {};
-    let selectedCurrency = BASE_CURRENCY;
+    let selectedCurrency = PUBLIC_BASE_CURRENCY;
 
     if (data.currencies !== undefined) {
         for (let i = 0; i < data.currencies.length; i++) {

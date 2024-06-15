@@ -2,6 +2,7 @@ package http
 
 import (
 	"encoding/json"
+	"fmt"
 	"main/backend/internal/auth"
 	"main/backend/internal/models"
 	"main/backend/internal/profile"
@@ -65,6 +66,7 @@ func (h *handlers) Login() http.HandlerFunc {
 		}
 
 		if err := found.ComparePasswords(user.Password); err != nil {
+			fmt.Println(r.RemoteAddr)
 			http.Error(w, "wrong credentials", http.StatusNotFound)
 			return
 		}

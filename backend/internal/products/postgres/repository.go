@@ -331,6 +331,28 @@ func (s *Repository) Currencies(ctx context.Context) (*models.Currencies, error)
 	return result, nil
 }
 
+func (s *Repository) Genres(ctx context.Context) ([]*models.Genre, error) {
+	const query = `
+				SELECT
+					*
+				FROM genres;
+				`
+	rows, err := s.database.QueryxContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := []*models.Genre{}
+	for rows.Next() {
+		row := &models.Genre{}
+		rows.StructScan(row)
+		result = append(result, row)
+	}
+
+	return result, nil
+}
+
 func (s *Repository) CreateProduct(ctx context.Context, product *models.PublishProduct) error {
 	tx, err := s.database.BeginTxx(ctx, nil)
 	if err != nil {

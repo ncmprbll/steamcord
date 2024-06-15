@@ -6,7 +6,7 @@
     export let highlights = [];
 
     const CAROUSEL_SPEED = 400;
-    const CAROUSEL_TIMER = 50; // Seconds
+    const CAROUSEL_TIMER = 8; // Seconds
 
     let left = [];
     let right = [];

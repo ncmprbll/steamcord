@@ -79,6 +79,11 @@ type Currency struct {
 	Symbol string `json:"symbol" db:"symbol"`
 }
 
+type Genre struct {
+	Id   string `json:"id" db:"id"`
+	Genre string `json:"genre" db:"genre"`
+}
+
 type Currencies []*Currency
 
 type PublishProduct struct {

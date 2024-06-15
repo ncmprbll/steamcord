@@ -13,6 +13,7 @@ type Repository interface {
 	FindByID(context.Context, *models.Product, string, string) (*models.Product, error)
 	Search(context.Context, string, string, []float32, string, []string, int, int) ([]*models.SearchProduct, error)
 	Currencies(context.Context) (*models.Currencies, error)
+	Genres(context.Context) ([]*models.Genre, error)
 	CreateProduct(context.Context, *models.PublishProduct) error
 	Sales(context.Context, *models.Product) (*models.Sales, error)
 }

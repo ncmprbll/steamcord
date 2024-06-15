@@ -25,7 +25,7 @@ func NewAuthHandlers(pR products.Repository) *handlers {
 func (h *handlers) GetTier() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var (
-			currencyCode = os.Getenv("BASE_CURRENCY")
+			currencyCode = os.Getenv("PUBLIC_BASE_CURRENCY")
 			rows         []*models.TierRow
 			err          error
 		)
@@ -67,7 +67,7 @@ func (h *handlers) GetTier() http.HandlerFunc {
 
 func (h *handlers) GetFeatured() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		currencyCode := os.Getenv("BASE_CURRENCY")
+		currencyCode := os.Getenv("PUBLIC_BASE_CURRENCY")
 		found, ok := r.Context().Value("user").(*models.User)
 		if ok {
 			currencyCode = found.CurrencyCode
@@ -124,7 +124,7 @@ func (h *handlers) FindByID() http.HandlerFunc {
 			return
 		}
 
-		currencyCode := os.Getenv("BASE_CURRENCY")
+		currencyCode := os.Getenv("PUBLIC_BASE_CURRENCY")
 		found, ok := r.Context().Value("user").(*models.User)
 		if ok {
 			currencyCode = found.CurrencyCode
@@ -223,7 +223,7 @@ func (h *handlers) Search() http.HandlerFunc {
 			}
 		}
 
-		currencyCode := os.Getenv("BASE_CURRENCY")
+		currencyCode := os.Getenv("PUBLIC_BASE_CURRENCY")
 		found, ok := r.Context().Value("user").(*models.User)
 		if ok {
 			currencyCode = found.CurrencyCode
@@ -248,6 +248,24 @@ func (h *handlers) Search() http.HandlerFunc {
 func (h *handlers) Currencies() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		currencies, err := h.productsRepository.Currencies(r.Context())
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(currencies); err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}
+}
+
+func (h *handlers) Genres() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		currencies, err := h.productsRepository.Genres(r.Context())
 		if err != nil {
 			util.HandleError(w, err)
 			return

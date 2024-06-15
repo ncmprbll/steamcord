@@ -216,6 +216,12 @@ INSERT INTO translations_tokens (token) VALUES ('#440_about');
 INSERT INTO translations_tokens (token) VALUES ('#440_description');
 INSERT INTO translations_tokens (token) VALUES ('#540_about');
 INSERT INTO translations_tokens (token) VALUES ('#540_description');
+INSERT INTO translations_tokens (token) VALUES ('#640_about');
+INSERT INTO translations_tokens (token) VALUES ('#640_description');
+INSERT INTO translations_tokens (token) VALUES ('#740_about');
+INSERT INTO translations_tokens (token) VALUES ('#740_description');
+INSERT INTO translations_tokens (token) VALUES ('#840_about');
+INSERT INTO translations_tokens (token) VALUES ('#840_description');
 INSERT INTO translations_tokens (token) VALUES ('#2540_about');
 INSERT INTO translations_tokens (token) VALUES ('#2540_description');
 
@@ -245,7 +251,16 @@ INSERT INTO locales (code, name) VALUES ('en', 'English');
 INSERT INTO currencies (code, symbol) VALUES ('RUB', '₽');
 INSERT INTO currencies (code, symbol) VALUES ('USD', '$');
 
-INSERT INTO genres (genre) VALUES ('Horror'), ('Survival');
+INSERT INTO genres (genre) VALUES ('Horror');
+INSERT INTO genres (genre) VALUES ('Survival');
+INSERT INTO genres (genre) VALUES ('Action');
+INSERT INTO genres (genre) VALUES ('RPG');
+INSERT INTO genres (genre) VALUES ('Adventure');
+INSERT INTO genres (genre) VALUES ('Strategy');
+INSERT INTO genres (genre) VALUES ('Indie');
+INSERT INTO genres (genre) VALUES ('Simulation');
+INSERT INTO genres (genre) VALUES ('Casual');
+INSERT INTO genres (genre) VALUES ('Multiplayer');
 
 INSERT INTO translations (token, locale, text) VALUES ('#440_about', 'en', '
 Cyberpunk 2077 is an open-world, action-adventure RPG set in the megalopolis of Night City, where you play as a cyberpunk mercenary wrapped up in a do-or-die fight for survival. Improved and featuring all-new free additional content, customize your character and playstyle as you take on jobs, build a reputation, and unlock upgrades. The relationships you forge and the choices you make will shape the story and the world around you. Legends are made here. What will yours be?
@@ -373,6 +388,150 @@ INSERT INTO translations (token, locale, text) VALUES ('#540_about', 'ru', '
 INSERT INTO translations (token, locale, text) VALUES ('#540_description', 'en', 'Baldur’s Gate 3 is a story-rich, party-based RPG set in the universe of Dungeons & Dragons, where your choices shape a tale of fellowship and betrayal, survival and sacrifice, and the lure of absolute power.');
 INSERT INTO translations (token, locale, text) VALUES ('#540_description', 'ru', 'Соберите отряд и вернитесь в Забытые Королевства. Вас ждет история о дружбе и предательстве, выживании и самопожертвовании, о сладком зове абсолютной власти.');
 
+INSERT INTO translations (token, locale, text) VALUES ('#640_about', 'en', '
+Bethesda Game Studios, the award-winning creators of Fallout 3 and The Elder Scrolls V: Skyrim, welcome you to the world of Fallout 4 – their most ambitious game ever, and the next generation of open-world gaming.  
+  
+As the sole survivor of Vault 111, you enter a world destroyed by nuclear war. Every second is a fight for survival, and every choice is yours. Only you can rebuild and determine the fate of the Wasteland. Welcome home.
+
+## Key Features:
+
+-   **Freedom and Liberty!**
+
+Do whatever you want in a massive open world with hundreds of locations, characters, and quests. Join multiple factions vying for power or go it alone, the choices are all yours.  
+
+-   **You’re S.P.E.C.I.A.L!**
+
+Be whoever you want with the S.P.E.C.I.A.L. character system. From a Power Armored soldier to the charismatic smooth talker, you can choose from hundreds of Perks and develop your own playstyle.  
+
+-   **Super Deluxe Pixels!**
+
+An all-new next generation graphics and lighting engine brings to life the world of Fallout like never before. From the blasted forests of the Commonwealth to the ruins of Boston, every location is packed with dynamic detail.  
+
+-   **Violence and V.A.T.S.!**  
+
+Intense first or third person combat can also be slowed down with the new dynamic Vault-Tec Assisted Targeting System (V.A.T.S) that lets you choose your attacks and enjoy cinematic carnage.  
+
+-   **Collect and Build!**
+
+Collect, upgrade, and build thousands of items in the most advanced crafting system ever. Weapons, armor, chemicals, and food are just the beginning - you can even build and manage entire settlements.
+');
+INSERT INTO translations (token, locale, text) VALUES ('#640_about', 'ru', '
+Bethesda Game Studios, создатель популярнейших игр Fallout 3 и The Elder Scrolls V: Skyrim, приглашает вас в мир Fallout 4 – своей самой грандиозной игры нового поколения с открытым миром.  
+  
+Вы – единственный выживший из убежища 111, оказавшийся в мире, разрушенном ядерной войной. Каждый миг вы сражаетесь за выживание, каждое решение может стать последним. Но именно от вас зависит судьба пустошей. Добро пожаловать домой.  
+  
+**ОСОБЕННОСТИ:**  
+
+-   **Свобода без границ!**
+
+Вы можете делать что угодно – в огромном открытом мире вас ждут сотни локаций, персонажей и заданий. Заключайте союзы с разными фракциями или добивайтесь всего самостоятельно – все в ваших руках.
+
+-   **Это S.P.E.C.I.A.L!**
+
+Станьте кем хотите с помощью системы персонажей S.P.E.C.I.A.L. Выберите из сотен качеств и создайте любого героя – от солдата в силовой броне до обаятельного переговорщика.  
+    
+-   **Торжество пикселей!**
+
+Мир Fallout оживает благодаря графике нового поколения и современному движку. Сожженные леса Содружества, руины Бостона – все воспроизведено убедительно и с потрясающими подробностями.  
+    
+-   **Насилие и V.A.T.S.!**
+
+Напряженные схватки от первого или третьего лица можно замедлить в новой системе пошагового прицеливания "Волт-Тек" (V.A.T.S), которая позволит выбрать способ атаки и насладиться кинематографической сценой бойни.  
+      
+    
+-   **Собирайте и стройте!**
+
+Собирайте, улучшайте и создавайте тысячи предметов с помощью продвинутой системы изготовления. Оружие, броня, химикаты и еда – вот только начало списка, впоследствии вы сможете создавать и развивать целые поселения.
+');
+INSERT INTO translations (token, locale, text) VALUES ('#640_description', 'en', 'Bethesda Game Studios, the award-winning creators of Fallout 3 and The Elder Scrolls V: Skyrim, welcome you to the world of Fallout 4 – their most ambitious game ever, and the next generation of open-world gaming.');
+INSERT INTO translations (token, locale, text) VALUES ('#640_description', 'ru', 'Bethesda Game Studios, создатель популярнейших игр Fallout 3 и The Elder Scrolls V: Skyrim, приглашает вас в мир Fallout 4 – своей самой грандиозной игры нового поколения с открытым миром.');
+
+INSERT INTO translations (token, locale, text) VALUES ('#740_about', 'en', '
+The Divine is dead. The Void approaches. And the powers lying dormant within you are soon to awaken. The battle for Divinity has begun. Choose wisely and trust sparingly; darkness lurks within every heart.
+
+## Who will you be?
+
+A flesh-eating Elf, an Imperial Lizard or an Undead, risen from the grave? Discover how the world reacts differently to who - or what - you are.
+
+## It’s time for a new Divinity!
+
+Gather your party and develop relationships with your companions. Blast your opponents in deep, tactical, turn-based combat. Use the environment as a weapon, use height to your advantage, and manipulate the elements themselves to seal your victory.
+
+## Ascend as the god that Rivellon so desperately needs.
+
+Explore the vast and layered world of Rivellon alone or in a party of up to 4 players in drop-in/drop-out cooperative play. Go anywhere, unleash your imagination, and explore endless ways to interact with the world. Beyond Rivellon, there’s more to explore in the brand-new PvP and Game Master modes.
+
+-   **Choose your race and origin.**  Choose from 6 unique origin characters with their own backgrounds and quests, or create your own as a Human, Lizard, Elf, Dwarf, or Undead. All choices have consequences.
+-   **Unlimited freedom to explore and experiment**. Go anywhere, talk to anyone, and interact with everything! Kill any NPC without sacrificing your progress, and speak to every animal. Even ghosts might be hiding a secret or two…
+-   **The next generation of turn-based combat.**  Blast your opponents with elemental combinations. Use height to your advantage. Master over 200 skills in 12 skill schools. But beware - the game’s AI 2.0 is our most devious invention to date.
+-   **Up to 4 player online and split-screen multiplayer.**  Play with your friends online or in local split-screen with full controller support.
+-   **Game Master Mode:**  Take your adventures to the next level and craft your own stories with the Game Master Mode. Download fan-made campaigns and mods from Steam Workshop.
+-   **4K Support:**  an Ultimate 4K experience pushing RPGs into a new era!
+');
+INSERT INTO translations (token, locale, text) VALUES ('#740_about', 'ru', '
+Божественный мертв. Пустота надвигается. А внутри вас просыпаются доселе неведомые силы. Битва за божественность началась. Тщательно выбирайте, кому верить: в эти непростые времена тьма может скрываться в каждом сердце.
+
+## Кем вы хотите стать?
+
+Эльфом, поедающим плоть собратьев? Царственным ящером? Мертвецом, восставшим из могилы? Окружающий мир будет реагировать на вас в зависимости от вашего выбора.
+
+## Пришло время нового бога!
+  
+Собирайте отряд и развивайте отношения со спутниками. Расправляйтесь с врагами в продуманных тактических пошаговых сражениях. Пользуйтесь ландшафтом как оружием; используйте высоту, чтобы получить преимущество, и загоняйте врагов в ловушки.
+
+## Станьте богом, в котором так отчаянно нуждается Ривеллон.
+
+Исследуйте обширный мир Ривеллона в одиночку или вместе с друзьями. Играть могут до 4 игроков одновременно, присоединяясь к игре и выходя из нее в любой момент. Направляйтесь куда угодно, отпустите на волю свое воображение и изучайте бесчисленные возможности взаимодействия с игровым миром. А после приключений в Ривеллоне вас ждут новый PvP-режим и режим гейм-мастера!  
+
+- **Выберите расу и биографию на свой вкус.** Вы можете играть за любого из 6 уникальных персонажей – каждого со своими историей и задачами – или же создать собственного героя: человека, ящера, эльфа, гнома или нежить. Но помните: у каждого выбора есть последствия.
+- **Неограниченная свобода для странствий и экспериментов** – идите куда угодно, говорите с кем угодно, используйте что угодно! Вы можете убить любого неигрового персонажа, не жертвуя при этом прохождением, можете говорить со всеми животными. Даже у призраков есть свои секреты...  
+- **Новое поколение пошаговых боев:** расправляйтесь с врагами, используя силы стихий и их сочетания, а также не забывайте использовать окружение. Вам доступны более 200 навыков 12 разных школ. Но будьте осторожны: игровой ИИ 2.0 неимоверно хитер и находчив!
+- **Совместная игра до 4 игроков по сети или в режиме разделения экрана:** играйте с друзьями по сети или на разделенном экране с полной поддержкой геймпадов.
+- **Режим гейм-мастера:** дайте волю воображению и творите собственные приключения в режиме гейм-мастера. Загружайте любительские кампании и моды через Steam Workshop.
+- **Поддержка 4K:**  небывалые впечатления 4K открывают для ролевых игр новую эпоху!
+');
+INSERT INTO translations (token, locale, text) VALUES ('#740_description', 'en', 'The critically acclaimed RPG that raised the bar, from the creators of Baldur''s Gate 3. Gather your party. Master deep, tactical combat. Venture as a party of up to four - but know that only one of you will have the chance to become a God.');
+INSERT INTO translations (token, locale, text) VALUES ('#740_description', 'ru', 'Знаменитая ролевая игра от разработчиков Baldur''s Gate 3. Соберите отряд. Освойте мощную боевую систему. Пригласите с собой до трех друзей, но помните, что только один из вас сможет стать богом.');
+
+INSERT INTO translations (token, locale, text) VALUES ('#840_about', 'en', '
+**Enter the Norse realm**
+
+His vengeance against the Gods of Olympus years behind him, Kratos now lives as a man in the realm of Norse Gods and monsters. It is in this harsh, unforgiving world that he must fight to survive… and teach his son to do the same.
+
+**Grasp a second chance**
+
+Kratos is a father again. As mentor and protector to Atreus, a son determined to earn his respect, he is forced to deal with and control the rage that has long defined him while out in a very dangerous world with his son.
+
+**Journey to a dark, elemental world of fearsome creatures**
+
+From the marble and columns of ornate Olympus to the gritty forests, mountains and caves of pre-Viking Norse lore, this is a distinctly new realm with its own pantheon of creatures, monsters and gods.
+
+**Engage in visceral, physical combat**
+
+With an over the shoulder camera that brings the player closer to the action than ever before, fights in God of War™ mirror the pantheon of Norse creatures Kratos will face: grand, gritty and grueling. A new main weapon and new abilities retain the defining spirit of the God of War series while presenting a vision of conflict that forges new ground in the genre.
+
+## PC FEATURES
+
+**High Fidelity Graphics**
+
+Striking visuals enhanced on PC. Enjoy true 4K resolution, on supported devices, [MU1] with unlocked framerates for peak performance. Dial in your settings via a wide range of graphical presets and options including higher resolution shadows, improved screen space reflections, the addition of GTAO and SSDO, and much more.
+  
+**NVIDIA® DLSS and Reflex Support**
+
+Quality meets performance. Harness the AI power of NVIDIA Deep Learning Super Sampling (DLSS) to boost frame rates and generate beautiful, sharp images on select Nvidia GPUs. Utilize NVIDIA Reflex low latency technology allowing you to react quicker and hit harder combos with the responsive gameplay you crave on GeForce GPUs.
+
+**Controls Customization**
+
+Play your way. With support for the DUALSHOCK®4 and DUALSENSE® wireless controllers, a wide range of other gamepads, and fully customizable bindings for mouse and keyboard, you have the power to fine-tune every action to match your playstyle.
+
+**Ultra-wide Support**
+
+Immerse yourself like never before. Journey through the Norse realms taking in breathtaking vistas in panoramic widescreen. With 21:9 ultra-widescreen support, God of War™ presents a cinema quality experience that further expands the original seamless theatrical vision.
+');
+-- INSERT INTO translations (token, locale, text) VALUES ('#840_about', 'ru', '');
+INSERT INTO translations (token, locale, text) VALUES ('#840_description', 'en', 'His vengeance against the Gods of Olympus years behind him, Kratos now lives as a man in the realm of Norse Gods and monsters. It is in this harsh, unforgiving world that he must fight to survive… and teach his son to do the same.');
+-- INSERT INTO translations (token, locale, text) VALUES ('#840_description', 'ru', '');
+
 INSERT INTO translations (token, locale, text) VALUES ('#2540_about', 'en', '
 Project Zomboid is an open-ended zombie-infested sandbox. It asks one simple question – how will you die? 
 
@@ -411,10 +570,10 @@ INSERT INTO translations (token, locale, text) VALUES ('#2540_description', 'en'
 -- INSERT INTO translations (token, locale, text) VALUES ('#2540_description', 'ru', '');
 
 INSERT INTO products (id, name, discount, publisher, about_token, description_token) VALUES (440, 'Cyberpunk 2077: Phantom Liberty', 100, 'CD Projekt Red', '#440_about', '#440_description');
-INSERT INTO products (id, name, discount, about_token, description_token) VALUES (540, 'Baldur''s Gate 3', 10, '#540_about', '#540_description');
-INSERT INTO products (id, name, discount) VALUES (640, 'Fallout 4: Game of the Year Edition', 75);
-INSERT INTO products (id, name, discount) VALUES (740, 'Divinity: Original Sin 2 - Definitive Edition', 69);
-INSERT INTO products (id, name, discount) VALUES (840, 'God of War', 0);
+INSERT INTO products (id, name, discount, publisher, about_token, description_token) VALUES (540, 'Baldur''s Gate 3', 10, 'Larian Studios', '#540_about', '#540_description');
+INSERT INTO products (id, name, discount, publisher, about_token, description_token) VALUES (640, 'Fallout 4: Game of the Year Edition', 75, 'Bethesda Softworks', '#640_about', '#640_description');
+INSERT INTO products (id, name, discount, publisher, about_token, description_token) VALUES (740, 'Divinity: Original Sin 2 - Definitive Edition', 69, 'Larian Studios', '#740_about', '#740_description'););
+INSERT INTO products (id, name, discount, publisher, about_token, description_token) VALUES (840, 'God of War', 0, 'PlayStation Publishing LLC', '#840_about', '#840_description');
 INSERT INTO products (id, name, discount) VALUES (940, 'Stardew Valley', 0);
 INSERT INTO products (id, name, discount) VALUES (1040, 'Volcano Princess', 0);
 INSERT INTO products (id, name, discount) VALUES (1140, 'Among Us', 20);
@@ -511,6 +670,8 @@ INSERT INTO products_images (product_id, tier_background_img) VALUES (2440, '/co
 INSERT INTO products_images (product_id, tier_background_img) VALUES (2540, '/content/apps/2540/2540_tier.jpg');
 INSERT INTO products_images (product_id, tier_background_img) VALUES (2640, '/content/apps/2640/2640_tier.jpg');
 
+-- ls | grep ss_ | awk '{print "INSERT INTO products_screenshots (product_id, img) VALUES (840, '\''/content/apps/840/" $1 "'\'');"}'
+
 INSERT INTO products_screenshots (product_id, img) VALUES (440, '/content/apps/440/ss_284ba40590de8f604ae693631c751a0aefdc452e.jpg');
 INSERT INTO products_screenshots (product_id, img) VALUES (440, '/content/apps/440/ss_4bda6f67580d94832ed2d5814e41ebe018ba1d9e.jpg');
 INSERT INTO products_screenshots (product_id, img) VALUES (440, '/content/apps/440/ss_4eb068b1cf52c91b57157b84bed18a186ed7714b.jpg');
@@ -521,6 +682,41 @@ INSERT INTO products_screenshots (product_id, img) VALUES (440, '/content/apps/4
 INSERT INTO products_screenshots (product_id, img) VALUES (440, '/content/apps/440/ss_b529b0abc43f55fc23fe8058eddb6e37c9629a6a.jpg');
 INSERT INTO products_screenshots (product_id, img) VALUES (440, '/content/apps/440/ss_bb1a60b8e5061caef7208369f42c5c9d574c9ac4.jpg');
 INSERT INTO products_screenshots (product_id, img) VALUES (440, '/content/apps/440/ss_e5a94665dbfa5a30931cff2f45cdc0ebea9fcebb.jpg');
+
+INSERT INTO products_screenshots (product_id, img) VALUES (540, '/content/apps/540/ss_2c576a8e563e3338826268f172c9032c84366d16.jpg');
+INSERT INTO products_screenshots (product_id, img) VALUES (540, '/content/apps/540/ss_31c13d137706fb4d9a4210513274a3ed9c3c7c96.jpg');
+INSERT INTO products_screenshots (product_id, img) VALUES (540, '/content/apps/540/ss_3cc4e8cfcfb8a91d19d96f631f076d252ba2c0c4.jpg');
+INSERT INTO products_screenshots (product_id, img) VALUES (540, '/content/apps/540/ss_49168eeefdfb6e6030a5aed3fd7c1a83da870a9f.jpg');
+INSERT INTO products_screenshots (product_id, img) VALUES (540, '/content/apps/540/ss_73d93bea842b93914d966622104dcb8c0f42972b.jpg');
+INSERT INTO products_screenshots (product_id, img) VALUES (540, '/content/apps/540/ss_b6a6ee6e046426d08ceea7a4506a1b5f44181543.jpg');
+INSERT INTO products_screenshots (product_id, img) VALUES (540, '/content/apps/540/ss_cf936d31061b58e98e0c646aee00e6030c410cda.jpg');
+
+INSERT INTO products_screenshots (product_id, img) VALUES (640, '/content/apps/640/ss_0e3f64b96da8ffc1372512f827c263934d3cd5d6.jpg');
+INSERT INTO products_screenshots (product_id, img) VALUES (640, '/content/apps/640/ss_2c576a8e563e3338826268f172c9032c84366d16.jpg');
+INSERT INTO products_screenshots (product_id, img) VALUES (640, '/content/apps/640/ss_3830831c6ff3ab5926810e76c30386036910937f.jpg');
+INSERT INTO products_screenshots (product_id, img) VALUES (640, '/content/apps/640/ss_910437ac708aed7c028f6e43a6224c633d086b0a.jpg');
+INSERT INTO products_screenshots (product_id, img) VALUES (640, '/content/apps/640/ss_a3540ed3253f36a666bd9a50698715f3a1316f70.jpg');
+INSERT INTO products_screenshots (product_id, img) VALUES (640, '/content/apps/640/ss_c310f858e6a7b02ffa21db984afb0dd1b24c1423.jpg');
+INSERT INTO products_screenshots (product_id, img) VALUES (640, '/content/apps/640/ss_d7e392145d393932fa86d6460db03d4a0038e320.jpg');
+INSERT INTO products_screenshots (product_id, img) VALUES (640, '/content/apps/640/ss_f3b094ce4bb54e1970abbd4fc7da3a0576894aae.jpg');
+INSERT INTO products_screenshots (product_id, img) VALUES (640, '/content/apps/640/ss_f649b8e57749f380cca225db5074edbb1e06d7f5.jpg');
+
+INSERT INTO products_screenshots (product_id, img) VALUES (740, '/content/apps/740/ss_34a428cdd26113e8645b77331d9fc82fcc50a4a2.jpg');
+INSERT INTO products_screenshots (product_id, img) VALUES (740, '/content/apps/740/ss_66d58326ebea7154d7f3d89e02f13913452caef7.jpg');
+INSERT INTO products_screenshots (product_id, img) VALUES (740, '/content/apps/740/ss_a0fa5dd2f40fffbae32af259afcf588a999e6663.jpg');
+INSERT INTO products_screenshots (product_id, img) VALUES (740, '/content/apps/740/ss_b59e5889726cab2cf01a93d0c0d192d25928952a.jpg');
+INSERT INTO products_screenshots (product_id, img) VALUES (740, '/content/apps/740/ss_d3badb07717f13ef3316928c513f8c4c7f7b50b1.jpg');
+INSERT INTO products_screenshots (product_id, img) VALUES (740, '/content/apps/740/ss_d882a5136e99c31ac7192cd3648b0d547be53f0e.jpg');
+INSERT INTO products_screenshots (product_id, img) VALUES (740, '/content/apps/740/ss_efa99b837c22f45f690f27d3c656de31a4446075.jpg');
+
+INSERT INTO products_screenshots (product_id, img) VALUES (840, '/content/apps/840/ss_0858b868ea51d53f73bd805ba7382f027dd33dca.jpg');
+INSERT INTO products_screenshots (product_id, img) VALUES (840, '/content/apps/840/ss_1351cb512d008f7e47fc50b74197f4f8eb6f3419.jpg');
+INSERT INTO products_screenshots (product_id, img) VALUES (840, '/content/apps/840/ss_1bd99270dcbd4ff9fe9c94b0d9c8ffc50ebb42c7.jpg');
+INSERT INTO products_screenshots (product_id, img) VALUES (840, '/content/apps/840/ss_3670ba72c7e3e9c3c3225547ef2c1053504e62b8.jpg');
+INSERT INTO products_screenshots (product_id, img) VALUES (840, '/content/apps/840/ss_6eccc970b5de2943546d93d319be1b5c0618f21b.jpg');
+INSERT INTO products_screenshots (product_id, img) VALUES (840, '/content/apps/840/ss_93a3ca63aa2cd8c675bbb6430324ee3f2d44b845.jpg');
+INSERT INTO products_screenshots (product_id, img) VALUES (840, '/content/apps/840/ss_e0edce62c590bc063a90a1296184392d0a9521da.jpg');
+INSERT INTO products_screenshots (product_id, img) VALUES (840, '/content/apps/840/ss_f1bff24d3967a21d303d95e11ed892e3d9113057.jpg');
 
 INSERT INTO products_platforms (product_id, platform) VALUES (440, 'windows');
 INSERT INTO products_platforms (product_id, platform) VALUES (540, 'windows');
@@ -556,7 +752,58 @@ INSERT INTO products_platforms (product_id, platform) VALUES (2440, 'linux');
 INSERT INTO products_platforms (product_id, platform) VALUES (2540, 'windows');
 INSERT INTO products_platforms (product_id, platform) VALUES (2640, 'windows');
 
-INSERT INTO products_genres (product_id, genre_id) VALUES (2340, 1), (2440, 1), (2540, 1), (2540, 2), (2640, 1), (1640, 1), (1840, 2);
+INSERT INTO products_genres (product_id, genre_id) VALUES (2340, 1);
+INSERT INTO products_genres (product_id, genre_id) VALUES (2440, 1);
+INSERT INTO products_genres (product_id, genre_id) VALUES (2540, 1);
+INSERT INTO products_genres (product_id, genre_id) VALUES (2540, 2);
+INSERT INTO products_genres (product_id, genre_id) VALUES (2640, 1);
+INSERT INTO products_genres (product_id, genre_id) VALUES (1640, 1);
+INSERT INTO products_genres (product_id, genre_id) VALUES (1840, 2);
+INSERT INTO products_genres (product_id, genre_id) VALUES (440, 3);
+INSERT INTO products_genres (product_id, genre_id) VALUES (440, 4);
+INSERT INTO products_genres (product_id, genre_id) VALUES (540, 4);
+INSERT INTO products_genres (product_id, genre_id) VALUES (540, 5);
+INSERT INTO products_genres (product_id, genre_id) VALUES (540, 6);
+INSERT INTO products_genres (product_id, genre_id) VALUES (640, 3);
+INSERT INTO products_genres (product_id, genre_id) VALUES (640, 4);
+INSERT INTO products_genres (product_id, genre_id) VALUES (740, 4);
+INSERT INTO products_genres (product_id, genre_id) VALUES (740, 5);
+INSERT INTO products_genres (product_id, genre_id) VALUES (740, 6);
+INSERT INTO products_genres (product_id, genre_id) VALUES (840, 3);
+INSERT INTO products_genres (product_id, genre_id) VALUES (840, 5);
+INSERT INTO products_genres (product_id, genre_id) VALUES (840, 6);
+INSERT INTO products_genres (product_id, genre_id) VALUES (940, 4);
+INSERT INTO products_genres (product_id, genre_id) VALUES (940, 7);
+INSERT INTO products_genres (product_id, genre_id) VALUES (940, 8);
+INSERT INTO products_genres (product_id, genre_id) VALUES (1040, 4);
+INSERT INTO products_genres (product_id, genre_id) VALUES (1040, 7);
+INSERT INTO products_genres (product_id, genre_id) VALUES (1040, 8);
+INSERT INTO products_genres (product_id, genre_id) VALUES (1140, 9);
+INSERT INTO products_genres (product_id, genre_id) VALUES (1240, 3);
+INSERT INTO products_genres (product_id, genre_id) VALUES (1240, 5);
+INSERT INTO products_genres (product_id, genre_id) VALUES (1340, 3);
+INSERT INTO products_genres (product_id, genre_id) VALUES (1340, 5);
+INSERT INTO products_genres (product_id, genre_id) VALUES (1340, 7);
+INSERT INTO products_genres (product_id, genre_id) VALUES (1340, 8);
+INSERT INTO products_genres (product_id, genre_id) VALUES (1440, 3);
+INSERT INTO products_genres (product_id, genre_id) VALUES (1540, 3);
+INSERT INTO products_genres (product_id, genre_id) VALUES (1540, 5);
+INSERT INTO products_genres (product_id, genre_id) VALUES (1540, 9);
+INSERT INTO products_genres (product_id, genre_id) VALUES (1740, 7);
+INSERT INTO products_genres (product_id, genre_id) VALUES (1740, 8);
+INSERT INTO products_genres (product_id, genre_id) VALUES (1740, 9);
+INSERT INTO products_genres (product_id, genre_id) VALUES (1840, 3);
+INSERT INTO products_genres (product_id, genre_id) VALUES (1840, 5);
+INSERT INTO products_genres (product_id, genre_id) VALUES (1840, 7);
+INSERT INTO products_genres (product_id, genre_id) VALUES (1840, 4);
+INSERT INTO products_genres (product_id, genre_id) VALUES (1840, 10);
+INSERT INTO products_genres (product_id, genre_id) VALUES (1940, 3);
+INSERT INTO products_genres (product_id, genre_id) VALUES (1940, 4);
+INSERT INTO products_genres (product_id, genre_id) VALUES (2040, 1);
+INSERT INTO products_genres (product_id, genre_id) VALUES (2040, 3);
+INSERT INTO products_genres (product_id, genre_id) VALUES (2140, 1);
+INSERT INTO products_genres (product_id, genre_id) VALUES (2140, 3);
+INSERT INTO products_genres (product_id, genre_id) VALUES (2140, 7);
 
 INSERT INTO products_featured (product_id) VALUES (440);
 INSERT INTO products_featured (product_id) VALUES (540);

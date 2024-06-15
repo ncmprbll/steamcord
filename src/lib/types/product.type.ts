@@ -59,6 +59,11 @@ export type Currency = {
 	symbol: string;
 }
 
+export type Genre = {
+	id: string;
+	genre: string;
+}
+
 export type Currencies = Currency[];
 
 export function formatPrice(price: Price, original: boolean, freeString: string | undefined): string {

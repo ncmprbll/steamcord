@@ -11,6 +11,7 @@ func NewRouter(h *handlers, mw *middleware.MiddlewareManager) http.Handler {
 	r := chi.NewRouter()
 
 	r.Get("/currencies", h.Currencies())
+	r.Get("/genres", h.Genres())
 
 	r.Group(func(r chi.Router) {
 		r.Use(mw.GetUserMiddleware)

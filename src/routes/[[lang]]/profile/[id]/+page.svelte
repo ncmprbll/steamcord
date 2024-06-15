@@ -219,7 +219,7 @@
                         </div>
                     </form>
                 {/if}
-                {#if comments !== undefined}
+                {#if comments !== undefined && comments.length !== 0}
                     {#each comments as comment}
                         <div class="comment-entry hoverable">
                             <div class="avatar-text-section">
@@ -257,6 +257,8 @@
                             <button class="page-button" type="button" disabled={currentPage === pages} on:click={() => goToCommentsPage(currentPage + 1)}>▶</button>
                         </div>
                     {/if}
+                {:else}
+                    {data.localization.noComments}
                 {/if}
             </div>
         {/if}

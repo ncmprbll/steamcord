@@ -8,6 +8,7 @@ const localization: Record<string, string> = {
     'games': 'Игры',
     'friends': 'Друзья',
     'noInformation': 'Информация отсутствует.',
+    'noComments': 'Комментариев нет.',
     'privateProfile': 'Профиль скрыт.',
     'addFriend': 'Добавить в друзья',
     'removeFriend': 'Удалить из друзей',

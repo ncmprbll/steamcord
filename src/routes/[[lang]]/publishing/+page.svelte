@@ -2,7 +2,7 @@
     import DOMPurify from 'dompurify';
     import { marked } from 'marked';
     import { pushState } from '$app/navigation';
-    import { BASE_CURRENCY } from "$env/static/public";
+    import { PUBLIC_BASE_CURRENCY } from "$env/static/public";
 
     export let data;
 
@@ -22,7 +22,7 @@
     let descriptionPreview = false;
 
     let prices = {};
-    let selectedCurrency = BASE_CURRENCY;
+    let selectedCurrency = PUBLIC_BASE_CURRENCY;
 
     if (data.locales !== undefined) {
         for (let i = 0; i < data.locales.length; i++) {
