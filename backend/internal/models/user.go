@@ -22,6 +22,9 @@ const (
 
 	MIN_NAME_SEARCH_LENGTH = 3
 	USERS_PAGE_LIMIT       = 20
+
+	MAX_BAD_LOGIN_ATTEMPTS = 5
+	BAD_LOGIN_IP_TIMEOUT = 60 * 3
 )
 
 type User struct {

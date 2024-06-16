@@ -14,6 +14,7 @@
     export let element: HTMLElement;
     export let paragraph: HTMLElement;
     export let active: number;
+    export let dragging: boolean;
 
     let width = 0;
     export const margin = 8;
@@ -79,11 +80,11 @@
 />
 
 {#if game !== undefined}
-<a href="{$page.data?.lang}/app/{game.id}" bind:clientWidth={clientWidth} bind:this={element} class="big-store-container">
+<a data-sveltekit-reload draggable="false" href="{$page.data?.lang}/app/{game.id}" class:dragging={dragging} bind:clientWidth={clientWidth} bind:this={element} class="big-store-container">
     <div class="screenshot" style="{style}">
         <picture>
             <source type="image/jpeg" class="big-spot__background-source" srcset={game.featured_background_img}>
-            <img class="big-spot__background-source" src={game.featured_background_img} alt="Highlight cover" style="object-fit: none;">
+            <img draggable="false" class="big-spot__background-source" src={game.featured_background_img} alt="Highlight cover" style="object-fit: none;">
         </picture>
         <div class="wall-gradient-full" class:wall-gradient-full--active={!active}></div>
         <div class="item" class:item--active={active}>
@@ -91,7 +92,7 @@
             <div class="logo">
                 <picture>
                     <source type="image/jpeg" srcset={game.featured_logo_img}>
-                    <img class="logo-image" src={game.featured_logo_img} alt="Logo">
+                    <img draggable="false" class="logo-image" src={game.featured_logo_img} alt="Logo">
                 </picture>
             </div>
             <div class="item-info">
@@ -161,6 +162,10 @@
 {/if}
 
 <style>
+    .dragging {
+        pointer-events: none;
+    }
+
     .loading {
         opacity: 0;
     }
@@ -409,7 +414,7 @@
         width: 100%;
         margin-left: 8px; /* Tied to 'export let margin' */
         margin-right: 8px; /* Tied to 'export let margin' */
-        pointer-events: auto;
+        /* pointer-events: auto; */
     }
 
     .big-store-container:has(.button:hover), .big-store-container:has(.button:disabled) {

@@ -2,13 +2,13 @@ package http
 
 import (
 	"encoding/json"
-	"fmt"
 	"main/backend/internal/auth"
 	"main/backend/internal/models"
 	"main/backend/internal/profile"
 	"main/backend/internal/session"
 	"main/backend/internal/util"
 	"net/http"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
@@ -53,6 +53,19 @@ func (h *handlers) Register() http.HandlerFunc {
 
 func (h *handlers) Login() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		lastIndex := strings.LastIndex(r.RemoteAddr, ":")
+		ip := r.RemoteAddr[:lastIndex]
+		attempts, err := h.sessionRepository.GetIPBadLoginAttempts(r.Context(), ip)
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		if attempts >= models.MAX_BAD_LOGIN_ATTEMPTS {
+			http.Error(w, "too many attempts, timeout", http.StatusBadRequest)
+			return
+		}
+
 		user := &models.User{}
 		if err := json.NewDecoder(r.Body).Decode(user); err != nil {
 			util.HandleError(w, err)
@@ -61,12 +74,13 @@ func (h *handlers) Login() http.HandlerFunc {
 
 		found, err := h.authRepository.FindByLogin(r.Context(), user)
 		if err != nil {
+			h.sessionRepository.LogIPBadLoginAttempt(r.Context(), ip, models.BAD_LOGIN_IP_TIMEOUT)
 			http.Error(w, "wrong credentials", http.StatusNotFound)
 			return
 		}
 
 		if err := found.ComparePasswords(user.Password); err != nil {
-			fmt.Println(r.RemoteAddr)
+			h.sessionRepository.LogIPBadLoginAttempt(r.Context(), ip, models.BAD_LOGIN_IP_TIMEOUT)
 			http.Error(w, "wrong credentials", http.StatusNotFound)
 			return
 		}
@@ -82,7 +96,7 @@ func (h *handlers) Login() http.HandlerFunc {
 			return
 		}
 
-		sessionId, err := h.sessionRepository.CreateSession(r.Context(), &models.Session{UserID: found.UUID}, 24 * 60 * 60)
+		sessionId, err := h.sessionRepository.CreateSession(r.Context(), &models.Session{UserID: found.UUID}, 24*60*60)
 		if err != nil {
 			util.HandleError(w, err)
 			return

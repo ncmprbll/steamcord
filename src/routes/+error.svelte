@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-    <title>Steamcord</title> 
+    <title>PC Games</title> 
 </svelte:head>
 
 <main>

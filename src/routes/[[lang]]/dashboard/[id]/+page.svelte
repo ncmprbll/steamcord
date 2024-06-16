@@ -132,7 +132,7 @@
         gap: 8px;
         margin-bottom: 20px;
     }
-g
+
     .box-input > label {
         font-size: 12px;
         letter-spacing: 0.5px;

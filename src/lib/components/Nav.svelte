@@ -201,7 +201,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 21 20" preserveAspectRatio="xMidYMid meet"><g transform="scale(1 -1) rotate(-45 -11.93502884 -2)" stroke="currentColor" stroke-width="1.65" fill="none" fill-rule="evenodd"><circle cx="7.70710678" cy="7.70710678" r="7"></circle><path d="M15.2071068 8.62132034h5.6923881" stroke-linecap="square"></path></g></svg>
                 </span>
                 <div class="search-input-wrapper">
-                    <input placeholder={$page.data.localization.search} value="">
+                    <input placeholder={$page.data.localization.search} value="" on:keydown={search}>
                 </div>
             </div>
             <div class="anchor-group">

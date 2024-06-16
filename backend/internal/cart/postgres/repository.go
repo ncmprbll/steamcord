@@ -101,18 +101,28 @@ func (s *Repository) Purchase(ctx context.Context, user *models.User) error {
 	}
 	defer tx.Rollback()
 
+	const queryGetBalance = `
+						SELECT
+							balance
+						FROM users
+						WHERE id = $1
+						`
+	var balance float32
+	if err = tx.QueryRowxContext(ctx, queryGetBalance, user.UUID).Scan(&balance); err != nil {
+		return err
+	}
+
 	const queryTotal = `
 						SELECT
-							users.balance,
 							SUM(price - (price * discount / 100)::NUMERIC(16, 2)) AS total
 						FROM users_cart
 							JOIN users ON users.id = $1
 							JOIN products ON users_cart.product_id = products.id
 							JOIN products_prices ON users_cart.product_id = products_prices.product_id
-						WHERE products_prices.currency_code = users.currency_code GROUP BY users.balance;
+						WHERE users_cart.user_id = $1 AND products_prices.currency_code = users.currency_code;
 						`
-	var balance, total float32
-	if err = tx.QueryRowxContext(ctx, queryTotal, user.UUID).Scan(&balance, &total); err != nil {
+	var total float32
+	if err = tx.QueryRowxContext(ctx, queryTotal, user.UUID).Scan(&total); err != nil {
 		return err
 	}
 
@@ -120,7 +130,7 @@ func (s *Repository) Purchase(ctx context.Context, user *models.User) error {
 		return errors.New("insufficient funds")
 	}
 
-	const queryBalance = `
+	const queryUpdateBalance = `
 						UPDATE
 							users
 						SET
@@ -128,7 +138,7 @@ func (s *Repository) Purchase(ctx context.Context, user *models.User) error {
 						WHERE id = $2
 						`
 
-	if _, err = tx.ExecContext(ctx, queryBalance, total, user.UUID); err != nil {
+	if _, err = tx.ExecContext(ctx, queryUpdateBalance, total, user.UUID); err != nil {
 		return err
 	}
 

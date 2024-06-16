@@ -16,6 +16,7 @@ const localization: Record<string, string> = {
     'userAlreadyExists': 'Пользователь существует',
     'email': 'E-mail',
     'wrong credentials': 'Неверный логин/пароль',
+    'too many attempts, timeout': 'Много попыток, таймаут',
     'banned': 'Аккаунт заблокирован',
     'search': 'Поиск',
     'profile': 'Профиль',
@@ -27,6 +28,7 @@ const localization: Record<string, string> = {
     "navAddFunds": "Пополнить баланс",
     "languages": "Языки",
     "cart": "Корзина",
+    "footer": "© 2024 PC Games. Все права защищены.",
 };
 
 export { localization };

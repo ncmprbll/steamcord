@@ -1,6 +1,8 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { onMount } from 'svelte';
+    import { swipe, press, pan } from 'svelte-gestures';
+
     import CarouselStoreItem from '$lib/components/carousel/CarouselStoreItem.svelte';
 
     export let highlights = [];
@@ -34,6 +36,9 @@
     let itemWidth: number = 0;
     let speed: number = 0;
     let offsetValue: number = 0;
+    let dragBase: number = 0;
+    let dragOffset: number = 0;
+    let dragging: boolean = false;
     let offset: number = -3236;
 
     let current: number = 0;
@@ -122,11 +127,70 @@
     };
 
     function transitionend() {
-        if (current >= objects.length) {
+        if (current < 0) {
+            speed = 0
+            carouselGoto(objects.length - 1);
+        } else if (current >= objects.length) {
             speed = 0
             carouselGoto(0);
         }
     };
+
+    let ignore = false;
+
+    function handler(event) {
+        if (ignore) {
+            return;
+        }
+
+        clearInterval(interval);
+        dragOffset = event.detail.x - dragBase;
+        dragging = true;
+
+        if (dragOffset >= 200) {
+            dragBase = 0;
+            dragOffset = 0
+            ignore = true;
+            pageGoto(current - 1);
+        } else if (dragOffset <= -200) {
+            dragBase = 0;
+            dragOffset = 0
+            ignore = true;
+            pageGoto(current + 1);
+        }
+    }
+
+    function panup(event) {
+        if (dragOffset >= 100) {
+            pageGoto(current - 1);
+        } else if (dragOffset <= -100) {
+            pageGoto(current + 1);
+        } else {
+            pageGoto(current);
+        }
+
+        dragBase = 0;
+        dragOffset = 0;
+        ignore = false;
+        dragging = false;
+    }
+
+    function onpress(event) {
+        clearInterval(interval);
+        dragBase = event.detail.x;
+    }
+
+    function onswipe(event) {
+        if (dragging) {
+            return;
+        }
+
+        if (event.detail.direction === 'right') {
+            pageGoto(current - 1);
+        } else if (event.detail.direction === 'left') {
+            pageGoto(current + 1);
+        }
+    }
 </script>
 
 <svelte:window
@@ -136,16 +200,16 @@
 {#if highlights.length > 2}
     <p bind:this={paragraph}>{$page.data.localization.highlights}</p>
     <div bind:this={carousel} class="carousel">
-        <div class="carousel-wrapper">
-            <div bind:this={items} class="items" on:transitionstart={transitionstart} on:transitionend={transitionend} style="transition: transform {speed}ms cubic-bezier(0.165, 0.84, 0.44, 1) 0s; transform: translate3d({offset}px, 0px, 0px);">
+        <div class="carousel-wrapper" use:swipe={{ timeframe: 300, minSwipeDistance: 60 }} use:press={{ timeframe: 0, triggerBeforeFinished: true }} use:pan={{ delay: 100 }} on:press={onpress} on:panup={panup} on:pan={handler} on:swipe={onswipe}>
+            <div bind:this={items} class="items" on:transitionstart={transitionstart} on:transitionend={transitionend} style="transition: transform {speed}ms cubic-bezier(0.165, 0.84, 0.44, 1) 0s; transform: translate3d({offset + dragOffset}px, 0px, 0px);">
                 {#each left as game, index}
-                    <CarouselStoreItem bind:this={carouselItemsLeft[index]} bind:active={activeLeft[index]} game={game} bind:paragraph/>
+                    <CarouselStoreItem bind:this={carouselItemsLeft[index]} bind:dragging={dragging} bind:active={activeLeft[index]} game={game} bind:paragraph/>
                 {/each}
                 {#each highlights as game, index}
-                    <CarouselStoreItem bind:this={carouselItems[index]} bind:active={activeObjects[index]} game={game} bind:element={objects[index]} bind:clientWidth={itemWidth} bind:paragraph bind:margin/>
+                    <CarouselStoreItem bind:this={carouselItems[index]} bind:dragging={dragging} bind:active={activeObjects[index]} game={game} bind:element={objects[index]} bind:clientWidth={itemWidth} bind:paragraph bind:margin/>
                 {/each}
                 {#each right as game, index}
-                    <CarouselStoreItem bind:this={carouselItemsRight[index]} bind:active={activeRight[index]} game={game} bind:paragraph/>
+                    <CarouselStoreItem bind:this={carouselItemsRight[index]} bind:dragging={dragging} bind:active={activeRight[index]} game={game} bind:paragraph/>
                 {/each}
             </div>
         </div>

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"main/backend/internal/models"
 	"time"
@@ -24,6 +25,29 @@ func format(sessionId string) string {
 	return fmt.Sprintf("session_id:%s", sessionId)
 }
 
+func (s *Repository) LogIPBadLoginAttempt(ctx context.Context, ip string, expiration int) error {
+	attempts, err := s.rdb.Get(ctx, ip).Int()
+	if err != nil && !errors.Is(err, redis.Nil) {
+		return err
+	}
+
+	err = s.rdb.Set(ctx, ip, attempts+1, time.Duration(expiration)*time.Second).Err()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *Repository) GetIPBadLoginAttempts(ctx context.Context, ip string) (int, error) {
+	attempts, err := s.rdb.Get(ctx, ip).Int()
+	if err != nil && !errors.Is(err, redis.Nil) {
+		return 0, err
+	}
+
+	return attempts, nil
+}
+
 func (s *Repository) CreateSession(ctx context.Context, session *models.Session, expiration int) (string, error) {
 	sessionId := base64.StdEncoding.EncodeToString([]byte(uuid.New().String() + uuid.New().String()))
 
@@ -32,7 +56,7 @@ func (s *Repository) CreateSession(ctx context.Context, session *models.Session,
 		return "", err
 	}
 
-	err = s.rdb.Set(ctx, format(sessionId), sessionJson, time.Duration(expiration) * time.Second).Err()
+	err = s.rdb.Set(ctx, format(sessionId), sessionJson, time.Duration(expiration)*time.Second).Err()
 	if err != nil {
 		return "", err
 	}
@@ -42,7 +66,7 @@ func (s *Repository) CreateSession(ctx context.Context, session *models.Session,
 		return "", err
 	}
 
-	return sessionId, err
+	return sessionId, nil
 }
 
 func (s *Repository) GetSessionByID(ctx context.Context, sessionId string) (*models.Session, error) {
@@ -68,7 +92,7 @@ func (s *Repository) DeleteByID(ctx context.Context, sessionId string) error {
 }
 
 func (s *Repository) InvalidateSessions(ctx context.Context, session *models.Session) error {
-	setKey := format(session.UserID.String()) 
+	setKey := format(session.UserID.String())
 	setMembers := s.rdb.SMembers(context.TODO(), setKey)
 	err := setMembers.Err()
 	if err != nil {

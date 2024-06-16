@@ -16,6 +16,7 @@ const localization: Record<string, string> = {
     'userAlreadyExists': 'User already exists',
     'email': 'E-mail',
     'wrong credentials': 'Wrong login or password',
+    'too many attempts, timeout': 'Too many attempts, timeout',
     'banned': 'Account banned',
     'search': 'Search',
     'profile': 'Profile',
@@ -27,6 +28,7 @@ const localization: Record<string, string> = {
     "navAddFunds": "Add funds",
     "languages": "Languages",
     "cart": "Cart",
+    "footer": "© 2024 PC Games. All rights reserved.",
 };
 
 export { localization };
