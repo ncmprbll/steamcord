@@ -1,7 +1,7 @@
 export function formatDate(date: string, localization: Record<string, string> | undefined): string {
     const dt = new Date(date);
     const d = dt.getDate();
-    const m = dt.toLocaleString("default", {month: "short"});
+    const m = dt.toLocaleString("en-US", { month: "short" });
     const y = dt.getFullYear();
 
     if (localization === undefined) {

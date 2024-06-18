@@ -16,7 +16,7 @@ const localization: Record<string, string> = {
     'userAlreadyExists': 'User already exists',
     'email': 'E-mail',
     'wrong credentials': 'Wrong login or password',
-    'too many attempts, timeout': 'Too many attempts, timeout',
+    'too many attempts, timeout': 'Too many attempts',
     'banned': 'Account banned',
     'search': 'Search',
     'profile': 'Profile',

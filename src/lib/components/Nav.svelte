@@ -232,11 +232,11 @@
                 <button class="login" on:click={() => {
                     loginVisible = !loginVisible
                 }}>
-                    Login
+                    {$page.data.localization.signin}
                 </button>
             {:else}
                 <div class="anchor-group">
-                    <a data-sveltekit-reload class="group-main" href="{$page.data?.lang}/profile/{$page.data.me.id}">{$page.data.me.login}</a>
+                    <a data-sveltekit-reload class="group-main" href="{$page.data?.lang}/profile/{$page.data.me.id}">{$page.data.me.login} ({formatBalance($page.data.me.balance, $page.data.me.currency_code)})</a>
                     <a data-sveltekit-reload href="{$page.data?.lang}/cart">{$page.data.localization.cart} {count}</a>
                     {#each profileContextMenu as item}
                         {#if item.type === "button"}

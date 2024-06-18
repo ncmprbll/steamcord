@@ -298,6 +298,30 @@ func (h *handlers) CreateProduct() http.HandlerFunc {
 	}
 }
 
+func (h *handlers) UpdateProduct() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		productId := chi.URLParam(r, "product_id")
+		i, err := strconv.Atoi(productId)
+		if err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		product := &models.UpdateProduct{ID: i}
+		if err := json.NewDecoder(r.Body).Decode(product); err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		if err := h.productsRepository.UpdateProduct(r.Context(), product); err != nil {
+			util.HandleError(w, err)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}
+}
+
 func (h *handlers) Sales() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		productId := chi.URLParam(r, "product_id")

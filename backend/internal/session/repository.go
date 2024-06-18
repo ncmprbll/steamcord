@@ -10,6 +10,6 @@ type Repository interface {
 	GetIPBadLoginAttempts(context.Context, string) (int, error)
 	CreateSession(context.Context, *models.Session, int) (string, error)
 	GetSessionByID(context.Context, string) (*models.Session, error)
-	DeleteByID(context.Context, string) error
+	DeleteSession(context.Context, *models.Session) error
 	InvalidateSessions(context.Context, *models.Session) error
 }

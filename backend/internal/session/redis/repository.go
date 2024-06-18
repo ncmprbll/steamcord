@@ -11,6 +11,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/redis/go-redis/v9"
+	"crypto/sha256"
 )
 
 type Repository struct {
@@ -23,6 +24,10 @@ func New(rdb *redis.Client) *Repository {
 
 func format(sessionId string) string {
 	return fmt.Sprintf("session_id:%s", sessionId)
+}
+
+func SHA256(s string) string {
+	return fmt.Sprintf("%x", sha256.Sum256([]byte(s)))
 }
 
 func (s *Repository) LogIPBadLoginAttempt(ctx context.Context, ip string, expiration int) error {
@@ -56,12 +61,14 @@ func (s *Repository) CreateSession(ctx context.Context, session *models.Session,
 		return "", err
 	}
 
-	err = s.rdb.Set(ctx, format(sessionId), sessionJson, time.Duration(expiration)*time.Second).Err()
+	hash := SHA256(sessionId)
+
+	err = s.rdb.Set(ctx, format(hash), sessionJson, time.Duration(expiration)*time.Second).Err()
 	if err != nil {
 		return "", err
 	}
 
-	err = s.rdb.SAdd(ctx, format(session.UserID.String()), format(sessionId), 0).Err()
+	err = s.rdb.SAdd(ctx, format(session.UserID.String()), format(hash), 0).Err()
 	if err != nil {
 		return "", err
 	}
@@ -70,7 +77,9 @@ func (s *Repository) CreateSession(ctx context.Context, session *models.Session,
 }
 
 func (s *Repository) GetSessionByID(ctx context.Context, sessionId string) (*models.Session, error) {
-	bytes, err := s.rdb.Get(ctx, format(sessionId)).Bytes()
+	hash := SHA256(sessionId)
+
+	bytes, err := s.rdb.Get(ctx, format(hash)).Bytes()
 	if err != nil {
 		return nil, err
 	}
@@ -83,8 +92,14 @@ func (s *Repository) GetSessionByID(ctx context.Context, sessionId string) (*mod
 	return session, nil
 }
 
-func (s *Repository) DeleteByID(ctx context.Context, sessionId string) error {
-	if err := s.rdb.Del(ctx, format(sessionId)).Err(); err != nil {
+func (s *Repository) DeleteSession(ctx context.Context, session *models.Session) error {
+	hash := SHA256(session.SessionID)
+
+	if err := s.rdb.Del(ctx, format(hash)).Err(); err != nil {
+		return err
+	}
+
+	if err := s.rdb.SRem(ctx, format(session.UserID.String()), format(hash)).Err(); err != nil {
 		return err
 	}
 

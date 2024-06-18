@@ -3,6 +3,7 @@
     import 'chartjs-adapter-moment';
 	import { onMount } from 'svelte';
     import { PUBLIC_BASE_CURRENCY } from "$env/static/public";
+    import { page } from '$app/stores';
 
     export let data;
 
@@ -18,6 +19,24 @@
     Chart.defaults.backgroundColor = '#9BD0F5';
     Chart.defaults.borderColor = '#202020';
     Chart.defaults.color = '#EBF2F4';
+
+
+    async function handleUpdate(event) {
+        const url = event.target.action;
+        const data = new FormData(event.target);
+        data.set("prices", JSON.stringify(prices));
+        let object = {};
+        data.forEach((value, key) => object[key] = value);
+
+        const result = await fetch(url, {
+            method: "PATCH",
+            body: data
+        });
+
+        if (result.status === 200) {
+            window.location.reload();
+        }
+    }
 
     onMount(async () => {
         const d = data.sales.map((report) => { return { x: report.date, y: report.sales } });
@@ -58,7 +77,7 @@
 <p class="breaker">{data.localization.dashboard}</p>
 <canvas id="chart"></canvas>
 <p class="breaker">{data.localization.priceManagement}</p>
-<form method="PATCH" action="/api/profile" class="form" on:submit|preventDefault={() => {}}>
+<form method="PATCH" action={`/api/products/${$page.params.id}`} class="form" on:submit|preventDefault={handleUpdate}>
     <div class="box-input">
         <label for="about">{data.localization.prices}</label>
         <select bind:value={selectedCurrency} name="prices" class="user-data-value-select">

@@ -25,19 +25,17 @@ export const load = async ({ cookies, params, parent, url }) => {
 	let merged = {...data.localization, ...localization};
 
     let currencies: Currencies | undefined;
-    // if (data.permissions.includes(PERMISSION_USERS_MANAGEMENT)) {
-        let result = await fetch(`${SERVER_API_URL}/products/currencies`, {
-            method: "GET",
-            credentials: "include",
-            headers: {
-                Cookie: "session_id=" + cookies.get("session_id")
-            }
-        });
-
-        if (result.status === 200) {
-            currencies = await result.json()
+    let result = await fetch(`${SERVER_API_URL}/products/currencies`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+            Cookie: "session_id=" + cookies.get("session_id")
         }
-    // }
+    });
+
+    if (result.status === 200) {
+        currencies = await result.json()
+    }
 
     return {
         localization: merged,

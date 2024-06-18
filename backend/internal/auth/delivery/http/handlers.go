@@ -54,7 +54,11 @@ func (h *handlers) Register() http.HandlerFunc {
 func (h *handlers) Login() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		lastIndex := strings.LastIndex(r.RemoteAddr, ":")
-		ip := r.RemoteAddr[:lastIndex]
+		ip := r.Header.Get("X-Real-IP")
+		if ip == "" {
+			ip = r.RemoteAddr[:lastIndex]
+		}
+
 		attempts, err := h.sessionRepository.GetIPBadLoginAttempts(r.Context(), ip)
 		if err != nil {
 			util.HandleError(w, err)
@@ -182,6 +186,7 @@ func (h *handlers) Me() http.HandlerFunc {
 
 func (h *handlers) Logout() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		found := r.Context().Value("user").(*models.User)
 		sessionIdCookie, err := r.Cookie("session_id")
 
 		if err != nil {
@@ -189,7 +194,7 @@ func (h *handlers) Logout() http.HandlerFunc {
 			return
 		}
 
-		if err := h.sessionRepository.DeleteByID(r.Context(), sessionIdCookie.Value); err != nil {
+		if err := h.sessionRepository.DeleteSession(r.Context(), &models.Session{SessionID: sessionIdCookie.Value, UserID: found.UUID}); err != nil {
 			util.HandleError(w, err)
 			return
 		}

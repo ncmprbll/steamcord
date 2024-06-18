@@ -200,7 +200,7 @@
 {#if highlights.length > 2}
     <p bind:this={paragraph}>{$page.data.localization.highlights}</p>
     <div bind:this={carousel} class="carousel">
-        <div class="carousel-wrapper" use:swipe={{ timeframe: 300, minSwipeDistance: 60 }} use:press={{ timeframe: 0, triggerBeforeFinished: true }} use:pan={{ delay: 100 }} on:press={onpress} on:panup={panup} on:pan={handler} on:swipe={onswipe}>
+        <div class="carousel-wrapper" use:swipe={{ timeframe: 300, minSwipeDistance: 60, touchAction: 'pan-y' }} use:press={{ timeframe: 0, triggerBeforeFinished: true }} use:pan={{ delay: 100, touchAction: 'pan-y' }} on:press={onpress} on:panup={panup} on:pan={handler} on:swipe={onswipe}>
             <div bind:this={items} class="items" on:transitionstart={transitionstart} on:transitionend={transitionend} style="transition: transform {speed}ms cubic-bezier(0.165, 0.84, 0.44, 1) 0s; transform: translate3d({offset + dragOffset}px, 0px, 0px);">
                 {#each left as game, index}
                     <CarouselStoreItem bind:this={carouselItemsLeft[index]} bind:dragging={dragging} bind:active={activeLeft[index]} game={game} bind:paragraph/>

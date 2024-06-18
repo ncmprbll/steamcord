@@ -16,10 +16,9 @@ const (
 type JSONOwnedProducts []int
 
 type Price struct {
-	ID           int     `json:"id,omitempty"`
-	ProductID    int64   `json:"product_id,omitempty"`
-	CurrencyCode string  `json:"currency_code,omitempty"`
-	Price        float32 `json:"price,omitempty"`
+	ProductID    int64   `json:"product_id" db:"product_id"`
+	CurrencyCode string  `json:"currency_code" db:"currency_code"`
+	Price        float32 `json:"price" db:"price"`
 }
 
 type JSONPrice struct {
@@ -80,7 +79,7 @@ type Currency struct {
 }
 
 type Genre struct {
-	Id   string `json:"id" db:"id"`
+	Id    string `json:"id" db:"id"`
 	Genre string `json:"genre" db:"genre"`
 }
 
@@ -93,6 +92,12 @@ type PublishProduct struct {
 	About       map[string]string  `json:"about"`
 	Description map[string]string  `json:"description"`
 	Prices      map[string]float32 `json:"prices"`
+}
+
+type UpdateProduct struct {
+	ID       int                `json:"id"`
+	Discount int                `json:"discount"`
+	Prices   map[string]float32 `json:"prices"`
 }
 
 type Sales []*struct {

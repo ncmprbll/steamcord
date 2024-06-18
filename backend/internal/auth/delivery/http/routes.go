@@ -12,7 +12,6 @@ func NewRouter(h *handlers, mw *middleware.MiddlewareManager) http.Handler {
 
 	r.Post("/register", h.Register())
 	r.Post("/login", h.Login())
-	r.Post("/logout", h.Logout())
 
 	r.Group(func(r chi.Router) {
 		r.Use(mw.GetUserMiddleware)
@@ -22,6 +21,7 @@ func NewRouter(h *handlers, mw *middleware.MiddlewareManager) http.Handler {
 	r.Group(func(r chi.Router) {
 		r.Use(mw.AuthSessionMiddleware)
 		r.Get("/me", h.Me())
+		r.Post("/logout", h.Logout())
 	})
 
 	return r

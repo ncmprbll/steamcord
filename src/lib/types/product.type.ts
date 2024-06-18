@@ -48,6 +48,12 @@ export type PublishProduct = {
 	prices: string
 };
 
+export type UpdateProduct = {
+	id: string
+	discount: number
+	prices: string
+};
+
 export type Price = {
 	original: number;
 	final: number;

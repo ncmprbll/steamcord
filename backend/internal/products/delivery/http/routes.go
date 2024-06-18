@@ -25,7 +25,9 @@ func NewRouter(h *handlers, mw *middleware.MiddlewareManager) http.Handler {
 		r.Use(mw.AuthSessionMiddleware)
 		r.Get("/owned", h.GetOwned())
 		r.Get("/{product_id}/sales", h.Sales())
+
 		r.Post("/", h.CreateProduct())
+		r.Patch("/{product_id}", h.UpdateProduct())
 	})
 
 	return r

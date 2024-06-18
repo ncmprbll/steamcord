@@ -26,7 +26,9 @@ export async function POST({ url, cookies, request }) {
 		redirect(303, "/");
 	}
 
-	if (amount >= 1000000) {
+	if (amount < 100) {
+		amount = 100
+	} else if (amount > 999999) {
 		amount = 999999;
 	}
 

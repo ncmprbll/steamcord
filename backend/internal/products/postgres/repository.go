@@ -459,6 +459,44 @@ func (s *Repository) CreateProduct(ctx context.Context, product *models.PublishP
 	return nil
 }
 
+func (s *Repository) UpdateProduct(ctx context.Context, product *models.UpdateProduct) error {
+	tx, err := s.database.BeginTxx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	const queryUpdateProduct = `
+							UPDATE
+								products
+							SET
+								discount = $1
+							WHERE id = $2
+							`
+	if _, err := tx.ExecContext(ctx, queryUpdateProduct, product.Discount, product.ID); err != nil {
+		return err
+	}
+
+	const queryUpdatePrices = `
+							UPDATE
+								products_prices
+							SET
+								price = $1
+							WHERE product_id = $2 AND currency_code = $3
+							`
+	for currency_code, price := range product.Prices {
+		if _, err := tx.ExecContext(ctx, queryUpdatePrices, price, product.ID, currency_code); err != nil {
+			return err
+		}
+	}
+
+	if err = tx.Commit(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (s *Repository) Sales(ctx context.Context, product *models.Product) (*models.Sales, error) {
 	const queryExists = `
 						SELECT EXISTS ( SELECT * FROM products WHERE id = $1 )

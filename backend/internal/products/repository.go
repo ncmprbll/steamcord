@@ -15,5 +15,6 @@ type Repository interface {
 	Currencies(context.Context) (*models.Currencies, error)
 	Genres(context.Context) ([]*models.Genre, error)
 	CreateProduct(context.Context, *models.PublishProduct) error
+	UpdateProduct(context.Context, *models.UpdateProduct) error
 	Sales(context.Context, *models.Product) (*models.Sales, error)
 }

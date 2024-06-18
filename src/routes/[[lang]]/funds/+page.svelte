@@ -6,7 +6,7 @@
 <form method="POST" action="/funds/stripe" class="form">
     <div class="box-input">
         <label for="amount">{data.localization.amount}</label>
-        <input id="amount" name="amount" type="number" min=0 max=999999 step=1 required >
+        <input placeholder={data.localization.addFundsPlaceholder} id="amount" name="amount" type="number" min=100 max=999999 step=1 required >
     </div>
     <div class="actions">
         <button class="form-button" type="submit">

@@ -1,6 +1,6 @@
 import { SERVER_API_URL } from "$env/static/private";
 
-export async function POST({ request }) {
+export async function POST({ request, getClientAddress }) {
 	const data = await request.formData();
 	let object = {};
 	data.forEach((value, key) => object[key] = value);
@@ -8,6 +8,9 @@ export async function POST({ request }) {
 
 	return await fetch(`${SERVER_API_URL}/auth/login`, {
 		method: request.method,
-		body: json
+		body: json,
+		headers: {
+            "X-Real-IP": getClientAddress()
+        }
 	});
 }
